@@ -1,0 +1,237 @@
+[
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/boot",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -m32 -g -g -o CMakeFiles/boot.dir/start.S.o -c /home/hsa/x86-code/start/test/source/boot/start.S",
+  "file": "/home/hsa/x86-code/start/test/source/boot/start.S"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/boot",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -g -o CMakeFiles/boot.dir/boot.c.o -c /home/hsa/x86-code/start/test/source/boot/boot.c",
+  "file": "/home/hsa/x86-code/start/test/source/boot/boot.c"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/loader",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -m32 -g -g -o CMakeFiles/loader.dir/start.S.o -c /home/hsa/x86-code/start/test/source/loader/start.S",
+  "file": "/home/hsa/x86-code/start/test/source/loader/start.S"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/loader",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -g -o CMakeFiles/loader.dir/loader_16.c.o -c /home/hsa/x86-code/start/test/source/loader/loader_16.c",
+  "file": "/home/hsa/x86-code/start/test/source/loader/loader_16.c"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/loader",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -g -o CMakeFiles/loader.dir/loader_32.c.o -c /home/hsa/x86-code/start/test/source/loader/loader_32.c",
+  "file": "/home/hsa/x86-code/start/test/source/loader/loader_32.c"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/kernel",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -m32 -g -g -o CMakeFiles/kernel.dir/init/start.S.o -c /home/hsa/x86-code/start/test/source/kernel/init/start.S",
+  "file": "/home/hsa/x86-code/start/test/source/kernel/init/start.S"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/kernel",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -g -o CMakeFiles/kernel.dir/core/memory.c.o -c /home/hsa/x86-code/start/test/source/kernel/core/memory.c",
+  "file": "/home/hsa/x86-code/start/test/source/kernel/core/memory.c"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/kernel",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -g -o CMakeFiles/kernel.dir/core/syscall.c.o -c /home/hsa/x86-code/start/test/source/kernel/core/syscall.c",
+  "file": "/home/hsa/x86-code/start/test/source/kernel/core/syscall.c"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/kernel",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -g -o CMakeFiles/kernel.dir/core/task.c.o -c /home/hsa/x86-code/start/test/source/kernel/core/task.c",
+  "file": "/home/hsa/x86-code/start/test/source/kernel/core/task.c"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/kernel",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -g -o CMakeFiles/kernel.dir/cpu/cpu.c.o -c /home/hsa/x86-code/start/test/source/kernel/cpu/cpu.c",
+  "file": "/home/hsa/x86-code/start/test/source/kernel/cpu/cpu.c"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/kernel",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -g -o CMakeFiles/kernel.dir/cpu/irq.c.o -c /home/hsa/x86-code/start/test/source/kernel/cpu/irq.c",
+  "file": "/home/hsa/x86-code/start/test/source/kernel/cpu/irq.c"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/kernel",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -g -o CMakeFiles/kernel.dir/dev/console.c.o -c /home/hsa/x86-code/start/test/source/kernel/dev/console.c",
+  "file": "/home/hsa/x86-code/start/test/source/kernel/dev/console.c"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/kernel",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -g -o CMakeFiles/kernel.dir/dev/dev.c.o -c /home/hsa/x86-code/start/test/source/kernel/dev/dev.c",
+  "file": "/home/hsa/x86-code/start/test/source/kernel/dev/dev.c"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/kernel",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -g -o CMakeFiles/kernel.dir/dev/disk.c.o -c /home/hsa/x86-code/start/test/source/kernel/dev/disk.c",
+  "file": "/home/hsa/x86-code/start/test/source/kernel/dev/disk.c"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/kernel",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -g -o CMakeFiles/kernel.dir/dev/kbd.c.o -c /home/hsa/x86-code/start/test/source/kernel/dev/kbd.c",
+  "file": "/home/hsa/x86-code/start/test/source/kernel/dev/kbd.c"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/kernel",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -g -o CMakeFiles/kernel.dir/dev/time.c.o -c /home/hsa/x86-code/start/test/source/kernel/dev/time.c",
+  "file": "/home/hsa/x86-code/start/test/source/kernel/dev/time.c"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/kernel",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -g -o CMakeFiles/kernel.dir/dev/tty.c.o -c /home/hsa/x86-code/start/test/source/kernel/dev/tty.c",
+  "file": "/home/hsa/x86-code/start/test/source/kernel/dev/tty.c"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/kernel",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -g -o CMakeFiles/kernel.dir/fs/devfs/devfs.c.o -c /home/hsa/x86-code/start/test/source/kernel/fs/devfs/devfs.c",
+  "file": "/home/hsa/x86-code/start/test/source/kernel/fs/devfs/devfs.c"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/kernel",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -g -o CMakeFiles/kernel.dir/fs/fatfs/fatfs.c.o -c /home/hsa/x86-code/start/test/source/kernel/fs/fatfs/fatfs.c",
+  "file": "/home/hsa/x86-code/start/test/source/kernel/fs/fatfs/fatfs.c"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/kernel",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -g -o CMakeFiles/kernel.dir/fs/file.c.o -c /home/hsa/x86-code/start/test/source/kernel/fs/file.c",
+  "file": "/home/hsa/x86-code/start/test/source/kernel/fs/file.c"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/kernel",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -g -o CMakeFiles/kernel.dir/fs/fs.c.o -c /home/hsa/x86-code/start/test/source/kernel/fs/fs.c",
+  "file": "/home/hsa/x86-code/start/test/source/kernel/fs/fs.c"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/kernel",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -g -o CMakeFiles/kernel.dir/init/first_task.c.o -c /home/hsa/x86-code/start/test/source/kernel/init/first_task.c",
+  "file": "/home/hsa/x86-code/start/test/source/kernel/init/first_task.c"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/kernel",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -m32 -g -g -o CMakeFiles/kernel.dir/init/first_task_entry.S.o -c /home/hsa/x86-code/start/test/source/kernel/init/first_task_entry.S",
+  "file": "/home/hsa/x86-code/start/test/source/kernel/init/first_task_entry.S"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/kernel",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -g -o CMakeFiles/kernel.dir/init/init.c.o -c /home/hsa/x86-code/start/test/source/kernel/init/init.c",
+  "file": "/home/hsa/x86-code/start/test/source/kernel/init/init.c"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/kernel",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -g -o CMakeFiles/kernel.dir/init/lib_syscall.c.o -c /home/hsa/x86-code/start/test/source/kernel/init/lib_syscall.c",
+  "file": "/home/hsa/x86-code/start/test/source/kernel/init/lib_syscall.c"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/kernel",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -g -o CMakeFiles/kernel.dir/ipc/mutex.c.o -c /home/hsa/x86-code/start/test/source/kernel/ipc/mutex.c",
+  "file": "/home/hsa/x86-code/start/test/source/kernel/ipc/mutex.c"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/kernel",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -g -o CMakeFiles/kernel.dir/ipc/sem.c.o -c /home/hsa/x86-code/start/test/source/kernel/ipc/sem.c",
+  "file": "/home/hsa/x86-code/start/test/source/kernel/ipc/sem.c"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/kernel",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -g -o CMakeFiles/kernel.dir/tools/bitmap.c.o -c /home/hsa/x86-code/start/test/source/kernel/tools/bitmap.c",
+  "file": "/home/hsa/x86-code/start/test/source/kernel/tools/bitmap.c"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/kernel",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -g -o CMakeFiles/kernel.dir/tools/klib.c.o -c /home/hsa/x86-code/start/test/source/kernel/tools/klib.c",
+  "file": "/home/hsa/x86-code/start/test/source/kernel/tools/klib.c"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/kernel",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -g -o CMakeFiles/kernel.dir/tools/list.c.o -c /home/hsa/x86-code/start/test/source/kernel/tools/list.c",
+  "file": "/home/hsa/x86-code/start/test/source/kernel/tools/list.c"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/kernel",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -g -o CMakeFiles/kernel.dir/tools/log.c.o -c /home/hsa/x86-code/start/test/source/kernel/tools/log.c",
+  "file": "/home/hsa/x86-code/start/test/source/kernel/tools/log.c"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/applib",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -m32 -g -g -o CMakeFiles/app.dir/crt0.S.o -c /home/hsa/x86-code/start/test/source/applib/crt0.S",
+  "file": "/home/hsa/x86-code/start/test/source/applib/crt0.S"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/applib",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -g -o CMakeFiles/app.dir/cstart.c.o -c /home/hsa/x86-code/start/test/source/applib/cstart.c",
+  "file": "/home/hsa/x86-code/start/test/source/applib/cstart.c"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/applib",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -g -o CMakeFiles/app.dir/lib_syscall.c.o -c /home/hsa/x86-code/start/test/source/applib/lib_syscall.c",
+  "file": "/home/hsa/x86-code/start/test/source/applib/lib_syscall.c"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/shell",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -I/home/hsa/x86-code/start/test/source/shell/../applib -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -g -o CMakeFiles/shell.dir/main.c.o -c /home/hsa/x86-code/start/test/source/shell/main.c",
+  "file": "/home/hsa/x86-code/start/test/source/shell/main.c"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/init",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -I/home/hsa/x86-code/start/test/source/init/../applib -m32 -g -g -o CMakeFiles/init.dir/__/applib/crt0.S.o -c /home/hsa/x86-code/start/test/source/applib/crt0.S",
+  "file": "/home/hsa/x86-code/start/test/source/applib/crt0.S"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/init",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -I/home/hsa/x86-code/start/test/source/init/../applib -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -g -o CMakeFiles/init.dir/__/applib/cstart.c.o -c /home/hsa/x86-code/start/test/source/applib/cstart.c",
+  "file": "/home/hsa/x86-code/start/test/source/applib/cstart.c"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/init",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -I/home/hsa/x86-code/start/test/source/init/../applib -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -g -o CMakeFiles/init.dir/__/applib/lib_syscall.c.o -c /home/hsa/x86-code/start/test/source/applib/lib_syscall.c",
+  "file": "/home/hsa/x86-code/start/test/source/applib/lib_syscall.c"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/init",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -I/home/hsa/x86-code/start/test/source/init/../applib -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -g -o CMakeFiles/init.dir/main.c.o -c /home/hsa/x86-code/start/test/source/init/main.c",
+  "file": "/home/hsa/x86-code/start/test/source/init/main.c"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/loop",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -I/home/hsa/x86-code/start/test/source/loop/../applib -m32 -g -g -o CMakeFiles/loop.dir/__/applib/crt0.S.o -c /home/hsa/x86-code/start/test/source/applib/crt0.S",
+  "file": "/home/hsa/x86-code/start/test/source/applib/crt0.S"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/loop",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -I/home/hsa/x86-code/start/test/source/loop/../applib -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -g -o CMakeFiles/loop.dir/__/applib/cstart.c.o -c /home/hsa/x86-code/start/test/source/applib/cstart.c",
+  "file": "/home/hsa/x86-code/start/test/source/applib/cstart.c"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/loop",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -I/home/hsa/x86-code/start/test/source/loop/../applib -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -g -o CMakeFiles/loop.dir/__/applib/lib_syscall.c.o -c /home/hsa/x86-code/start/test/source/applib/lib_syscall.c",
+  "file": "/home/hsa/x86-code/start/test/source/applib/lib_syscall.c"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/loop",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -I/home/hsa/x86-code/start/test/source/loop/../applib -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -g -o CMakeFiles/loop.dir/main.c.o -c /home/hsa/x86-code/start/test/source/loop/main.c",
+  "file": "/home/hsa/x86-code/start/test/source/loop/main.c"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/snake",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -I/home/hsa/x86-code/start/test/source/snake/../applib -m32 -g -g -o CMakeFiles/snake.dir/__/applib/crt0.S.o -c /home/hsa/x86-code/start/test/source/applib/crt0.S",
+  "file": "/home/hsa/x86-code/start/test/source/applib/crt0.S"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/snake",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -I/home/hsa/x86-code/start/test/source/snake/../applib -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -g -o CMakeFiles/snake.dir/__/applib/cstart.c.o -c /home/hsa/x86-code/start/test/source/applib/cstart.c",
+  "file": "/home/hsa/x86-code/start/test/source/applib/cstart.c"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/snake",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -I/home/hsa/x86-code/start/test/source/snake/../applib -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -g -o CMakeFiles/snake.dir/__/applib/lib_syscall.c.o -c /home/hsa/x86-code/start/test/source/applib/lib_syscall.c",
+  "file": "/home/hsa/x86-code/start/test/source/applib/lib_syscall.c"
+},
+{
+  "directory": "/home/hsa/x86-code/start/test/build/source/snake",
+  "command": "/usr/bin/gcc  -I/home/hsa/x86-code/start/test/source -I/home/hsa/x86-code/start/test/source/kernel/include -I/home/hsa/x86-code/start/test/../newlib/i686-elf/include -I/home/hsa/x86-code/start/test/source/snake/../applib -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -g -o CMakeFiles/snake.dir/main.c.o -c /home/hsa/x86-code/start/test/source/snake/main.c",
+  "file": "/home/hsa/x86-code/start/test/source/snake/main.c"
+}
+]

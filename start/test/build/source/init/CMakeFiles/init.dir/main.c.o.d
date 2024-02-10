@@ -1,0 +1,32 @@
+source/init/CMakeFiles/init.dir/main.c.o: \
+ /home/hsa/x86-code/start/test/source/init/main.c \
+ /usr/include/stdc-predef.h \
+ /home/hsa/x86-code/start/test/../newlib/i686-elf/include/stdio.h \
+ /home/hsa/x86-code/start/test/../newlib/i686-elf/include/_ansi.h \
+ /home/hsa/x86-code/start/test/../newlib/i686-elf/include/newlib.h \
+ /home/hsa/x86-code/start/test/../newlib/i686-elf/include/_newlib_version.h \
+ /home/hsa/x86-code/start/test/../newlib/i686-elf/include/sys/config.h \
+ /home/hsa/x86-code/start/test/../newlib/i686-elf/include/machine/ieeefp.h \
+ /home/hsa/x86-code/start/test/../newlib/i686-elf/include/sys/features.h \
+ /home/hsa/x86-code/start/test/../newlib/i686-elf/include/sys/cdefs.h \
+ /home/hsa/x86-code/start/test/../newlib/i686-elf/include/machine/_default_types.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/stddef.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/stdarg.h \
+ /home/hsa/x86-code/start/test/../newlib/i686-elf/include/sys/reent.h \
+ /home/hsa/x86-code/start/test/../newlib/i686-elf/include/_ansi.h \
+ /home/hsa/x86-code/start/test/../newlib/i686-elf/include/sys/_types.h \
+ /home/hsa/x86-code/start/test/../newlib/i686-elf/include/machine/_types.h \
+ /home/hsa/x86-code/start/test/../newlib/i686-elf/include/sys/lock.h \
+ /home/hsa/x86-code/start/test/../newlib/i686-elf/include/sys/types.h \
+ /home/hsa/x86-code/start/test/../newlib/i686-elf/include/sys/_stdint.h \
+ /home/hsa/x86-code/start/test/../newlib/i686-elf/include/machine/endian.h \
+ /home/hsa/x86-code/start/test/../newlib/i686-elf/include/machine/_endian.h \
+ /home/hsa/x86-code/start/test/../newlib/i686-elf/include/sys/select.h \
+ /home/hsa/x86-code/start/test/../newlib/i686-elf/include/sys/_sigset.h \
+ /home/hsa/x86-code/start/test/../newlib/i686-elf/include/sys/_timeval.h \
+ /home/hsa/x86-code/start/test/../newlib/i686-elf/include/sys/timespec.h \
+ /home/hsa/x86-code/start/test/../newlib/i686-elf/include/sys/_timespec.h \
+ /home/hsa/x86-code/start/test/../newlib/i686-elf/include/sys/_pthreadtypes.h \
+ /home/hsa/x86-code/start/test/../newlib/i686-elf/include/sys/sched.h \
+ /home/hsa/x86-code/start/test/../newlib/i686-elf/include/machine/types.h \
+ /home/hsa/x86-code/start/test/../newlib/i686-elf/include/sys/stdio.h

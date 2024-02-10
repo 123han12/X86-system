@@ -1,0 +1,14 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/hsa/x86-code/start/test/source/boot/boot.h
+
+/home/hsa/x86-code/start/test/source/boot/start.S
+boot.h
+/home/hsa/x86-code/start/test/source/boot/boot.h
+
