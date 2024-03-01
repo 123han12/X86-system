@@ -5,11 +5,21 @@ source/loader/CMakeFiles/loader.dir/load_32.c.o: ../source/loader/load_32.c \
   /usr/include/stdc-predef.h
 
 source/loader/CMakeFiles/loader.dir/loader_16.c.o: ../source/loader/loader_16.c \
-  /usr/include/stdc-predef.h
+  /usr/include/stdc-predef.h \
+  ../source/loader/loader.h \
+  ../source/common/boot_info.h \
+  ../source/common/types.h \
+  ../source/common/types.h
 
+
+../source/common/boot_info.h:
+
+../source/loader/loader.h:
 
 ../source/loader/loader_16.c:
 
 /usr/include/stdc-predef.h:
+
+../source/common/types.h:
 
 ../source/loader/load_32.c:

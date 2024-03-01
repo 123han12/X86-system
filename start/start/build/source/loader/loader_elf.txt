@@ -10,30 +10,34 @@ ELF Header:
   Version:                           0x1
   Entry point address:               0x8000
   Start of program headers:          52 (bytes into file)
-  Start of section headers:          5396 (bytes into file)
+  Start of section headers:          11968 (bytes into file)
   Flags:                             0x0
   Size of this header:               52 (bytes)
   Size of program headers:           32 (bytes)
-  Number of program headers:         3
+  Number of program headers:         5
   Size of section headers:           40 (bytes)
-  Number of section headers:         13
-  Section header string table index: 12
+  Number of section headers:         17
+  Section header string table index: 16
 
 Section Headers:
   [Nr] Name              Type            Addr     Off    Size   ES Flg Lk Inf Al
   [ 0]                   NULL            00000000 000000 000000 00      0   0  0
-  [ 1] .text             PROGBITS        00008000 001000 00000a 00  AX  0   0  1
-  [ 2] .comment          PROGBITS        00000000 00100a 00002b 01  MS  0   0  1
-  [ 3] .debug_aranges    PROGBITS        00000000 001038 000040 00      0   0  8
-  [ 4] .debug_info       PROGBITS        00000000 001078 00005d 00      0   0  1
-  [ 5] .debug_abbrev     PROGBITS        00000000 0010d5 000041 00      0   0  1
-  [ 6] .debug_line       PROGBITS        00000000 001116 000099 00      0   0  1
-  [ 7] .debug_frame      PROGBITS        00000000 0011b0 00002c 00      0   0  4
-  [ 8] .debug_str        PROGBITS        00000000 0011dc 000112 01  MS  0   0  1
-  [ 9] .debug_line_str   PROGBITS        00000000 0012ee 0000e0 01  MS  0   0  1
-  [10] .symtab           SYMTAB          00000000 0013d0 000080 10     11   3  4
-  [11] .strtab           STRTAB          00000000 001450 00003c 00      0   0  1
-  [12] .shstrtab         STRTAB          00000000 00148c 000087 00      0   0  1
+  [ 1] .text             PROGBITS        00008000 001000 000293 00  AX  0   0  1
+  [ 2] .rodata           PROGBITS        00009000 002000 00007a 00   A  0   0  4
+  [ 3] .data             PROGBITS        0000a07c 00207c 000018 00  WA  0   0  4
+  [ 4] .bss              NOBITS          0000a0a0 002094 000054 00  WA  0   0 32
+  [ 5] .comment          PROGBITS        00000000 002094 00002b 01  MS  0   0  1
+  [ 6] .debug_aranges    PROGBITS        00000000 0020c0 000040 00      0   0  8
+  [ 7] .debug_info       PROGBITS        00000000 002100 00037d 00      0   0  1
+  [ 8] .debug_abbrev     PROGBITS        00000000 00247d 00019e 00      0   0  1
+  [ 9] .debug_line       PROGBITS        00000000 00261b 00018e 00      0   0  1
+  [10] .debug_frame      PROGBITS        00000000 0027ac 000118 00      0   0  4
+  [11] .debug_str        PROGBITS        00000000 0028c4 000264 01  MS  0   0  1
+  [12] .debug_line_str   PROGBITS        00000000 002b28 000138 01  MS  0   0  1
+  [13] .debug_rnglists   PROGBITS        00000000 002c60 000017 00      0   0  1
+  [14] .symtab           SYMTAB          00000000 002c78 000110 10     15  11  4
+  [15] .strtab           STRTAB          00000000 002d88 00008c 00      0   0  1
+  [16] .shstrtab         STRTAB          00000000 002e14 0000aa 00      0   0  1
 Key to Flags:
   W (write), A (alloc), X (execute), M (merge), S (strings), I (info),
   L (link order), O (extra OS processing required), G (group), T (TLS),
@@ -44,30 +48,43 @@ There are no section groups in this file.
 
 Program Headers:
   Type           Offset   VirtAddr   PhysAddr   FileSiz MemSiz  Flg Align
-  LOAD           0x000000 0x00007000 0x00007000 0x00094 0x00094 R   0x1000
-  LOAD           0x001000 0x00008000 0x00008000 0x0000a 0x0000a R E 0x1000
+  LOAD           0x000000 0x00007000 0x00007000 0x000d4 0x000d4 R   0x1000
+  LOAD           0x001000 0x00008000 0x00008000 0x00293 0x00293 R E 0x1000
+  LOAD           0x002000 0x00009000 0x00009000 0x0007a 0x0007a R   0x1000
+  LOAD           0x00207c 0x0000a07c 0x0000a07c 0x00018 0x00078 RW  0x1000
   GNU_STACK      0x000000 0x00000000 0x00000000 0x00000 0x00000 RWE 0x10
 
  Section to Segment mapping:
   Segment Sections...
    00     
    01     .text 
-   02     
+   02     .rodata 
+   03     .data .bss 
+   04     
 
 There is no dynamic section in this file.
 
 There are no relocations in this file.
 No processor specific unwind information to decode
 
-Symbol table '.symtab' contains 8 entries:
+Symbol table '.symtab' contains 17 entries:
    Num:    Value  Size Type    Bind   Vis      Ndx Name
      0: 00000000     0 NOTYPE  LOCAL  DEFAULT  UND 
      1: 00000000     0 FILE    LOCAL  DEFAULT  ABS load_32.c
      2: 00000000     0 FILE    LOCAL  DEFAULT  ABS loader_16.c
-     3: 00008003     7 FUNC    GLOBAL DEFAULT    1 loader_entry
-     4: 00008000     0 NOTYPE  GLOBAL DEFAULT    1 _start
-     5: 00009000     0 NOTYPE  GLOBAL DEFAULT    1 __bss_start
-     6: 00009000     0 NOTYPE  GLOBAL DEFAULT    1 _edata
-     7: 00009000     0 NOTYPE  GLOBAL DEFAULT    1 _end
+     3: 00008003    42 FUNC    LOCAL  DEFAULT    1 inb
+     4: 0000802d    48 FUNC    LOCAL  DEFAULT    1 outb
+     5: 0000805d    11 FUNC    LOCAL  DEFAULT    1 cli
+     6: 00008068    54 FUNC    LOCAL  DEFAULT    1 lgdt
+     7: 0000809e    60 FUNC    LOCAL  DEFAULT    1 show_msg
+     8: 0000a0a0    84 OBJECT  LOCAL  DEFAULT    4 boot_info
+     9: 000080da   313 FUNC    LOCAL  DEFAULT    1 detect_memory
+    10: 00008213    93 FUNC    LOCAL  DEFAULT    1 enter_protect_mode
+    11: 00008270    35 FUNC    GLOBAL DEFAULT    1 loader_entry
+    12: 0000a07c    24 OBJECT  GLOBAL DEFAULT    3 gdt_table
+    13: 00008000     0 NOTYPE  GLOBAL DEFAULT    1 _start
+    14: 0000a094     0 NOTYPE  GLOBAL DEFAULT    4 __bss_start
+    15: 0000a094     0 NOTYPE  GLOBAL DEFAULT    3 _edata
+    16: 0000a0f4     0 NOTYPE  GLOBAL DEFAULT    4 _end
 
 No version information found in this file.
