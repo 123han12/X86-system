@@ -1,6 +1,7 @@
 __asm__(".code16gcc");
 
 #include "loader.h"
+void protected_mode_entry (void);
 
 static void show_msg(const char *msg)
 {
@@ -82,16 +83,25 @@ static void enter_protect_mode()
     // 设置 gdt 表
     lgdt((uint32_t)gdt_table , sizeof(gdt_table) ) ; 
 
+    // 设置 cr0 的最低位
+    uint32_t  CR0 = read_cr0() ; 
+    write_cr0(CR0 | (1 << 0 ) ) ;
+
+    // 实现远跳转
+    far_jump(8 , (uint32_t)protected_mode_entry ) ; 
+
 }
+
+
 
 void loader_entry(void) // 对操作系统的运行环境初始化，加载操作系统到内存中去
 {
     show_msg("......loading.......\n\r");
 
     // 添加代码，实现对内存容量的检测
-
     detect_memory();
 
+    // 进入保护模式代码
     enter_protect_mode() ; 
 
     for(; ; ) {} 
