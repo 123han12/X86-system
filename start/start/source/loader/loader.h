@@ -5,6 +5,7 @@
 #include "common/types.h"
 #include "common/cpu_instr.h"
 
+extern boot_info_t boot_info ;
 
 typedef struct SMAP_entry{
     uint32_t BaseL; // base address uint64_t

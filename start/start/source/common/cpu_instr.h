@@ -18,6 +18,19 @@ static inline uint8_t inb(uint16_t port )
     return rv ; 
 }
 
+static inline uint16_t inw(uint16_t port )   
+{
+    uint16_t rv ; 
+    __asm__  __volatile__ 
+    (
+        "inw %[p] , %[v] \n\t" 
+        : [v]"=a"(rv)
+        : [p]"d"(port)
+    ) ; 
+    return rv ; 
+}
+
+
 // 向指定端口输出数据
 static inline void outb(uint16_t port , uint8_t data )
 {   
@@ -90,6 +103,7 @@ static inline void far_jump(uint32_t selector , uint32_t offset )
         :
     ) ; 
 }
+
 
 
 #endif

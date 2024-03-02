@@ -6,3 +6,6 @@
 /home/hsa/X86-system/start/start/build/source/loader/CMakeFiles/loader.dir
 /home/hsa/X86-system/start/start/build/source/loader/CMakeFiles/edit_cache.dir
 /home/hsa/X86-system/start/start/build/source/loader/CMakeFiles/rebuild_cache.dir
+/home/hsa/X86-system/start/start/build/source/kernel/CMakeFiles/kernel.dir
+/home/hsa/X86-system/start/start/build/source/kernel/CMakeFiles/edit_cache.dir
+/home/hsa/X86-system/start/start/build/source/kernel/CMakeFiles/rebuild_cache.dir

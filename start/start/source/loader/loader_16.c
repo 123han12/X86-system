@@ -20,7 +20,7 @@ static void show_msg(const char *msg)
     }
 }
 
-static boot_info_t boot_info; // 这个结构体变量用来存储返回的信息。
+boot_info_t boot_info; // 这个结构体变量用来存储返回的信息。
 
 static void detect_memory(void)
 {
