@@ -26,10 +26,10 @@ Section Headers:
   [ 2] .rodata           PROGBITS        00010014 001014 00000c 00   A  0   0  4
   [ 3] .data             PROGBITS        00010020 001020 000010 00  WA  0   0  4
   [ 4] .bss              NOBITS          00010030 001030 00000c 00  WA  0   0  4
-  [ 5] .debug_line       PROGBITS        00000000 001030 0000ae 00      0   0  1
-  [ 6] .debug_line_str   PROGBITS        00000000 0010de 0000ef 01  MS  0   0  1
-  [ 7] .debug_info       PROGBITS        00000000 0011cd 0001b0 00      0   0  1
-  [ 8] .debug_abbrev     PROGBITS        00000000 00137d 000127 00      0   0  1
+  [ 5] .debug_line       PROGBITS        00000000 001030 0000ac 00      0   0  1
+  [ 6] .debug_line_str   PROGBITS        00000000 0010dc 0000ef 01  MS  0   0  1
+  [ 7] .debug_info       PROGBITS        00000000 0011cb 0001b0 00      0   0  1
+  [ 8] .debug_abbrev     PROGBITS        00000000 00137b 000127 00      0   0  1
   [ 9] .debug_aranges    PROGBITS        00000000 0014a8 000040 00      0   0  8
   [10] .debug_str        PROGBITS        00000000 0014e8 000207 01  MS  0   0  1
   [11] .comment          PROGBITS        00000000 0016ef 00002b 01  MS  0   0  1

@@ -5,8 +5,6 @@
 	.extern kernel_init
 _start: 
 
-
-
 	# 假设boot_info_ *  指针存放在 eax 中
 	push %ebp 
 	mov %esp , %ebp 

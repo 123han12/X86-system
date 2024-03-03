@@ -52,7 +52,7 @@ static uint32_t reload_elf_file(uint8_t* file_buffer)
         Elf32_Phdr * phdr = (Elf32_Phdr* )(file_buffer + elf_hdr->e_phoff) + i ; 
         if(phdr->p_type != PT_LOAD ) continue ;  //  如果这个段能被加载 就略过
 
-        uint32_t * src =  (uint32_t*)file_buffer + phdr->p_offset ; 
+        uint8_t * src = file_buffer + phdr->p_offset ; 
         uint8_t * dest = (uint8_t* )phdr->p_paddr ;
         for(int j = 0 ; j < phdr->p_filesz ; ++j  )
         {
@@ -60,7 +60,7 @@ static uint32_t reload_elf_file(uint8_t* file_buffer)
         }
 
         dest = (uint8_t * )phdr->p_paddr + phdr->p_filesz ; 
-        for(int j = 0 ; j < phdr->p_memsz - phdr->p_filesz ; j ++ ) *dest = 0x00 ;   // 对 p_memsz 比 p_filesz 多余出来的部分清零。
+        for(int j = 0 ; j < phdr->p_memsz - phdr->p_filesz ; j ++ ) *dest++ = 0x00 ;   // 对 p_memsz 比 p_filesz 多余出来的部分清零。
 
     }
 
