@@ -93,7 +93,7 @@
 				"role" : "flags"
 			},
 			{
-				"fragment" : "-m elf_i386  -Ttext=0x100000  -rdynamic",
+				"fragment" : "-m elf_i386  -T /home/hsa/X86-system/start/start/source/kernel/kernel.lds  -rdynamic",
 				"role" : "flags"
 			}
 		],

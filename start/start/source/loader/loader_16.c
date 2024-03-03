@@ -89,7 +89,6 @@ static void enter_protect_mode()
 
     // 实现远跳转
     far_jump(8 , (uint32_t)protected_mode_entry ) ; 
-
 }
 
 

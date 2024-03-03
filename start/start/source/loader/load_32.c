@@ -1,4 +1,5 @@
 #include "loader.h"
+#include "common/elf.h"
 
 // 这个模块的代码实现的是从硬盘指定扇区开始，读取指定个数个扇区放到内存的指定位置的功能，不需太过纠结这个原理。
 static void read_disk(int sector , int sector_count , uint8_t* buf ) 
@@ -30,12 +31,61 @@ static void read_disk(int sector , int sector_count , uint8_t* buf )
 
 }
 
+
+// 从file_buffer 处读取到elf 文件，并将其解析。
+static uint32_t reload_elf_file(uint8_t* file_buffer)
+{
+    Elf32_Ehdr * elf_hdr = (Elf32_Ehdr*) file_buffer ; 
+
+    // 检查是否为有效的elf文件
+    if(
+        (elf_hdr->e_ident[0] != 0x7F) || 
+        (elf_hdr->e_ident[1] != 0x45) || 
+        (elf_hdr->e_ident[2] != 0x4C) || 
+        (elf_hdr->e_ident[3] != 0x46) )  
+    {
+        // 走到这里说明不是有效的elf文件
+        return 0 ;
+    }
+    for(int i = 0 ; i < elf_hdr->e_phnum ; i ++ )
+    {
+        Elf32_Phdr * phdr = (Elf32_Phdr* )(file_buffer + elf_hdr->e_phoff) + i ; 
+        if(phdr->p_type != PT_LOAD ) continue ;  //  如果这个段能被加载 就略过
+
+        uint32_t * src =  (uint32_t*)file_buffer + phdr->p_offset ; 
+        uint8_t * dest = (uint8_t* )phdr->p_paddr ;
+        for(int j = 0 ; j < phdr->p_filesz ; ++j  )
+        {
+            *dest++ = *src++ ; 
+        }
+
+        dest = (uint8_t * )phdr->p_paddr + phdr->p_filesz ; 
+        for(int j = 0 ; j < phdr->p_memsz - phdr->p_filesz ; j ++ ) *dest = 0x00 ;   // 对 p_memsz 比 p_filesz 多余出来的部分清零。
+
+    }
+
+    return elf_hdr->e_entry ; 
+}
+
+
+static void die(uint32_t code )
+{
+    for(;;) {}
+} 
+
 // 这里没有开启分页机制，直接就是物理地址
 void load_kernel(void)
 {
     // 将 SYS_KERNEL_LOAD_ADDR 转换为函数指针，并且调用这个函数指针 就能跳入到内核进行执行了。
     read_disk(100 , 500 , (uint8_t *)SYS_KERNEL_LOAD_ADDR ) ;  
 
-    ((void (*)(boot_info_t* ) )SYS_KERNEL_LOAD_ADDR)(&boot_info) ;    
+    uint32_t kernel_entry = reload_elf_file((uint8_t*)SYS_KERNEL_LOAD_ADDR) ;
+    if(kernel_entry == 0 )
+    {
+        // 表示未将kernel 可执行文件装载好。
+        die(-1) ; 
+    }
+    ((void (*)(boot_info_t* ) ) kernel_entry )(&boot_info) ;    
+
     for( ;; ) {} 
 }
