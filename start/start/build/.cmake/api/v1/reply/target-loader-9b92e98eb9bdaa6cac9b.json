@@ -2,7 +2,7 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "source/boot/boot"
+			"path" : "source/loader/loader"
 		}
 	],
 	"backtrace" : 1,
@@ -15,7 +15,7 @@
 		],
 		"files" : 
 		[
-			"source/boot/CMakeLists.txt",
+			"source/loader/CMakeLists.txt",
 			"CMakeLists.txt"
 		],
 		"nodes" : 
@@ -54,6 +54,10 @@
 				{
 					"backtrace" : 3,
 					"path" : "/home/hsa/X86-system/start/start/source"
+				},
+				{
+					"backtrace" : 3,
+					"path" : "/home/hsa/X86-system/start/start/source/kernel/include"
 				}
 			],
 			"language" : "ASM",
@@ -74,16 +78,21 @@
 				{
 					"backtrace" : 3,
 					"path" : "/home/hsa/X86-system/start/start/source"
+				},
+				{
+					"backtrace" : 3,
+					"path" : "/home/hsa/X86-system/start/start/source/kernel/include"
 				}
 			],
 			"language" : "C",
 			"sourceIndexes" : 
 			[
-				1
+				1,
+				3
 			]
 		}
 	],
-	"id" : "boot::@a4fbfdde3044a49ad01d",
+	"id" : "loader::@346703cd72729101d3c6",
 	"link" : 
 	{
 		"commandFragments" : 
@@ -93,18 +102,18 @@
 				"role" : "flags"
 			},
 			{
-				"fragment" : "-m elf_i386  -Ttext=0x7c00  --section-start boot_end=0x7dfe  -rdynamic",
+				"fragment" : "-m elf_i386  -Ttext=0x8000    -rdynamic",
 				"role" : "flags"
 			}
 		],
 		"language" : "C"
 	},
-	"name" : "boot",
-	"nameOnDisk" : "boot",
+	"name" : "loader",
+	"nameOnDisk" : "loader",
 	"paths" : 
 	{
-		"build" : "source/boot",
-		"source" : "source/boot"
+		"build" : "source/loader",
+		"source" : "source/loader"
 	},
 	"sourceGroups" : 
 	[
@@ -119,7 +128,8 @@
 			"name" : "Source Files",
 			"sourceIndexes" : 
 			[
-				1
+				1,
+				3
 			]
 		},
 		{
@@ -135,19 +145,25 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "source/boot/start.S",
+			"path" : "source/loader/start.S",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 1,
-			"path" : "source/boot/boot.c",
+			"path" : "source/loader/load_32.c",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 1,
-			"path" : "source/boot/boot.h",
+			"path" : "source/loader/loader.h",
 			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "source/loader/loader_16.c",
+			"sourceGroupIndex" : 1
 		}
 	],
 	"type" : "EXECUTABLE"
