@@ -154,6 +154,30 @@ cpu/cpu.c.s:
 	cd /home/hsa/X86-system/start/start/build && $(MAKE) $(MAKESILENT) -f source/kernel/CMakeFiles/kernel.dir/build.make source/kernel/CMakeFiles/kernel.dir/cpu/cpu.c.s
 .PHONY : cpu/cpu.c.s
 
+cpu/irq.o: cpu/irq.c.o
+.PHONY : cpu/irq.o
+
+# target to build an object file
+cpu/irq.c.o:
+	cd /home/hsa/X86-system/start/start/build && $(MAKE) $(MAKESILENT) -f source/kernel/CMakeFiles/kernel.dir/build.make source/kernel/CMakeFiles/kernel.dir/cpu/irq.c.o
+.PHONY : cpu/irq.c.o
+
+cpu/irq.i: cpu/irq.c.i
+.PHONY : cpu/irq.i
+
+# target to preprocess a source file
+cpu/irq.c.i:
+	cd /home/hsa/X86-system/start/start/build && $(MAKE) $(MAKESILENT) -f source/kernel/CMakeFiles/kernel.dir/build.make source/kernel/CMakeFiles/kernel.dir/cpu/irq.c.i
+.PHONY : cpu/irq.c.i
+
+cpu/irq.s: cpu/irq.c.s
+.PHONY : cpu/irq.s
+
+# target to generate assembly for a file
+cpu/irq.c.s:
+	cd /home/hsa/X86-system/start/start/build && $(MAKE) $(MAKESILENT) -f source/kernel/CMakeFiles/kernel.dir/build.make source/kernel/CMakeFiles/kernel.dir/cpu/irq.c.s
+.PHONY : cpu/irq.c.s
+
 init/init.o: init/init.c.o
 .PHONY : init/init.o
 
@@ -198,6 +222,9 @@ help:
 	@echo "... cpu/cpu.o"
 	@echo "... cpu/cpu.i"
 	@echo "... cpu/cpu.s"
+	@echo "... cpu/irq.o"
+	@echo "... cpu/irq.i"
+	@echo "... cpu/irq.s"
 	@echo "... init/init.o"
 	@echo "... init/init.i"
 	@echo "... init/init.s"

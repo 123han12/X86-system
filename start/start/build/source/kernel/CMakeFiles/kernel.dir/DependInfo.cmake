@@ -21,6 +21,7 @@ set(CMAKE_ASM_TARGET_INCLUDE_PATH
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/hsa/X86-system/start/start/source/kernel/cpu/cpu.c" "source/kernel/CMakeFiles/kernel.dir/cpu/cpu.c.o" "gcc" "source/kernel/CMakeFiles/kernel.dir/cpu/cpu.c.o.d"
+  "/home/hsa/X86-system/start/start/source/kernel/cpu/irq.c" "source/kernel/CMakeFiles/kernel.dir/cpu/irq.c.o" "gcc" "source/kernel/CMakeFiles/kernel.dir/cpu/irq.c.o.d"
   "/home/hsa/X86-system/start/start/source/kernel/init/init.c" "source/kernel/CMakeFiles/kernel.dir/init/init.c.o" "gcc" "source/kernel/CMakeFiles/kernel.dir/init/init.c.o.d"
   )
 

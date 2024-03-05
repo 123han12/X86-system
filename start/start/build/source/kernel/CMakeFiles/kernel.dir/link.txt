@@ -1,1 +1,1 @@
-ld CMakeFiles/kernel.dir/init/start.S.o CMakeFiles/kernel.dir/cpu/cpu.c.o CMakeFiles/kernel.dir/init/init.c.o -m elf_i386  -T /home/hsa/X86-system/start/start/source/kernel/kernel.lds -o /home/hsa/X86-system/start/start/build/source/kernel/kernel.elf
+ld CMakeFiles/kernel.dir/init/start.S.o CMakeFiles/kernel.dir/cpu/cpu.c.o CMakeFiles/kernel.dir/cpu/irq.c.o CMakeFiles/kernel.dir/init/init.c.o -m elf_i386  -T /home/hsa/X86-system/start/start/source/kernel/kernel.lds -o /home/hsa/X86-system/start/start/build/source/kernel/kernel.elf

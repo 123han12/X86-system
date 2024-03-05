@@ -22,6 +22,8 @@
 
 
 
+
+
 // gdt 表项结构的创建 , 为防止字节对齐对结构体内存布局的影响，需要设置一下内存对齐的方式
 #pragma pack(1) 
 typedef struct _segment_desc_t {
@@ -34,8 +36,24 @@ typedef struct _segment_desc_t {
 } segment_desc_t ; 
 
 
+
+typedef struct _gate_desc_t {
+    uint16_t offset15_0 ; 
+    uint16_t selector ; 
+    uint16_t attr ; 
+    uint16_t offset31_16 ; 
+} gate_desc_t ; 
+
+#define GATE_TYPE_INT           (0xE << 8) 
+#define GATE_P_PRESENT          (1 << 15)
+#define GATE_DPL0               (0 << 13)
+#define GATE_DPL3               (3 << 13)
+
+
+
 void cpu_init(void) ; 
 void segment_desc_set( uint16_t selector , uint32_t base , uint32_t limit , uint16_t attr ) ;  
+void gate_dest_set(gate_desc_t* desc , uint16_t selector , uint32_t offset , uint16_t attr ) ; 
 
 #pragma pack() 
 

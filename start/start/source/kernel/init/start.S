@@ -33,3 +33,27 @@ gdt_reload:
 
 	.bss
 .comm stack , KERNEL_STACK_SIZE 
+
+
+	.text
+	.extern do_handler_unkown
+	.global exception_handler_unkown
+exception_handler_unkown:
+
+	# 保存现场
+	pusha 
+	push %ds 
+	push %es 
+	push %fs 
+	push %gs 
+	
+
+	call do_handler_unkown
+
+	# 恢复现场
+	pop %gs 
+	pop %fs 
+	pop %es 
+	pop %ds 
+	popa 
+	iret 

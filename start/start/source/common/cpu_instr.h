@@ -104,6 +104,23 @@ static inline void far_jump(uint32_t selector , uint32_t offset )
     ) ; 
 }
 
+static inline void lidt(uint32_t idt_addr , uint16_t idt_size ) 
+{
+    struct {
+        uint16_t limit ; 
+        uint16_t start15_0 ; 
+        uint16_t start31_16 ; 
+    } idt ; 
 
+    idt.limit = idt_size - 1 ; 
+    idt.start15_0 = idt_addr & 0xFFFF ; 
+    idt.start31_16 = (idt_addr >> 16) & 0xFFFF ;   
+
+    __asm__ __volatile__ (
+        "lidt %[g]"
+        :
+        :[g]"m"(idt)
+    ) ;
+}
 
 #endif
