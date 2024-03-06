@@ -123,4 +123,9 @@ static inline void lidt(uint32_t idt_addr , uint16_t idt_size )
     ) ;
 }
 
+static inline void hlt(void) {
+    __asm__ __volatile__("hlt");
+}
+
+
 #endif
