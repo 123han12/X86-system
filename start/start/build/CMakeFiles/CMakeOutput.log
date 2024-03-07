@@ -15,14 +15,14 @@ The C compiler identification is GNU, found in "/home/hsa/X86-system/start/start
 Determining if the C compiler works passed with the following output:
 Change Dir: /home/hsa/X86-system/start/start/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_9ad11/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_9ad11.dir/build.make CMakeFiles/cmTC_9ad11.dir/build
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_63d5f/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_63d5f.dir/build.make CMakeFiles/cmTC_63d5f.dir/build
 gmake[1]: Entering directory '/home/hsa/X86-system/start/start/build/CMakeFiles/CMakeTmp'
-Building C object CMakeFiles/cmTC_9ad11.dir/testCCompiler.c.o
-/usr/bin/gcc   -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables  -o CMakeFiles/cmTC_9ad11.dir/testCCompiler.c.o -c /home/hsa/X86-system/start/start/build/CMakeFiles/CMakeTmp/testCCompiler.c
-Linking C executable cmTC_9ad11
-/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_9ad11.dir/link.txt --verbose=1
-/usr/bin/gcc -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables  -rdynamic CMakeFiles/cmTC_9ad11.dir/testCCompiler.c.o -o cmTC_9ad11 
-gcc: warning: CMakeFiles/cmTC_9ad11.dir/testCCompiler.c.o: linker input file unused because linking not done
+Building C object CMakeFiles/cmTC_63d5f.dir/testCCompiler.c.o
+/usr/bin/gcc   -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables  -o CMakeFiles/cmTC_63d5f.dir/testCCompiler.c.o -c /home/hsa/X86-system/start/start/build/CMakeFiles/CMakeTmp/testCCompiler.c
+Linking C executable cmTC_63d5f
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_63d5f.dir/link.txt --verbose=1
+/usr/bin/gcc -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables  -rdynamic CMakeFiles/cmTC_63d5f.dir/testCCompiler.c.o -o cmTC_63d5f 
+gcc: warning: CMakeFiles/cmTC_63d5f.dir/testCCompiler.c.o: linker input file unused because linking not done
 gmake[1]: Leaving directory '/home/hsa/X86-system/start/start/build/CMakeFiles/CMakeTmp'
 
 

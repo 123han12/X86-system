@@ -7,11 +7,11 @@ ASM_DEFINES =
 
 ASM_INCLUDES = -I/home/hsa/X86-system/start/start/source -I/home/hsa/X86-system/start/start/source/kernel/include
 
-ASM_FLAGS = -m32 -g -g
+ASM_FLAGS = -m32 -g
 
 C_DEFINES = 
 
 C_INCLUDES = -I/home/hsa/X86-system/start/start/source -I/home/hsa/X86-system/start/start/source/kernel/include
 
-C_FLAGS = -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -g
+C_FLAGS = -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables
 

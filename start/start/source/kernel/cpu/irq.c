@@ -7,9 +7,7 @@ static gate_desc_t idt_table[IDT_TABLE_NR] ;
 
 static void do_default_handler(exception_frame_t* frame , const char* message )
 {
-    for(; ;){
-         hlt() ; 
-    } 
+    for(; ;){ hlt() ; } 
 }
 
 void do_handler_unknown (exception_frame_t * frame) {
@@ -105,6 +103,25 @@ uint32_t irq_install(uint32_t irq_num , irq_handler_t handler )
     ) ; 
 } 
 
+// 初始化 8259可编程中断控制器
+static void init_pic(void)
+{
+	outb(PIC0_ICW1 , PIC_ICW1_ALWAYS_1 | PIC_ICW1_ICW4) ;
+	outb(PIC0_ICW2 , IRQ_PIC_START ) ; 
+	outb(PIC0_ICW3 , 1 << 2 ) ;
+	outb(PIC0_ICW4 , PIC_ICW4_8086 ) ;
+
+	outb(PIC1_ICW1 , PIC_ICW1_ALWAYS_1 | PIC_ICW1_ICW4) ;
+	outb(PIC1_ICW2 , IRQ_PIC_START + 8 ) ; 
+	outb(PIC1_ICW3 , 2 ) ; // 告知从片连接的主片的引脚
+	outb(PIC1_ICW4 , PIC_ICW4_8086 ) ; 
+	
+	
+	// 设置8259 主片和从片的所有中断屏蔽位都打开
+	outb(PIC0_IMR , 0xFF & ~(1 << 2 ) ) ; 
+	outb(PIC1_IMR , 0xFF ) ; 
+}
+
 void irq_init(void)
 {
     // 初始化每一个表项
@@ -138,4 +155,50 @@ void irq_init(void)
     // 将 idt_table 地址加载到 idtr 寄存器
     lidt((uint32_t)idt_table , sizeof(idt_table) ) ; 
 
+
+	init_pic() ; 
+
+}
+
+
+void irq_disable_global(void)
+{
+	cli() ; 
+}
+void irq_enable_global(void)
+{
+	sti() ; 
+}
+
+void irq_enable(int irq_num)
+{
+	if(irq_num < IRQ_PIC_START ) return ; 
+	irq_num -= IRQ_PIC_START ; 
+
+	if(irq_num < 8 ) 
+	{
+		uint8_t mask = inb(PIC0_IMR) & ~(1 << irq_num); 
+		outb(PIC0_IMR , mask ) ; 
+	}
+	else {
+		irq_num -= 8 ; 
+		uint8_t mask = inb(PIC1_IMR) & ~(1 << irq_num ); 
+		outb(PIC1_IMR , mask) ; 
+	}
+}
+
+void irq_disable(int irq_num)
+{
+	if(irq_num < IRQ_PIC_START ) return ; 
+	irq_num -= IRQ_PIC_START ; 
+	if(irq_num < 8 )
+	{
+		uint8_t mask = inb(PIC0_IMR) | (1 << irq_num) ; 
+		outb(PIC0_IMR , mask ) ; 
+	}
+	else {
+		irq_num -= 8 ; 
+		uint8_t mask = inb(PIC1_IMR) | (1 << irq_num) ; 
+		outb(PIC0_IMR , mask ) ; 
+	}
 }
