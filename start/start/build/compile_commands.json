@@ -41,6 +41,11 @@
 },
 {
   "directory": "/home/hsa/X86-system/start/start/build/source/kernel",
+  "command": "/usr/bin/gcc  -I/home/hsa/X86-system/start/start/source -I/home/hsa/X86-system/start/start/source/kernel/include -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -g -o CMakeFiles/kernel.dir/dev/time.c.o -c /home/hsa/X86-system/start/start/source/kernel/dev/time.c",
+  "file": "/home/hsa/X86-system/start/start/source/kernel/dev/time.c"
+},
+{
+  "directory": "/home/hsa/X86-system/start/start/build/source/kernel",
   "command": "/usr/bin/gcc  -I/home/hsa/X86-system/start/start/source -I/home/hsa/X86-system/start/start/source/kernel/include -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -g -o CMakeFiles/kernel.dir/init/init.c.o -c /home/hsa/X86-system/start/start/source/kernel/init/init.c",
   "file": "/home/hsa/X86-system/start/start/source/kernel/init/init.c"
 }

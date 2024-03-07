@@ -165,7 +165,7 @@ void irq_disable_global(void)
 {
 	cli() ; 
 }
-void irq_enable_global(void)
+void irq_enable_global(void)   // 设置flags 中的 iF 中断标志位，使得cpu能够接受外部的中断
 {
 	sti() ; 
 }
@@ -202,3 +202,17 @@ void irq_disable(int irq_num)
 		outb(PIC0_IMR , mask ) ; 
 	}
 }
+
+void pic_send_eoi(int irq_num)
+{
+	irq_num -= IRQ_PIC_START ; 
+
+	if(irq_num >= 8 ) 
+	{
+		outb(PIC1_OCW2 , PIC_OCW2_EOI ) ; 
+	}
+	outb(PIC0_OCW2 , PIC_OCW2_EOI) ; 
+}
+
+
+

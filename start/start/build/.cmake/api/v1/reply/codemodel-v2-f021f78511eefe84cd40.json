@@ -12,7 +12,7 @@
 						2,
 						3
 					],
-					"jsonFile" : "directory-.-f5ebdc15457944623624.json",
+					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.0.0"
@@ -22,7 +22,7 @@
 				},
 				{
 					"build" : "source/boot",
-					"jsonFile" : "directory-source.boot-acdf477dc2f6e67294bb.json",
+					"jsonFile" : "directory-source.boot-Debug-acdf477dc2f6e67294bb.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.0.0"
@@ -37,7 +37,7 @@
 				},
 				{
 					"build" : "source/loader",
-					"jsonFile" : "directory-source.loader-1ff827f926734863cf7a.json",
+					"jsonFile" : "directory-source.loader-Debug-1ff827f926734863cf7a.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.0.0"
@@ -52,7 +52,7 @@
 				},
 				{
 					"build" : "source/kernel",
-					"jsonFile" : "directory-source.kernel-110e3854bbd1757c9f8d.json",
+					"jsonFile" : "directory-source.kernel-Debug-110e3854bbd1757c9f8d.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.0.0"
@@ -66,7 +66,7 @@
 					]
 				}
 			],
-			"name" : "",
+			"name" : "Debug",
 			"projects" : 
 			[
 				{
@@ -124,21 +124,21 @@
 				{
 					"directoryIndex" : 1,
 					"id" : "boot::@a4fbfdde3044a49ad01d",
-					"jsonFile" : "target-boot-45f0a18a93bbfb3e3cfa.json",
+					"jsonFile" : "target-boot-Debug-91bd5b377c4e9c7672c3.json",
 					"name" : "boot",
 					"projectIndex" : 1
 				},
 				{
 					"directoryIndex" : 3,
 					"id" : "kernel::@483af936ae9a949d521e",
-					"jsonFile" : "target-kernel-9c9e69bfb8e925c9e0a3.json",
+					"jsonFile" : "target-kernel-Debug-1ac1cd8753381f619322.json",
 					"name" : "kernel",
 					"projectIndex" : 3
 				},
 				{
 					"directoryIndex" : 2,
 					"id" : "loader::@346703cd72729101d3c6",
-					"jsonFile" : "target-loader-9b92e98eb9bdaa6cac9b.json",
+					"jsonFile" : "target-loader-Debug-8869266051ad42c6a73e.json",
 					"name" : "loader",
 					"projectIndex" : 2
 				}
