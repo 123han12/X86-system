@@ -1,6 +1,7 @@
 #ifndef IRQ_H
 #define IRQ_H
 #include "common/types.h"
+#include "tools/log.h"
 
 #define IDT_TABLE_NR          128
 
@@ -93,5 +94,17 @@ void irq_enable(int irq_num) ;
 void irq_disable(int irq_num) ; 
 
 void pic_send_eoi(int irq) ; 
+
+#ifndef RELEASE 
+#define RELEASE
+#define ASSERT(expression)  \
+    if( !(expression) ) pannic(__FILE__ , __LINE__ , __func__ , #expression )  
+
+void pannic(const char* filename , int line , const char* func , const char* cond ) ; 
+#else 
+#define ASSERT(expression)   ((void)0)
+
+#endif 
+
 
 #endif 

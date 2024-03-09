@@ -1,7 +1,7 @@
 The system is: Linux - 5.15.90.1-microsoft-standard-WSL2 - x86_64
 Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
 Compiler: /usr/bin/gcc 
-Build flags: -g;-c;-O0;-m32;-fno-pie;-fno-stack-protector;-fno-asynchronous-unwind-tables
+Build flags: -g;-c;-O0;-m32;-DRELEASE;-fno-pie;-fno-stack-protector;-fno-asynchronous-unwind-tables
 Id flags:  
 
 The output was:
@@ -15,14 +15,14 @@ The C compiler identification is GNU, found in "/home/hsa/X86-system/start/start
 Determining if the C compiler works passed with the following output:
 Change Dir: /home/hsa/X86-system/start/start/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_9e08e/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_9e08e.dir/build.make CMakeFiles/cmTC_9e08e.dir/build
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_a178c/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_a178c.dir/build.make CMakeFiles/cmTC_a178c.dir/build
 gmake[1]: Entering directory '/home/hsa/X86-system/start/start/build/CMakeFiles/CMakeTmp'
-Building C object CMakeFiles/cmTC_9e08e.dir/testCCompiler.c.o
-/usr/bin/gcc   -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables  -o CMakeFiles/cmTC_9e08e.dir/testCCompiler.c.o -c /home/hsa/X86-system/start/start/build/CMakeFiles/CMakeTmp/testCCompiler.c
-Linking C executable cmTC_9e08e
-/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_9e08e.dir/link.txt --verbose=1
-/usr/bin/gcc -g -c -O0 -m32 -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables  -rdynamic CMakeFiles/cmTC_9e08e.dir/testCCompiler.c.o -o cmTC_9e08e 
-gcc: warning: CMakeFiles/cmTC_9e08e.dir/testCCompiler.c.o: linker input file unused because linking not done
+Building C object CMakeFiles/cmTC_a178c.dir/testCCompiler.c.o
+/usr/bin/gcc   -g -c -O0 -m32 -DRELEASE -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables  -o CMakeFiles/cmTC_a178c.dir/testCCompiler.c.o -c /home/hsa/X86-system/start/start/build/CMakeFiles/CMakeTmp/testCCompiler.c
+Linking C executable cmTC_a178c
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_a178c.dir/link.txt --verbose=1
+/usr/bin/gcc -g -c -O0 -m32 -DRELEASE -fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables  -rdynamic CMakeFiles/cmTC_a178c.dir/testCCompiler.c.o -o cmTC_a178c 
+gcc: warning: CMakeFiles/cmTC_a178c.dir/testCCompiler.c.o: linker input file unused because linking not done
 gmake[1]: Leaving directory '/home/hsa/X86-system/start/start/build/CMakeFiles/CMakeTmp'
 
 

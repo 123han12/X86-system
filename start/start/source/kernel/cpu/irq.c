@@ -2,12 +2,40 @@
 #include "cpu/cpu.h"
 #include "common/cpu_instr.h"
 #include "os_cfg.h"
+#include "tools/log.h"
+
 
 static gate_desc_t idt_table[IDT_TABLE_NR] ; 
 
+static void dump_core_regs(exception_frame_t* frame)
+{
+	log_printf("IRQ: %d  error code: %d " , frame->num , frame->error_code ) ; 
+	log_printf("CS: %d\r\nDS: %d\r\nES: %d\r\nSS: %d\r\nFS:%d\r\nGS:%d",
+               frame->cs, frame->ds, frame->es, frame->ds, frame->fs, frame->gs  
+    );
+    log_printf("EAX:0x%x\r\n"
+                "EBX:0x%x\r\n"
+                "ECX:0x%x\r\n"
+                "EDX:0x%x\r\n"
+                "EDI:0x%x\r\n"
+                "ESI:0x%x\r\n"
+                "EBP:0x%x\r\n"
+                "ESP:0x%x\r\n",
+               frame->eax, frame->ebx, frame->ecx, frame->edx,
+               frame->edi, frame->esi, frame->ebp, frame->esp);
+    log_printf("EIP:0x%x\r\nEFLAGS:0x%x\r\r\n", frame->eip, frame->eflags);
+}
+
 static void do_default_handler(exception_frame_t* frame , const char* message )
 {
-    for(; ;){ hlt() ; } 
+	log_printf("---------------------------------") ; 
+	log_printf("IRQ/Exception happend: %s." , message) ; 
+
+	dump_core_regs(frame) ; 
+
+
+	log_printf("--------------------------------") ; 
+	for(; ;){ hlt() ; } 
 }
 
 void do_handler_unknown (exception_frame_t * frame) {
@@ -15,7 +43,7 @@ void do_handler_unknown (exception_frame_t * frame) {
 }
 
 void do_handler_divider(exception_frame_t * frame) {
-	do_default_handler(frame, "Device Error.");
+	do_default_handler(frame, "Device exception......");
 }
 
 void do_handler_Debug(exception_frame_t * frame) {
@@ -215,4 +243,9 @@ void pic_send_eoi(int irq_num)
 }
 
 
-
+void pannic(const char* filename , int line , const char* func , const char* cond ) 
+{
+	log_printf("assert failed: %s" , cond ) ; 
+	log_printf("file:%s\r\nline:%d\r\nfunc:%s\r\n" , filename , line , func ) ;
+	for(;;) {hlt() ;  } 
+}

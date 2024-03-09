@@ -24,6 +24,8 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/hsa/X86-system/start/start/source/kernel/cpu/irq.c" "source/kernel/CMakeFiles/kernel.dir/cpu/irq.c.o" "gcc" "source/kernel/CMakeFiles/kernel.dir/cpu/irq.c.o.d"
   "/home/hsa/X86-system/start/start/source/kernel/dev/time.c" "source/kernel/CMakeFiles/kernel.dir/dev/time.c.o" "gcc" "source/kernel/CMakeFiles/kernel.dir/dev/time.c.o.d"
   "/home/hsa/X86-system/start/start/source/kernel/init/init.c" "source/kernel/CMakeFiles/kernel.dir/init/init.c.o" "gcc" "source/kernel/CMakeFiles/kernel.dir/init/init.c.o.d"
+  "/home/hsa/X86-system/start/start/source/kernel/tools/klib.c" "source/kernel/CMakeFiles/kernel.dir/tools/klib.c.o" "gcc" "source/kernel/CMakeFiles/kernel.dir/tools/klib.c.o.d"
+  "/home/hsa/X86-system/start/start/source/kernel/tools/log.c" "source/kernel/CMakeFiles/kernel.dir/tools/log.c.o" "gcc" "source/kernel/CMakeFiles/kernel.dir/tools/log.c.o.d"
   )
 
 # Targets to which this target links.

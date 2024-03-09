@@ -13,6 +13,7 @@ source/kernel/CMakeFiles/kernel.dir/cpu/irq.c.o: ../source/kernel/cpu/irq.c \
   /usr/include/stdc-predef.h \
   ../source/kernel/include/cpu/irq.h \
   ../source/common/types.h \
+  ../source/kernel/include/tools/log.h \
   ../source/kernel/include/cpu/cpu.h \
   ../source/common/cpu_instr.h \
   ../source/common/types.h \
@@ -23,6 +24,7 @@ source/kernel/CMakeFiles/kernel.dir/dev/time.c.o: ../source/kernel/dev/time.c \
   ../source/kernel/include/dev/time.h \
   ../source/common/types.h \
   ../source/kernel/include/cpu/irq.h \
+  ../source/kernel/include/tools/log.h \
   ../source/common/cpu_instr.h \
   ../source/common/types.h \
   ../source/kernel/include/os_cfg.h
@@ -35,32 +37,59 @@ source/kernel/CMakeFiles/kernel.dir/init/init.c.o: ../source/kernel/init/init.c 
   ../source/kernel/include/cpu/cpu.h \
   ../source/common/types.h \
   ../source/kernel/include/cpu/irq.h \
+  ../source/kernel/include/tools/log.h \
   ../source/kernel/include/dev/time.h \
   ../source/kernel/include/os_cfg.h
+
+source/kernel/CMakeFiles/kernel.dir/tools/klib.c.o: ../source/kernel/tools/klib.c \
+  /usr/include/stdc-predef.h \
+  ../source/kernel/include/tools/klib.h \
+  ../source/common/types.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/stdarg.h
+
+source/kernel/CMakeFiles/kernel.dir/tools/log.c.o: ../source/kernel/tools/log.c \
+  /usr/include/stdc-predef.h \
+  ../source/kernel/include/tools/log.h \
+  ../source/common/cpu_instr.h \
+  ../source/common/types.h \
+  ../source/kernel/include/os_cfg.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/stdarg.h \
+  ../source/kernel/include/tools/klib.h \
+  ../source/common/types.h
 
 
 ../source/kernel/init/init.h:
 
-../source/common/boot_info.h:
+../source/kernel/tools/log.c:
 
-../source/kernel/cpu/irq.c:
-
-../source/kernel/include/dev/time.h:
-
-../source/common/cpu_instr.h:
-
-../source/kernel/dev/time.c:
-
-../source/kernel/include/cpu/irq.h:
-
-../source/kernel/include/os_cfg.h:
-
-../source/kernel/init/init.c:
-
-../source/common/types.h:
-
-../source/kernel/include/cpu/cpu.h:
+../source/kernel/cpu/cpu.c:
 
 /usr/include/stdc-predef.h:
 
-../source/kernel/cpu/cpu.c:
+../source/kernel/include/tools/klib.h:
+
+../source/common/types.h:
+
+../source/kernel/init/init.c:
+
+../source/kernel/include/os_cfg.h:
+
+../source/kernel/include/tools/log.h:
+
+../source/kernel/include/cpu/irq.h:
+
+../source/kernel/include/cpu/cpu.h:
+
+../source/kernel/dev/time.c:
+
+../source/kernel/include/dev/time.h:
+
+/usr/lib/gcc/x86_64-linux-gnu/11/include/stdarg.h:
+
+../source/kernel/tools/klib.c:
+
+../source/common/cpu_instr.h:
+
+../source/kernel/cpu/irq.c:
+
+../source/common/boot_info.h:
