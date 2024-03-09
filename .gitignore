@@ -1,13 +1,11 @@
-./start/test
-./start/.idea
-./start/newlib
+/start/test
+/start/.idea
+/start/newlib
 
-./start/test/.vscode
-./start/test/build
-./start/test/script
+/start/test/.vscode
+/start/test/build
+/start/test/script
 
-./start/start/build
+/start/start/build
 
-./磁盘映像
-
-./test.cpp
+/磁盘映像
