@@ -33,13 +33,27 @@ int task_init(task_t * task , uint32_t entry , uint32_t esp )
 {
     ASSERT(task != (task_t *) 0 ) ; 
 
-    tss_init(task , entry , esp ) ; 
+    // tss_init(task , entry , esp ) ; 
+
+    uint32_t * pesp = (uint32_t *) esp ; 
+    if(pesp )
+    {
+        *(--pesp) = entry ; 
+        *(--pesp) = 0 ;   // edi
+        *(--pesp) = 0 ;   // esi 
+        *(--pesp) = 0 ;   // ebx
+        *(--pesp) = 0 ;   // ebp 
+        task->stack = pesp ; 
+    }
+
 
     return 0 ; 
 } 
 
+void simple_switch(uint32_t ** from , uint32_t * to ) ; 
 
 void task_switch_from_to(task_t* from , task_t* to )
 {
-    swith_to_tss(to->tss_sel) ; 
+   // swith_to_tss(to->tss_sel) ;
+    simple_switch( &from->stack , to->stack ) ; 
 }

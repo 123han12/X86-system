@@ -34,4 +34,3 @@ protected_mode_entry:
 	jmp $8 , $load_kernel 
 
 
-

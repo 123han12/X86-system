@@ -30,6 +30,7 @@ void init_task_entry(void)
 {
     int count = 0 ; 
     for( ; ; ) { 
+
         log_printf("int task: %d" , count ++ ) ; 
         task_switch_from_to(&init_task , &first_task) ; 
     }

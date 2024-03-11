@@ -96,3 +96,27 @@ exception_handler machine_check, 18, 0
 exception_handler smd_exception, 19, 0
 exception_handler virtual_exception, 20, 0
 exception_handler timer , 0x20 , 0 
+
+
+# 给 simple_switch 会传入两个参数，from  to 表示两个tss段
+	.text
+	.global simple_switch 
+simple_switch:
+	mov 4(%esp) , %eax   
+	mov 8(%esp) , %edx
+	
+	push %ebp 
+	push %ebx 
+	push %esi 
+	push %edi
+	mov %esp , (%eax)   
+	
+	# 这一行代码成功的实现了栈的切换
+	mov %edx , %esp  
+
+	pop %edi
+	pop %esi 
+	pop %ebx 
+	pop %ebp 
+
+	ret 
