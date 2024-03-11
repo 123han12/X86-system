@@ -6,6 +6,7 @@
 static segment_desc_t gdt_table[GDT_TABLE_SIZE] ; 
 
 
+
 void segment_desc_set( uint16_t selector , uint32_t base , uint32_t limit , uint16_t attr ) 
 {
 
@@ -49,6 +50,24 @@ void init_gdt(void)
 
     lgdt((uint32_t)gdt_table , sizeof(gdt_table) ) ;  // 将 gdt_table 表的起始地址放入到 gdtr 寄存器中
 
+}
+
+int gdt_alloc_desc() 
+{
+    for(int i = 1 ; i < GDT_TABLE_SIZE ; i ++ )
+    {
+        segment_desc_t * desc = gdt_table + i ; 
+        if(desc->attr == 0 ) 
+        {
+            return i * sizeof(segment_desc_t) ; 
+        }
+    }
+    return -1 ; 
+}
+
+void swith_to_tss(int selector ) 
+{
+    far_jump(selector , 0 ) ;  // 实现程序切换的最重要的部分，就是跳转到指定的代码进行执行
 }
 
 void cpu_init(void)
