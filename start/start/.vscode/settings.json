@@ -9,6 +9,7 @@
         "types.h": "c",
         "fcntl.h": "c",
         "_default_fcntl.h": "c",
-        "cpu_instr.h": "c"
+        "cpu_instr.h": "c",
+        "list.h": "c"
     },
 }
