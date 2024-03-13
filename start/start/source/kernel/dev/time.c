@@ -2,7 +2,8 @@
 #include "cpu/irq.h"
 #include "common/cpu_instr.h"
 #include "os_cfg.h"
-
+#include "core/task.h"
+ 
 
 static uint32_t sys_tick ; 
 
@@ -10,6 +11,7 @@ void do_handler_timer(exception_frame_t * frame)
 {
     sys_tick ++ ; 
 
+    task_time_tick() ; 
     // 通知8253芯片可以继续触发中断。
     pic_send_eoi(IRQ0_TIMER) ; 
 }
