@@ -106,5 +106,12 @@ void pannic(const char* filename , int line , const char* func , const char* con
 
 #endif 
 
+typedef uint32_t irq_state_t ; 
+
+
+irq_state_t irq_enter_protection(void) ; 
+
+void irq_exit_protection(irq_state_t state ) ; 
+
 
 #endif 

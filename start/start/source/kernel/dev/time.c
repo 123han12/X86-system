@@ -11,9 +11,14 @@ void do_handler_timer(exception_frame_t * frame)
 {
     sys_tick ++ ; 
 
-    task_time_tick() ; 
+    /*
+        注：下面的两个函数一定是pic_send_eoi函数在 task_time_tick 之前进行调用
+    */
     // 通知8253芯片可以继续触发中断。
     pic_send_eoi(IRQ0_TIMER) ; 
+
+    task_time_tick() ; 
+
 }
 
 static void init_pit(void)

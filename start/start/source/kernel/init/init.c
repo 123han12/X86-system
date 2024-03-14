@@ -31,7 +31,8 @@ void init_task_entry(void)
 {
     int count = 0 ; 
     for( ; ; ) { 
-        log_printf("second task: %d" , count ++ ) ; 
+         log_printf("second task: %d" , count ++ ) ; 
+         sys_sleep(1000) ; 
     }
 }
 
@@ -42,7 +43,6 @@ void init_main()
     log_printf("kernel is runing.......") ; 
     log_printf("version: %s  name:%s" , OS_VERSION , "tiny os x86") ;  
     log_printf("%d %d %x %c", -123, 123456, 0x12345, 'a') ; 
-    
 
 
     task_first_init() ;  
@@ -53,7 +53,7 @@ void init_main()
     int count = 0 ; 
     for( ; ; ) { 
         log_printf("first task: %d" , count ++ ) ; 
-
+        sys_sleep(1000) ; 
     }
 
 }

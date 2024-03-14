@@ -4,7 +4,9 @@
 #include "os_cfg.h"
 #include "cpu/cpu.h"
 #include "common/cpu_instr.h"
+#include "cpu/irq.h"
 
+ 
 static task_manager_t task_manager;     // 任务管理器
 
 static int tss_init(task_t * task , uint32_t entry , uint32_t esp )
@@ -37,9 +39,9 @@ int task_init(task_t * task , const char * name ,  uint32_t entry , uint32_t esp
     ASSERT(task != (task_t *) 0 ) ; 
     tss_init(task , entry , esp ) ; 
 
-
     kernel_strncpy(task->name , name , TASK_NAME_SIZE) ; 
     task->state = TASK_CREATED ; 
+    task->sleep_ticks = 0 ; 
     task->time_ticks = TASK_TIME_SLICE_DEFAULT ; 
     task->slice_ticks = task->time_ticks ; 
 
@@ -47,8 +49,15 @@ int task_init(task_t * task , const char * name ,  uint32_t entry , uint32_t esp
     list_node_init(&task->run_node) ;
     list_node_init(&task->all_node) ;  
 
+
+    // 进行临界区保护
+    irq_state_t  state = irq_enter_protection() ; 
+    
     task_set_ready(task) ;  
     list_insert_last(&task_manager.task_list , &task->all_node) ;   
+
+    irq_exit_protection(state) ; 
+
 
     return 0 ; 
 } 
@@ -68,6 +77,7 @@ void task_manager_init(){
 
     list_init(&(task_manager.ready_list) ) ; 
     list_init(&(task_manager.task_list) ) ; 
+    list_init(&(task_manager.sleep_list) ) ; 
     task_manager.curr_task = (task_t*)0 ; 
 
 }
@@ -104,6 +114,9 @@ task_t * task_current(void)
 
 int sys_sched_yield(void) 
 {   
+    // 进行临界区保护
+    irq_state_t  state = irq_enter_protection() ; 
+
     if(list_count(&task_manager.ready_list) > 1 ) 
     {
         task_t* curr_task = task_current() ; 
@@ -114,13 +127,15 @@ int sys_sched_yield(void)
 
         task_dispatch() ; 
 
-    } 
+    }
+
+    irq_exit_protection(state) ; 
 
     return 0 ; 
 }
 
 
-task_t * task_next_run(void)
+static task_t * task_next_run(void)
 {
     list_node_t* task_node = list_first(&task_manager.ready_list ) ; 
 
@@ -136,20 +151,22 @@ void task_dispatch(void)
     {
         task_t* from = task_current() ; 
 
-        // 这里的from 的 state 需要进行修改吗？
-        from->state = TASK_READY ; 
+        // 这里的from 的 state 需要进行修改吗
 
         task_manager.curr_task = to ; 
         to->state = TASK_RUNNING ; 
 
         task_switch_from_to(from , to) ; 
     }
-
 }
 
 void task_time_tick(void) 
 {
+
+
     task_t * curr_task = task_current() ; 
+
+    irq_state_t state = irq_enter_protection() ; 
 
     if(--curr_task->slice_ticks == 0 ) 
     {
@@ -160,9 +177,69 @@ void task_time_tick(void)
         task_set_block(curr_task) ; 
         task_set_ready(curr_task) ; 
         
-
-        // 进行任务切换
         task_dispatch() ; 
     }
 
+    list_node_t * curr = list_first(&task_manager.sleep_list) ; 
+    list_node_t* end = curr ; 
+    
+    // 注意，如果你设置的list是双向循环链表的话，这里就不能简单的设置为curr 而应该
+    if(curr) 
+    {
+        list_node_t* next = list_node_next(curr) ; 
+        task_t* task = list_parent_node(curr , task_t , run_node) ; 
+        if(--task->sleep_ticks == 0 ) 
+        {
+            task_set_wakeup(task) ; 
+            task_set_ready(task) ;  
+        }
+        curr = next ; 
+    }
+
+    while(curr && curr != end)   
+    {
+        list_node_t* next = list_node_next(curr) ; 
+        task_t* task = list_parent_node(curr , task_t , run_node) ; 
+        if(--task->sleep_ticks == 0 ) 
+        {
+            task_set_wakeup(task) ; 
+            task_set_ready(task) ;  
+        }
+        curr = next ; 
+    }
+
+    task_dispatch() ;
+
+    irq_exit_protection(state) ;  
+}
+
+
+
+void task_set_sleep(task_t* task , uint32_t ticks)
+{
+    if(ticks <= 0 ) return ; 
+
+    task->sleep_ticks = ticks ; 
+    task->state = TASK_SLEEP ; 
+    list_insert_last(&(task_manager.sleep_list) , &task->run_node ) ;
+
+
+}
+void task_set_wakeup(task_t* task) {
+    list_remove((&task_manager.sleep_list) , &task->run_node ) ; 
+} 
+
+void sys_sleep(uint32_t ms) {
+    if(ms < OS_TICK_MS) ms = OS_TICK_MS ;
+
+    irq_state_t state = irq_enter_protection() ; 
+
+    task_set_block(task_manager.curr_task) ; 
+    task_set_sleep(task_manager.curr_task , ( ms + (OS_TICK_MS - 1 ) ) / OS_TICK_MS ) ;
+
+    // 切换进程
+    
+    task_dispatch() ;  
+
+    irq_exit_protection( state ) ; 
 }

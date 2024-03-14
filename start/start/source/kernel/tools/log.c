@@ -3,7 +3,8 @@
 #include "os_cfg.h"
 #include <stdarg.h> 
 #include "tools/klib.h"
- 
+#include "cpu/irq.h"
+  
 
 #define COM1_PORT               0x3F8
 
@@ -34,14 +35,21 @@ void log_printf(const char* fmt , ... )
     kernel_vsprintf(str_buf , fmt , args) ; 
     va_end(args) ; 
 
+    const char * p = str_buf ; 
 
-    const char * p = str_buf ;  
+    irq_state_t state =  irq_enter_protection() ; 
+    
     while(*p != '\0')
     {
         while((inb(COM1_PORT + 5) & (1 << 6) ) == 0 ) ; 
         outb(COM1_PORT , *p++) ; 
     }
-
     outb(COM1_PORT , '\r') ; // 将光标移动到当前行的开头
     outb(COM1_PORT , '\n') ; // 将光标移动到当前行的结尾
+
+    irq_exit_protection(state) ;
+
+
 }
+
+

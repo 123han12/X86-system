@@ -249,3 +249,17 @@ void pannic(const char* filename , int line , const char* func , const char* con
 	log_printf("file:%s\r\nline:%d\r\nfunc:%s\r\n" , filename , line , func ) ;
 	for(;;) {hlt() ;  } 
 }
+
+
+irq_state_t irq_enter_protection(void) 
+{
+	irq_state_t state = read_eflags() ; 
+	irq_disable_global() ; 
+
+	return state ; 
+}
+
+void irq_exit_protection(irq_state_t state )
+{
+	write_eflags(state) ;  
+} 
