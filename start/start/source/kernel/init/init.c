@@ -53,7 +53,7 @@ void init_main()
     int count = 0 ; 
     for( ; ; ) { 
         log_printf("first task: %d" , count ++ ) ; 
-        sys_sleep(1000) ; 
+        sys_sleep(1500) ; 
     }
 
 }

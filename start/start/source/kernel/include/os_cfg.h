@@ -10,5 +10,6 @@
 #define OS_TICK_MS              10       	// 每毫秒的时钟数
 
 #define OS_VERSION            "22.04"
+#define IDLE_TASK_SIZE         1024
 
 #endif
