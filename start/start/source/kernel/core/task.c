@@ -49,6 +49,7 @@ int task_init(task_t * task , const char * name ,  uint32_t entry , uint32_t esp
     // 对 task_t 结构中的list_node_t 进行初始化
     list_node_init(&task->run_node) ;
     list_node_init(&task->all_node) ;  
+    list_node_init(&task->wait_node) ; 
 
 
     // 进行临界区保护

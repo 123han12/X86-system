@@ -9,9 +9,14 @@
 #include "core/task.h"
 #include "common/cpu_instr.h"
 #include "tools/list.h"
+#include "ipc/sem.h"
 
 
-static boot_info_t* init_boot_info ; 
+static boot_info_t* init_boot_info ;
+static task_t init_task ; 
+static uint32_t init_task_stack[1024] ; 
+static sem_t sem ; 
+
 
 void kernel_init(boot_info_t* boot_info )  
 {   
@@ -24,15 +29,14 @@ void kernel_init(boot_info_t* boot_info )
     task_manager_init() ;  // 任务管理器初始化
 }
 
-static task_t init_task ; 
-static uint32_t init_task_stack[1024] ; 
+
 
 void init_task_entry(void)
 {
     int count = 0 ; 
     for( ; ; ) { 
-         log_printf("second task: %d" , count ++ ) ; 
-         sys_sleep(1000) ; 
+        sem_wait(&sem) ; 
+        log_printf("second task: %d" , count ++ ) ; 
     }
 }
 
@@ -47,13 +51,16 @@ void init_main()
 
     task_first_init() ;  
     task_init(&init_task , "init_task" , (uint32_t)init_task_entry , (uint32_t)&init_task_stack[1024] ) ; 
-
+    sem_init(&sem , 0 ) ;   
 
     irq_enable_global() ; 
     int count = 0 ; 
     for( ; ; ) { 
+
         log_printf("first task: %d" , count ++ ) ; 
-        sys_sleep(1500) ; 
+        sem_notify(&sem) ; 
+
+        sys_sleep(1000) ; 
     }
 
 }

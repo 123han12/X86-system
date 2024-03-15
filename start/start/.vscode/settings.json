@@ -11,6 +11,7 @@
         "_default_fcntl.h": "c",
         "cpu_instr.h": "c",
         "list.h": "c",
-        "irq.h": "c"
+        "irq.h": "c",
+        "log.h": "c"
     },
 }

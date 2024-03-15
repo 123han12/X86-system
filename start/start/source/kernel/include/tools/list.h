@@ -70,8 +70,8 @@ list_node_t* list_remove(list_t* list , list_node_t* node ) ;
 #define parent_addr(node , parent_type , node_name ) \
     ((uint32_t)node - offset_in_parent(parent_type , node_name) ) 
 
-#define list_parent_node(node , parent_type , node_name) \
-    ( (parent_type *)(node ? parent_addr(node , parent_type , node_name) : 0 ))
+#define list_parent_node(node_ptr , parent_type , node_name) \
+    ( (parent_type *)(node_ptr ? parent_addr(node_ptr , parent_type , node_name) : 0 ))
 
 
 #endif 
