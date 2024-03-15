@@ -4,12 +4,15 @@
 #include <stdarg.h> 
 #include "tools/klib.h"
 #include "cpu/irq.h"
-  
-
+#include "ipc/mutex.h"
+   
 #define COM1_PORT               0x3F8
+
+static mutex_t mutex ; 
 
 void log_init(void)  // 设置qemu的串行接口的寄存器，硬件初始化，不用太在意
 {
+    mutex_init(&mutex) ; 
     outb(COM1_PORT + 1, 0x00);    // Disable all interrupts
     outb(COM1_PORT + 3, 0x80);    // Enable DLAB (set baud rate divisor)
     outb(COM1_PORT + 0, 0x03);    // Set divisor to 3 (lo byte) 38400 baud
@@ -37,7 +40,7 @@ void log_printf(const char* fmt , ... )
 
     const char * p = str_buf ; 
 
-    irq_state_t state =  irq_enter_protection() ; 
+    mutex_lock(&mutex) ; 
     
     while(*p != '\0')
     {
@@ -47,9 +50,8 @@ void log_printf(const char* fmt , ... )
     outb(COM1_PORT , '\r') ; // 将光标移动到当前行的开头
     outb(COM1_PORT , '\n') ; // 将光标移动到当前行的结尾
 
-    irq_exit_protection(state) ;
-
-
+    mutex_unlock(&mutex) ; 
+    
 }
 
 

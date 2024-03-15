@@ -10,7 +10,7 @@
 #include "common/cpu_instr.h"
 #include "tools/list.h"
 #include "ipc/sem.h"
-
+#include "ipc/mutex.h" 
 
 static boot_info_t* init_boot_info ;
 static task_t init_task ; 
@@ -35,7 +35,7 @@ void init_task_entry(void)
 {
     int count = 0 ; 
     for( ; ; ) { 
-        sem_wait(&sem) ; 
+        // sem_wait(&sem) ; 
         log_printf("second task: %d" , count ++ ) ; 
     }
 }
@@ -58,9 +58,8 @@ void init_main()
     for( ; ; ) { 
 
         log_printf("first task: %d" , count ++ ) ; 
-        sem_notify(&sem) ; 
-
-        sys_sleep(1000) ; 
+        // sem_notify(&sem) ; 
+        // sys_sleep(1000) ; 
     }
 
 }
