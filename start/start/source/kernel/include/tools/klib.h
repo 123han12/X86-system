@@ -4,6 +4,20 @@
 #include "common/types.h"
 #include <stdarg.h> 
 
+
+// 将size 转换为bound的整数倍
+static inline uint32_t down2(uint32_t size , uint32_t bound ) 
+{
+    return size & ~(bound - 1) ; 
+}
+
+// 将size 转换为bound的整数倍 并且向上取整
+static inline uint32_t up2(uint32_t size , uint32_t bound ) 
+{
+    return (size + bound - 1) & ~(bound - 1) ;    
+}
+
+
 void kernel_strcpy(char * dest , const char * src ) ; 
 void kernel_strncpy(char * dest , const char * src ,  uint32_t size ) ; 
 uint32_t kernel_strncmp(const char * s1 , const char * s2 , uint32_t size) ; 
