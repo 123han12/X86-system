@@ -168,4 +168,51 @@ static inline void write_eflags(uint32_t state )
 }
 
 
+static inline uint32_t read_cr3() 
+{
+    uint32_t cr3 ; 
+    __asm__ __volatile__(
+        "movl %%cr3 , %[p]\n\t"
+        : [p]"=r"(cr3) 
+        : 
+        : 
+    ) ; 
+    return cr3 ; 
+}
+
+static inline uint32_t write_cr3(uint32_t v )
+{
+    __asm__ __volatile__(
+        "movl %[v] , %%cr3 \n\t"
+        :
+        :[v]"r"(v) 
+        :
+    ) ; 
+}
+
+static inline uint32_t read_cr4() 
+{
+    uint32_t cr4 ; 
+    __asm__ __volatile__(
+        "movl %%cr4 , %[p]\n\t"
+        : [p]"=r"(cr4) 
+        : 
+        : 
+    ) ; 
+    return cr4 ; 
+}
+
+static inline uint32_t write_cr4(uint32_t v )
+{
+    __asm__ __volatile__(
+        "movl %[v] , %%cr4 \n\t"
+        :
+        :[v]"r"(v) 
+        :
+    ) ; 
+}
+
+
+
+
 #endif

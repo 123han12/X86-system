@@ -3,6 +3,7 @@ SECTIONS
 {
     . = 0x00010000;
 
+	PROVIDE(s_text = . ) ; 
 	.text : {
 		*(.text)
 	} 
@@ -11,6 +12,10 @@ SECTIONS
 		*(.rodata)
 	}
 
+	PROVIDE(e_text = . ) ;
+
+	. = ALIGN(4096) ; 
+	PROVIDE(s_data = . ) ;
 	.data : { 
 		*(.data)
 	}

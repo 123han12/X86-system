@@ -2,9 +2,12 @@
 #include "tools/log.h"
 #include "tools/klib.h"
 #include "cpu/irq.h"
+#include "cpu/mmu.h" 
 
 static addr_alloc_t paddr_alloc ; 
 
+
+static pde_t kernel_page_dir[PDE_CNT]  __attribute__((aligned(MEM_PAGE_SIZE)) )  ; // 定义页目录表结构，并且令其起始地址4KB对齐  
 
 static void addr_alloc_init(addr_alloc_t* alloc , uint8_t* bits , uint32_t start , uint32_t size , uint32_t page_size ) 
 {
@@ -63,24 +66,113 @@ static uint32_t total_memory_size(boot_info_t* boot_info)
     return mem_size ; 
 }
 
+// alloc 为1表示当vaddr 对应的pte表项不存在的时候就重新分配，为0则不分配
+pte_t* find_pte(pde_t* page_dir , uint32_t vaddr , int alloc) 
+{   
+    pte_t* page_table = (pte_t*)0 ; 
+
+    pde_t* pde = page_dir + pde_index(vaddr) ; 
+
+    if(pde->present){
+        page_table = (pte_t*)pde_paddr(pde) ;   
+    }else {
+        if(alloc == 1 ){
+            uint32_t page_paddr =  addr_alloc_page(&paddr_alloc , 1 ) ; 
+            if(page_paddr == 0 ) return (pte_t*) 0 ; 
+            
+            pde->v = page_paddr | PDE_P | PDE_W | PDE_U ; 
+
+            page_table = (pte_t*)page_paddr ; 
+
+            // 对这个新分配的4KB大小的页表进行一个清空。
+            kernel_memset(page_table , 0 , MEM_PAGE_SIZE ) ; 
+
+
+        }else { 
+            return (pte_t*)0 ; 
+        }
+    }
+
+    return page_table + pte_index(vaddr) ;  
+}
+
+int memory_create_map(pde_t* page_dir  , uint32_t vaddr  , uint32_t paddr  , int count ,  uint32_t perm  ) 
+{
+    for(int i = 0 ; i < count ; i ++ ) 
+    {
+        pte_t* pte = find_pte(page_dir , vaddr , 1 ) ; 
+        if(pte== (pte_t *)0 ) {
+            return -1 ; 
+        }  
+        
+        // log_printf("find pte:0x%x" , pte ) ;
+
+        ASSERT(pte->present == 0 ) ; 
+        pte->v = paddr | perm | PTE_P ; 
+
+        vaddr += MEM_PAGE_SIZE ; 
+        paddr += MEM_PAGE_SIZE ; 
+
+    }
+
+
+}
+
+
+
+void  create_kernel_table(void) 
+{
+    extern uint8_t s_text[] , e_text[] , s_data[]  ;  
+    static memory_map_t kernel_map[] = {
+       [0] = {0 , s_text , 0 , PTE_W }  ,  
+       [1] =  {s_text , e_text , s_text ,  0 }  , 
+       [2] = {s_data , (void*)MEM_EBDA_START , s_data , PTE_W  } 
+    } ; 
+
+    for(int i = 0 ; i < sizeof(kernel_map) / sizeof(memory_map_t) ; ++i )
+    {
+        memory_map_t* map = kernel_map + i ; 
+        
+        uint32_t vstart = down2((uint32_t)map->vstart , MEM_PAGE_SIZE ) ; 
+        uint32_t vend = up2((uint32_t)map->vend , MEM_PAGE_SIZE) ; 
+        uint32_t paddr = down2((uint32_t)map->p_start , MEM_PAGE_SIZE ) ; 
+
+        int page_count = (vend - vstart) / MEM_PAGE_SIZE ;  
+        
+        memory_create_map(kernel_page_dir , vstart , paddr , page_count ,  map->perm ) ;  
+
+    }
+
+}
+
 void memory_init(boot_info_t* boot_info) 
 {
     extern uint8_t* mem_free_start ; 
     uint8_t* mem_free = (uint8_t*)&mem_free_start ; 
 
-    log_printf("mem init") ; 
 
-    show_memory_info(boot_info) ; 
+    // show_memory_info(boot_info) ; 
 
     uint32_t mem_up1MB_free = total_memory_size(boot_info) - MEME_EXT_START ;  
+    
+    // 将能够分配给进程的物理内存的大小变为MEM_PAGE_SIZE 的整数倍，向下取整
     mem_up1MB_free = down2(mem_up1MB_free , MEM_PAGE_SIZE ) ; 
 
-    log_printf("free memory:0x%x , size:0x%x" , MEME_EXT_START , mem_up1MB_free ) ; 
 
 
+    // 对地址分配器paddr_alloc ，进行初始化 mem_free 表示位图缓存的起始地址，实际上其位于 .bss和MEM_EBDA_START 之间
+    // 使用paddr_alloc 管理 mem_up1MB_free大小的空间，并且开始地址是 MEME_EXT_START 这个地方
     addr_alloc_init(&paddr_alloc ,mem_free ,  MEME_EXT_START , mem_up1MB_free , MEM_PAGE_SIZE) ; 
+    
+    // 获取在位图之后的空闲地址的开头地址
+
     mem_free += bitmap_byte_count(paddr_alloc.size / MEM_PAGE_SIZE ) ; 
 
     ASSERT(mem_free < (uint8_t*)MEM_EBDA_START ) ; 
+
+
+    create_kernel_table() ; 
+    mmu_set_page_dir((uint32_t)kernel_page_dir ); 
+
 
 }

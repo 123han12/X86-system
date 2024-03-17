@@ -21,8 +21,9 @@ static sem_t sem ;
 
 void kernel_init(boot_info_t* boot_info )  
 {   
-    init_boot_info = boot_info ; 
+    init_boot_info = boot_info ;
     memory_init(boot_info) ;  
+    
     log_init() ; 
     cpu_init() ; 
     irq_init() ; 
@@ -62,8 +63,6 @@ void init_main()
         log_printf("first task: %d" , count ++ ) ; 
         // sem_notify(&sem) ; 
         // sys_sleep(1000) ; 
-
-
     }
 
 }

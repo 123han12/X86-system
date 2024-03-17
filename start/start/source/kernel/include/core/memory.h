@@ -23,6 +23,20 @@ typedef  struct  _addr_alloc_t {
 } addr_alloc_t ; 
 
 
+typedef struct _memory_map_t {
+    
+    // 线性地址的起始与结束空间
+    void* vstart  ; 
+    void* vend ;
+    void* p_start ; 
+
+    // 特权相关的属性
+    uint32_t perm ; 
+
+}memory_map_t ; 
+
+
+
 void memory_init(boot_info_t* boot_info ) ; 
 
 
