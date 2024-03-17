@@ -45,13 +45,14 @@ typedef struct _gate_desc_t {
 #define GATE_DPL0               (0 << 13)
 #define GATE_DPL3               (3 << 13)
 
-#define EFLAGS_DEFAULT          (1 << 3 )
+#define EFLAGS_DEFAULT          (1 << 1 )
 #define EFLAGS_IF               (1 << 9)
 
 void cpu_init(void) ; 
 void segment_desc_set( uint16_t selector , uint32_t base , uint32_t limit , uint16_t attr ) ;  
 void gate_dest_set(gate_desc_t* desc , uint16_t selector , uint32_t offset , uint16_t attr ) ; 
 
+void gdt_free_sel(int sel ) ;
 
 
 typedef struct _tss_t {

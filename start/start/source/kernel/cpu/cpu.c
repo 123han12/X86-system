@@ -79,3 +79,11 @@ void cpu_init(void)
     init_gdt() ; 
 }
 
+void gdt_free_sel(int sel ) 
+{
+    mutex_lock(&mutex) ; 
+
+    gdt_table[sel / sizeof(segment_desc_t) ].attr = 0 ; 
+    
+    mutex_unlock(&mutex) ; 
+}

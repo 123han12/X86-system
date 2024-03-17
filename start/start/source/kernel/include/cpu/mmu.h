@@ -78,6 +78,6 @@ static inline void mmu_set_page_dir(uint32_t paddr )
     write_cr3(paddr) ; 
 }
 
-
+uint32_t memory_create_uvm(void)  ; 
 
 #endif 

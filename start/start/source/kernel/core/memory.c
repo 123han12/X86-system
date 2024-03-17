@@ -124,9 +124,11 @@ void  create_kernel_table(void)
 {
     extern uint8_t s_text[] , e_text[] , s_data[]  ;  
     static memory_map_t kernel_map[] = {
-       [0] = {0 , s_text , 0 , PTE_W }  ,  
-       [1] =  {s_text , e_text , s_text ,  0 }  , 
-       [2] = {s_data , (void*)MEM_EBDA_START , s_data , PTE_W  } 
+        {0 , s_text , 0 , PTE_W }  ,  
+       {s_text , e_text , s_text ,  0 }  , 
+       {s_data , (void*)MEM_EBDA_START , s_data , PTE_W  } , 
+
+       {(void*)MEME_EXT_START , (void*)MEM_EXT_END , (void*)MEME_EXT_START, PTE_W } ,  
     } ; 
 
     for(int i = 0 ; i < sizeof(kernel_map) / sizeof(memory_map_t) ; ++i )
@@ -174,5 +176,27 @@ void memory_init(boot_info_t* boot_info)
     create_kernel_table() ; 
     mmu_set_page_dir((uint32_t)kernel_page_dir ); 
 
+
+}
+
+uint32_t memory_create_uvm(void) 
+{
+    // page_dir 是物理地址
+    pde_t* page_dir = (pde_t*) addr_alloc_page(&paddr_alloc , 1 ) ; 
+    if(page_dir == 0 ) 
+    {
+        return 0 ; 
+    }
+
+    kernel_memset(page_dir , 0 , MEM_PAGE_SIZE) ; 
+
+    uint32_t user_pde_start = pde_index(MEMORY_TASK_BASE) ; 
+    
+    // 对于用户进程来说，在内核态下，不同的进程指向的是同一份物理二级页表，也就是同一份操作系统代码
+    for(int i = 0 ; i < user_pde_start ; i ++ ) {
+        page_dir[i].v = kernel_page_dir[i].v ; 
+    }   
+
+    return (uint32_t ) page_dir; 
 
 }
