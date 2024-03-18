@@ -6,6 +6,7 @@
 #include "common/cpu_instr.h"
 #include "cpu/irq.h"
 #include "cpu/mmu.h"
+#include "core/memory.h"
 
 
 static uint32_t idle_task_stack[IDLE_TASK_SIZE] ; 
@@ -62,7 +63,6 @@ int task_init(task_t * task , const char * name ,  uint32_t entry , uint32_t esp
     list_node_init(&task->all_node) ;  
     list_node_init(&task->wait_node) ; 
 
-
     // 进行临界区保护
     irq_state_t  state = irq_enter_protection() ; 
     
@@ -104,12 +104,34 @@ void task_manager_init(){
 
 }
 
+
+
+
 void task_first_init(void)  
 {   
-    task_init( &(task_manager.first_task) , "first_task"  , 0 , 0 ) ;
-    write_tr(task_manager.first_task.tss_sel) ; // 将其选择子放入到tr 寄存器中、
+    void first_task_entry(void) ;
+
+    // s_first_task  和 e_first_task 分别是first_task的起始地址和结束地址(物理上的) 
+    extern uint8_t s_first_task[] , e_first_task[] ;
+
+    uint32_t copy_size = (uint32_t)(e_first_task - s_first_task) ; 
+    uint32_t alloc_size = 10 * MEM_PAGE_SIZE ; // 分配10个物理页
+    ASSERT(copy_size < alloc_size) ; 
+    
+
+    uint32_t first_start = (uint32_t) first_task_entry ;  
+
+    task_init( &(task_manager.first_task) , "first_task"  , first_start , 0 ) ;
+    write_tr(task_manager.first_task.tss_sel) ; // 将其选择子放入到tr 寄存器中
 
     task_manager.curr_task = &(task_manager.first_task) ;  
+
+    // 将first_task进程的一级页表的地址放入到cr3寄存器中
+    mmu_set_page_dir(task_manager.first_task.tss.cr3) ;  
+
+    memory_alloc_page_for(first_start , alloc_size , PTE_P | PTE_W ) ; 
+    kernel_memcpy((void*)first_start , s_first_task , copy_size ) ;   
+
 }
 
 task_t* task_first_task(void)  

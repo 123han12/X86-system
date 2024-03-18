@@ -42,5 +42,8 @@ typedef struct _memory_map_t {
 void memory_init(boot_info_t* boot_info ) ; 
 uint32_t memory_create_uvm(void) ; 
 
+// 给当前进程的一级页表addr虚拟地址开始的size个页面分配物理页面，每页的属性都是perm
+int memory_alloc_page_for(uint32_t addr , uint32_t size , int perm ) ; 
+
 
 #endif 

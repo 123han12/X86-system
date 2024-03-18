@@ -47,7 +47,7 @@ void init_gdt(void)
     segment_desc_set(KERNEL_SELECTOR_DS , 0x00000000 , 0xFFFFFFFF ,  
         SEG_P_PRESENT | SEG_DPL0 | SEG_S_NORMAL | SEG_TYPE_DATA | SEG_TYPE_RW | SEG_D | SEG_G 
     ) ;  
-
+    
     lgdt((uint32_t)gdt_table , sizeof(gdt_table) ) ;  // 将 gdt_table 表的起始地址放入到 gdtr 寄存器中
 
 }

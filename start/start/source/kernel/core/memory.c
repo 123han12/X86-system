@@ -96,6 +96,9 @@ pte_t* find_pte(pde_t* page_dir , uint32_t vaddr , int alloc)
     return page_table + pte_index(vaddr) ;  
 }
 
+
+// 在page_dir这个一级页表中建立vaddr和paddr之间的映射关系，count表示一共建立多少个页的映射关系，perm 表示每一个页的属性设置
+// 成功返回0失败返回-1
 int memory_create_map(pde_t* page_dir  , uint32_t vaddr  , uint32_t paddr  , int count ,  uint32_t perm  ) 
 {
     for(int i = 0 ; i < count ; i ++ ) 
@@ -115,7 +118,7 @@ int memory_create_map(pde_t* page_dir  , uint32_t vaddr  , uint32_t paddr  , int
 
     }
 
-
+    return 0 ; 
 }
 
 
@@ -199,4 +202,35 @@ uint32_t memory_create_uvm(void)
 
     return (uint32_t ) page_dir; 
 
+}
+
+
+int memory_alloc_for_page_dir(uint32_t page_dir , uint32_t vaddr , uint32_t size , uint32_t perm) 
+{
+    uint32_t curr_vaddr = vaddr ; 
+    int page_count = up2(size , MEM_PAGE_SIZE) / MEM_PAGE_SIZE ; 
+    for(int i = 0 ; i < page_count; i ++ ) 
+    {
+        uint32_t paddr = addr_alloc_page(&paddr_alloc , 1 ) ; 
+        if(paddr == 0 )
+        {
+            log_printf("memory alloc is failed.....") ; 
+            return 0 ; 
+        }
+
+        int err = memory_create_map((pde_t*)page_dir , curr_vaddr , paddr , 1 , perm ) ; 
+        if(err == -1 ) 
+        {
+            log_printf("create memory map is failed.....") ; 
+            return 0 ; 
+        }
+        curr_vaddr += MEM_PAGE_SIZE ; 
+    }
+    return 0 ; 
+}
+
+int memory_alloc_page_for(uint32_t addr , uint32_t size , int perm ) 
+{
+    // 给指定页表的指定的虚拟地址分配指定的内存页的个数
+    return memory_alloc_for_page_dir(task_current()->tss.cr3 , addr , size , perm ) ; 
 }
