@@ -105,8 +105,15 @@ void task_manager_init(){
 }
 
 
-
-
+/**
+ * @brief 初始进程的初始化
+ * 没有采用从磁盘加载的方式，因为需要用到文件系统，并且最好是和kernel绑在一定，这样好加载
+ * 当然，也可以采用将init的源文件和kernel的一起编译。此里要调整好kernel.lds，在其中
+ * 将init加载地址设置成和内核一起的，运行地址设置成用户进程运行的高处。
+ * 不过，考虑到init可能用到newlib库，如果与kernel合并编译，在lds中很难控制将newlib的
+ * 代码与init进程的放在一起，有可能与kernel放在了一起。
+ * 综上，最好是分离。
+ */
 void task_first_init(void)  
 {   
     void first_task_entry(void) ;
@@ -122,16 +129,17 @@ void task_first_init(void)
     uint32_t first_start = (uint32_t) first_task_entry ;  
 
     task_init( &(task_manager.first_task) , "first_task"  , first_start , 0 ) ;
-    write_tr(task_manager.first_task.tss_sel) ; // 将其选择子放入到tr 寄存器中
-
+   
     task_manager.curr_task = &(task_manager.first_task) ;  
 
     // 将first_task进程的一级页表的地址放入到cr3寄存器中
     mmu_set_page_dir(task_manager.first_task.tss.cr3) ;  
 
     memory_alloc_page_for(first_start , alloc_size , PTE_P | PTE_W ) ; 
-    kernel_memcpy((void*)first_start , s_first_task , copy_size ) ;   
+    kernel_memcpy((void*)first_start , (void*)s_first_task , copy_size ) ;   
 
+
+    write_tr(task_manager.first_task.tss_sel) ; // 将其选择子放入到tr 寄存器中
 }
 
 task_t* task_first_task(void)  

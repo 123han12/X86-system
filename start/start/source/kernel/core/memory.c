@@ -209,6 +209,7 @@ int memory_alloc_for_page_dir(uint32_t page_dir , uint32_t vaddr , uint32_t size
 {
     uint32_t curr_vaddr = vaddr ; 
     int page_count = up2(size , MEM_PAGE_SIZE) / MEM_PAGE_SIZE ; 
+    vaddr = down2(vaddr , MEM_PAGE_SIZE); 
     for(int i = 0 ; i < page_count; i ++ ) 
     {
         uint32_t paddr = addr_alloc_page(&paddr_alloc , 1 ) ; 
@@ -222,8 +223,10 @@ int memory_alloc_for_page_dir(uint32_t page_dir , uint32_t vaddr , uint32_t size
         if(err == -1 ) 
         {
             log_printf("create memory map is failed.....") ; 
-            return 0 ; 
+            addr_free_page(&paddr_alloc , vaddr , i + 1 ) ; 
+            return -1 ; 
         }
+        
         curr_vaddr += MEM_PAGE_SIZE ; 
     }
     return 0 ; 

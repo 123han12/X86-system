@@ -58,7 +58,7 @@ void kernel_memcpy(void *dest, void *src, uint32_t size)
     uint8_t *d = (uint8_t *)dest;
     uint8_t *s = (uint8_t *)src;
 
-    while ((size--) && *s)
+    while (size--)
     {
         *d++ = *s++;
     }

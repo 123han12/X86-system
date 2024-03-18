@@ -7,6 +7,8 @@ static segment_desc_t gdt_table[GDT_TABLE_SIZE] ;
 
 static mutex_t mutex ; 
 
+
+// 设置指定selector选择子的属性，基地址base 段限长limit  段属性attr 
 void segment_desc_set( uint16_t selector , uint32_t base , uint32_t limit , uint16_t attr ) 
 {
 
@@ -52,6 +54,7 @@ void init_gdt(void)
 
 }
 
+// 在gdt表中分配最小的段选择子槽给调用方，返回值是i * segment_desc_t 
 int gdt_alloc_desc() 
 {
     mutex_lock(&mutex) ; 

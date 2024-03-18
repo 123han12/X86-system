@@ -20,8 +20,8 @@ static sem_t sem ;
 void kernel_init(boot_info_t* boot_info )  
 {   
     init_boot_info = boot_info ;
-    log_init() ; 
     cpu_init() ; 
+    log_init() ; 
     
     memory_init(boot_info) ;  
     
