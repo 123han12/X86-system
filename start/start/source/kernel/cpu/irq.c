@@ -95,7 +95,20 @@ void do_handler_general_protection(exception_frame_t * frame) {
 }
 
 void do_handler_page_fault(exception_frame_t * frame) {
+
+	log_printf("---------") ; 
+	log_printf("Page fault....") ; 
+
+	if(frame->error_code & ERR_PAGE_P )
+	{
+		log_printf("The fault ")
+	}else {
+
+	}
+
 	do_default_handler(frame, "Page Fault.");
+
+
 }
 
 void do_handler_fpu_error(exception_frame_t * frame) {

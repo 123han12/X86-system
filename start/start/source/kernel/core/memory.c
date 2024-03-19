@@ -206,7 +206,7 @@ uint32_t memory_create_uvm(void)
 
 
 int memory_alloc_for_page_dir(uint32_t page_dir , uint32_t vaddr , uint32_t size , uint32_t perm) 
-{
+{  
     uint32_t curr_vaddr = vaddr ; 
     int page_count = up2(size , MEM_PAGE_SIZE) / MEM_PAGE_SIZE ; 
     vaddr = down2(vaddr , MEM_PAGE_SIZE); 

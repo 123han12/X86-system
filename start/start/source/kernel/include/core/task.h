@@ -6,6 +6,8 @@
 
 #define TASK_NAME_SIZE    32 
 #define TASK_TIME_SLICE_DEFAULT  10 
+
+
 typedef struct _task_t {
 
     enum {
@@ -45,8 +47,11 @@ typedef struct _task_manager_t {
     
 
     task_t first_task ; 
-
     task_t idle_task ; 
+
+    int app_code_sel ; 
+    int app_data_sel ; 
+
 } task_manager_t ; 
 
 

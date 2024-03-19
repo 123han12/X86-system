@@ -20,6 +20,11 @@
 #define SEG_TYPE_RW                 (1 << 1) 
 #define SEG_TYPE_TSS                (9 << 0)
 
+
+#define ERR_PAGE_P                   (1 << 0 )
+#define ERR_PAGE_W                   (1 << 1 )
+#define ERR_PAGE_US                  (1 << 2 ) 
+
 // gdt 表项结构的创建 , 为防止字节对齐对结构体内存布局的影响，需要设置一下内存对齐的方式
 #pragma pack(1) 
 typedef struct _segment_desc_t {
@@ -44,6 +49,9 @@ typedef struct _gate_desc_t {
 #define GATE_P_PRESENT          (1 << 15)
 #define GATE_DPL0               (0 << 13)
 #define GATE_DPL3               (3 << 13)
+#define SEG_CPL3                (3 << 0)
+#define SEG_CPL0                (0 << 0 )
+
 
 #define EFLAGS_DEFAULT          (1 << 1 )
 #define EFLAGS_IF               (1 << 9)
