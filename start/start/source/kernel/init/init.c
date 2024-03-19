@@ -1,4 +1,3 @@
-
 #include "common/boot_info.h"
 #include "init.h"
 #include "cpu/cpu.h"
@@ -39,9 +38,14 @@ void move_to_first_task(void){
     tss_t* tss = &(curr->tss) ; 
 
     __asm__ __volatile__ (
-        "jmp *%[ip]"
+        "push %[ss]\n\t"
+        "push %[esp]\n\t"
+        "push %[eflags]\n\t"
+        "push %[cs]\n\t"
+        "push %[eip]\n\t"
+        "iret\n\t"
         : 
-        : [ip]"r"(tss->eip) 
+        : [ss]"r"(tss->ss) , [esp]"r"(tss->esp) , [eflags]"r"(tss->eflags) , [cs]"r"(tss->cs) , [eip]"r"(tss->eip) 
         : 
     ) ; 
 } 

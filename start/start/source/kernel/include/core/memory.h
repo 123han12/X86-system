@@ -12,6 +12,8 @@
 #define MEM_EXT_END       (128*1024*1024) 
 
 
+
+
 typedef  struct  _addr_alloc_t {
 
     bitmap_t bitmap ; 
@@ -44,6 +46,10 @@ uint32_t memory_create_uvm(void) ;
 
 // 给当前进程的一级页表addr虚拟地址开始的size个页面分配物理页面，每页的属性都是perm
 int memory_alloc_page_for(uint32_t addr , uint32_t size , int perm ) ; 
+
+
+uint32_t memory_alloc_page(void) ; 
+void memory_free_page(uint32_t addr ) ; 
 
 
 #endif 

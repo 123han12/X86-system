@@ -7,7 +7,7 @@ int first_task_main(void)
 {
     for(;;)
     {   
-        log_printf("first task.") ; 
-        sys_sleep(1000) ; 
+        // log_printf("first task.") ; 
+        // sys_sleep(1000) ; 
     }   
 }

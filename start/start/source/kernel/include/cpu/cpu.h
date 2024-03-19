@@ -24,6 +24,9 @@
 #define ERR_PAGE_P                   (1 << 0 )
 #define ERR_PAGE_W                   (1 << 1 )
 #define ERR_PAGE_US                  (1 << 2 ) 
+#define ERR_EXT                      (1 << 0 )
+#define ERR_IDT                      (1 << 1 )
+
 
 // gdt 表项结构的创建 , 为防止字节对齐对结构体内存布局的影响，需要设置一下内存对齐的方式
 #pragma pack(1) 

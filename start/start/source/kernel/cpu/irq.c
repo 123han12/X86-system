@@ -3,15 +3,25 @@
 #include "common/cpu_instr.h"
 #include "os_cfg.h"
 #include "tools/log.h"
+#include "common/types.h"
 
 
 static gate_desc_t idt_table[IDT_TABLE_NR] ; 
 
 static void dump_core_regs(exception_frame_t* frame)
 {
+	uint32_t ss , esp ; 
+	if(frame->cs & 0x3 ) {
+		ss = frame->ss3 ; 
+		esp = frame->esp3 ; 
+	}else {
+		ss = frame->ds ; 
+		esp = frame->esp ; 
+	}
+
 	log_printf("IRQ: %d  error code: %d " , frame->num , frame->error_code ) ; 
 	log_printf("CS: %d\r\nDS: %d\r\nES: %d\r\nSS: %d\r\nFS:%d\r\nGS:%d",
-               frame->cs, frame->ds, frame->es, frame->ds, frame->fs, frame->gs  
+               frame->cs, frame->ds, frame->es, ss , frame->fs, frame->gs  
     );
     log_printf("EAX:0x%x\r\n"
                 "EBX:0x%x\r\n"
@@ -22,7 +32,7 @@ static void dump_core_regs(exception_frame_t* frame)
                 "EBP:0x%x\r\n"
                 "ESP:0x%x\r\n",
                frame->eax, frame->ebx, frame->ecx, frame->edx,
-               frame->edi, frame->esi, frame->ebp, frame->esp);
+               frame->edi, frame->esi, frame->ebp,  esp ) ;
     log_printf("EIP:0x%x\r\nEFLAGS:0x%x\r\r\n", frame->eip, frame->eflags);
 }
 
@@ -91,7 +101,32 @@ void do_handler_stack_segment_fault(exception_frame_t * frame) {
 }
 
 void do_handler_general_protection(exception_frame_t * frame) {
-	do_default_handler(frame, "General Protection.");
+	log_printf("---------") ; 
+	log_printf("general_protection fault....") ; 
+
+	if(frame->error_code & ERR_EXT ) 
+	{
+		log_printf("The exception occured during delivery of an event external to the program.:0x%x" , read_cr2() ) ; 
+	}else {
+		log_printf("The exception occured during delivery of s software interrupt:0x%x" , read_cr2() ) ; 
+	}
+
+	if(frame->error_code & ERR_IDT )
+	{
+		log_printf("The index portion of the error code refers to a gate descriptor in the IDT:0x%x" , read_cr2() ) ; 
+	} else {
+		log_printf("The index portion refers to a descriptor in the GDT or the current LDT:0x%x" , read_cr2() ) ; 
+	}
+
+	log_printf("selector index:%d" , frame->error_code & 0xFFF8) ; 
+
+	dump_core_regs(frame) ; 
+	
+	while(1){
+		hlt() ; 
+	}
+
+
 }
 
 void do_handler_page_fault(exception_frame_t * frame) {
@@ -101,14 +136,30 @@ void do_handler_page_fault(exception_frame_t * frame) {
 
 	if(frame->error_code & ERR_PAGE_P )
 	{
-		log_printf("The fault ")
+		log_printf("The fault was cased by a page-level protection violation.:0x%x" , read_cr2() ) ; 
 	}else {
-
+		log_printf("The fault was caused by a non-present page.:0x%x" , read_cr2() ) ; 
 	}
 
-	do_default_handler(frame, "Page Fault.");
+	if(frame->error_code & ERR_PAGE_W )
+	{
+		log_printf("The access causing the fault was a write:0x%x" , read_cr2() ) ; 
+	} else {
+		log_printf("The access causing the fault was a read:0x%x" , read_cr2() ) ; 
+	}
 
+	if(frame->error_code & ERR_PAGE_US ) 
+	{
+		log_printf("A user-mode access caused the fault:0x%x" , read_cr2() ) ; 
+	} else {
+		log_printf("A supervsior-mode access the fault:0x%x" , read_cr2() ) ; 
+	}
 
+	dump_core_regs(frame) ; 
+	
+	while(1){
+		hlt() ; 
+	}
 }
 
 void do_handler_fpu_error(exception_frame_t * frame) {

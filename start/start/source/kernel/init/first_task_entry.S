@@ -8,4 +8,7 @@ first_task_entry:
 	mov %ax , %es 
 	mov %ax , %fs 
 	mov %ax , %gs 
+
+	
+
 	jmp first_task_main 

@@ -56,6 +56,7 @@ typedef struct _exception_frame_t {
     uint32_t edi , esi , ebp , esp , ebx , edx , ecx , eax ; 
     uint32_t  num , error_code ;  
     uint32_t eip , cs , eflags ; 
+    uint32_t esp3 , ss3 ; 
 
 } exception_frame_t ; 
 

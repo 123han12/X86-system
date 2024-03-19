@@ -237,3 +237,32 @@ int memory_alloc_page_for(uint32_t addr , uint32_t size , int perm )
     // 给指定页表的指定的虚拟地址分配指定的内存页的个数
     return memory_alloc_for_page_dir(task_current()->tss.cr3 , addr , size , perm ) ; 
 }
+
+
+
+// 返回从内存管理器中申请的物理地址,因为在1~128M内存都是线性映射，所以addr是物理地址也是其对应的虚拟地址
+uint32_t memory_alloc_page() {
+    uint32_t addr = addr_alloc_page(&paddr_alloc , 1 ) ;    
+    return addr ; 
+}
+
+
+static pde_t* curr_page_dir()
+{
+    return (pde_t*) (task_current())->tss.cr3 ; 
+}
+
+void memory_free_page(uint32_t addr )
+{
+    if(addr < MEMORY_TASK_BASE ){
+        addr_free_page(&paddr_alloc , addr , 1 ) ; 
+    }else {
+        pte_t* pte = find_pte(curr_page_dir() , addr , 0 ) ; 
+        
+        ASSERT(pte == (pte_t*)0 && pte->present ) ;  
+
+        addr_free_page(&paddr_alloc , pte_paddr(pte) , 1 ) ;
+        
+        pte->v = 0 ;  
+    }
+} 
