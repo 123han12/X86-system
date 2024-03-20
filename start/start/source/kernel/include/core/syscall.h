@@ -2,7 +2,12 @@
 #define SYSCALL_H 
 #include "common/types.h"
 #define SYSCALL_COUNT           5
+
+
+
 #define SYS_sleep    0 
+#define SYS_getpid   1
+#define SYS_printmsg  100
 
 
 void exception_handler_syscall(void) ; 

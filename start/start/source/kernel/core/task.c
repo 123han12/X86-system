@@ -44,9 +44,8 @@ static int tss_init(task_t * task , int flag , uint32_t entry , uint32_t esp )
         data_sel = task_manager.app_data_sel | SEG_CPL3 ;  
     } 
 
-
     task->tss.eip = entry ; 
-    task->tss.esp = esp ; 
+    task->tss.esp = esp ? esp : kernel_stack + MEM_PAGE_SIZE ; // 未指定栈则用内核栈，即运行在特权级0的进程 
     task->tss.esp0 = kernel_stack + MEM_PAGE_SIZE ; 
     task->tss.ss = data_sel ; 
     task->tss.ss0 = KERNEL_SELECTOR_DS ; 
@@ -80,7 +79,10 @@ tss_init_failed:
 
 int task_init(task_t * task , const char * name , int flag ,  uint32_t entry , uint32_t esp ) 
 {
+    
     ASSERT(task != (task_t *) 0 ) ; 
+    
+    task->pid = (uint32_t)task ; 
     int error = tss_init(task , flag , entry , esp ) ; 
     if(error == -1 ){
         log_printf("task init is failed....") ; 
@@ -122,7 +124,7 @@ void task_switch_from_to(task_t* from , task_t* to )
 // 空闲进程执行的代码 
 static void idle_task_entry()
 {
-    for(; ; ) {
+    for( ;; ) {
         hlt() ; 
     } 
 }
@@ -345,4 +347,10 @@ void sys_sleep(uint32_t ms) {
     task_dispatch() ;  
 
     irq_exit_protection( state ) ; 
+}
+
+
+int sys_getpid() {
+    task_t* task = task_current() ; 
+    return task->pid ; 
 }

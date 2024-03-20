@@ -139,6 +139,7 @@ exception_handler_syscall:
 	
 	add $4 , %esp 
 
+	popf
 	pop %gs
 	pop %fs
 	pop %es

@@ -5,8 +5,12 @@
 
 int first_task_main(void)
 {
+    int pid = getpid() ; 
+
+
     for(;;)
     {       
+        print_msg("the process pid is:%d" , pid) ;  
         msleep(1000) ; 
     }   
 }
