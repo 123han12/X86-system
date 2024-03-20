@@ -3,6 +3,7 @@
 #include "common/cpu_instr.h"
 #include "cpu/irq.h"
 #include "ipc/mutex.h"
+#include "core/syscall.h"
 static segment_desc_t gdt_table[GDT_TABLE_SIZE] ; 
 
 static mutex_t mutex ; 
@@ -27,6 +28,8 @@ void segment_desc_set( uint16_t selector , uint32_t base , uint32_t limit , uint
     desc->base31_24 = (base >> 24 ) & 0xFF ; 
 }
 
+
+// 将 selector offset attr 设置到指定的调用门描述符地址desc指定的位置
 void gate_dest_set(gate_desc_t* desc , uint16_t selector , uint32_t offset , uint16_t attr )
 {
     desc->offset15_0 = offset & 0xFFFF ; 
@@ -50,6 +53,14 @@ void init_gdt(void)
         SEG_P_PRESENT | SEG_DPL0 | SEG_S_NORMAL | SEG_TYPE_DATA | SEG_TYPE_RW | SEG_D | SEG_G 
     ) ;  
     
+
+    // 在dgt表中设置调用门描述符，调用内核指定的exception_handler_syscall函数
+    gate_dest_set(
+        (gate_desc_t*)(gdt_table + (SELECTOR_SYSCALL >> 3 )) , KERNEL_SELECTOR_CS  , 
+        (uint32_t)exception_handler_syscall , 
+        GATE_P_PRESENT | GATE_DPL3 | GATE_TYPE_SYSCALL | SYSCALL_COUNT 
+    ) ; 
+
     lgdt((uint32_t)gdt_table , sizeof(gdt_table) ) ;  // 将 gdt_table 表的起始地址放入到 gdtr 寄存器中
 
 }

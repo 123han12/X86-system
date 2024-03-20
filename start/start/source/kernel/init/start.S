@@ -120,3 +120,32 @@ simple_switch:
 	pop %ebp 
 
 	ret 
+
+
+	.global exception_handler_syscall
+	.extern do_handler_syscall
+exception_handler_syscall:
+
+	pushal
+	push %ds
+	push %es
+	push %fs
+	push %gs
+	pushf 
+
+	mov %esp , %eax 
+	push %eax 
+	call do_handler_syscall 
+	
+	add $4 , %esp 
+
+	pop %gs
+	pop %fs
+	pop %es
+	pop %ds
+	popal
+
+	retf $(5 * 4)   
+
+
+# retf 表示远返回 , 为了在内核栈弹出之前在lib_syscall下的sys_call函数压入的5个参数需要将esp指针向上调整20哥个字节

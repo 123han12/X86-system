@@ -12,6 +12,7 @@
         "cpu_instr.h": "c",
         "list.h": "c",
         "irq.h": "c",
-        "log.h": "c"
+        "log.h": "c",
+        "syscall.h": "c"
     },
 }

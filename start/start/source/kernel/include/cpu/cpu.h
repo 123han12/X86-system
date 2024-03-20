@@ -21,6 +21,8 @@
 #define SEG_TYPE_TSS                (9 << 0)
 
 
+
+
 #define ERR_PAGE_P                   (1 << 0 )
 #define ERR_PAGE_W                   (1 << 1 )
 #define ERR_PAGE_US                  (1 << 2 ) 
@@ -54,6 +56,9 @@ typedef struct _gate_desc_t {
 #define GATE_DPL3               (3 << 13)
 #define SEG_CPL3                (3 << 0)
 #define SEG_CPL0                (0 << 0 )
+
+#define GATE_TYPE_SYSCALL       (0xC << 8 )
+
 
 
 #define EFLAGS_DEFAULT          (1 << 1 )
