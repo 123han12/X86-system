@@ -19,7 +19,7 @@ static void addr_alloc_init(addr_alloc_t* alloc , uint8_t* bits , uint32_t start
 }
 
 
-// 在内存管理器alloc中获取page_count 个页面，返回物理地址的指针。
+// 在内存管理器alloc中获取page_count 个页面，返回物理地址的指针 , 失败返回0
 static uint32_t addr_alloc_page(addr_alloc_t* alloc , int page_count )
 {
     uint32_t addr = 0 ; 
@@ -27,6 +27,9 @@ static uint32_t addr_alloc_page(addr_alloc_t* alloc , int page_count )
     int page_index = bitmap_alloc_nbits(&alloc->bitmap , 0 , page_count ) ; 
     if(page_index >= 0 ) { // 如果存在的话找到第一个分配的地址。
         addr = alloc->start + page_index * alloc->page_size ;  
+    }else {
+        mutex_unlock(&alloc->mutex) ; 
+        return 0 ; 
     }
     mutex_unlock(&alloc->mutex) ; 
     return addr ; 
@@ -240,7 +243,7 @@ int memory_alloc_page_for(uint32_t addr , uint32_t size , int perm )
 
 
 
-// 返回从内存管理器中申请的物理地址,因为在1~128M内存都是线性映射，所以addr是物理地址也是其对应的虚拟地址
+// 返回从内存管理器中申请的物理地址,因为在1~128M内存都是线性映射，所以addr是物理地址也是其对应的虚拟地址,失败返回0
 uint32_t memory_alloc_page() {
     uint32_t addr = addr_alloc_page(&paddr_alloc , 1 ) ;    
     return addr ; 

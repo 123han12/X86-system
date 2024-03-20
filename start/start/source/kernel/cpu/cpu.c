@@ -54,7 +54,7 @@ void init_gdt(void)
 
 }
 
-// 在gdt表中分配最小的段选择子槽给调用方，返回值是i * segment_desc_t 
+// 在gdt表中分配最小的段选择子槽给调用方，返回值是i * segment_desc_t , 分配不成功返回-1
 int gdt_alloc_desc() 
 {
     mutex_lock(&mutex) ; 

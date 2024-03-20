@@ -12,6 +12,7 @@
 static uint32_t idle_task_stack[IDLE_TASK_SIZE] ; 
 static task_manager_t task_manager;     // 任务管理器
 
+// 初始化指定task_struct 的tss段
 static int tss_init(task_t * task , int flag , uint32_t entry , uint32_t esp )
 {
     int tss_sel = gdt_alloc_desc() ; 
@@ -24,6 +25,7 @@ static int tss_init(task_t * task , int flag , uint32_t entry , uint32_t esp )
     ) ; 
 
     kernel_memset(&task->tss , 0 , sizeof(tss_t) ) ; 
+
 
 
     uint32_t kernel_stack = memory_alloc_page() ; 
@@ -79,7 +81,11 @@ tss_init_failed:
 int task_init(task_t * task , const char * name , int flag ,  uint32_t entry , uint32_t esp ) 
 {
     ASSERT(task != (task_t *) 0 ) ; 
-    tss_init(task , flag , entry , esp ) ; 
+    int error = tss_init(task , flag , entry , esp ) ; 
+    if(error == -1 ){
+        log_printf("task init is failed....") ; 
+        return  error ; 
+    }
 
     kernel_strncpy(task->name , name , TASK_NAME_SIZE) ; 
     task->state = TASK_CREATED ; 
@@ -141,9 +147,7 @@ void task_manager_init(){
     list_init(&(task_manager.sleep_list) ) ; 
     task_manager.curr_task = (task_t*)0 ;  
     task_init(&task_manager.idle_task , "idle_task" , TASK_FLAGS_SYSTEM ,
-     (uint32_t)idle_task_entry , 
-     (uint32_t)(idle_task_stack + MEM_PAGE_SIZE )
-     ); 
+     (uint32_t)idle_task_entry , 0);  // esp 等于0因为其运行在特权级为0所以无需指定特权级为3的栈
 
 }
 
@@ -175,7 +179,7 @@ void task_first_init(void)
    
     task_manager.curr_task = &(task_manager.first_task) ;  
 
-    // 将first_task进程的一级页表的地址放入到cr3寄存器中
+    // 将first_task进程的一级页表的地址放入到cr3寄存器中    
     mmu_set_page_dir(task_manager.first_task.tss.cr3) ;  
 
     memory_alloc_page_for(first_start , alloc_size , PTE_P | PTE_W | PTE_U ) ; 
