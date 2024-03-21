@@ -19,7 +19,7 @@ static void addr_alloc_init(addr_alloc_t* alloc , uint8_t* bits , uint32_t start
 }
 
 
-// 在内存管理器alloc中获取page_count 个页面，返回物理地址的指针 , 失败返回0
+// 在内存管理器alloc中获取page_count 个页面，返回物理地址的指针 , 失败返回0，并且返回的物理地址是4KB对齐的。
 static uint32_t addr_alloc_page(addr_alloc_t* alloc , int page_count )
 {
     uint32_t addr = 0 ; 
@@ -72,19 +72,23 @@ static uint32_t total_memory_size(boot_info_t* boot_info)
 // alloc 为1表示当vaddr 对应的pte表项不存在的时候就重新分配，为0则不分配
 pte_t* find_pte(pde_t* page_dir , uint32_t vaddr , int alloc) 
 {   
+    // 到最后page_table代表的是二级页表的起始地址(物理地址)
     pte_t* page_table = (pte_t*)0 ; 
 
+    // 虚拟地址vaddr 在 页目录表中对应的槽地址
     pde_t* pde = page_dir + pde_index(vaddr) ; 
 
     if(pde->present){
         page_table = (pte_t*)pde_paddr(pde) ;   
     }else {
         if(alloc == 1 ){
-            uint32_t page_paddr =  addr_alloc_page(&paddr_alloc , 1 ) ; 
+            uint32_t page_paddr =  addr_alloc_page(&paddr_alloc , 1 ) ; // 新分配的一个物理地址(也是虚拟地址),作为一个二级页表
             if(page_paddr == 0 ) return (pte_t*) 0 ; 
-            
+
+            // 将这个物理地址设置到对应的页目录表中的槽, 并且设置相应的4MB的属性
             pde->v = page_paddr | PDE_P | PDE_W | PDE_U ; 
 
+            // 将这个物理地址给page_table 作为二级页表的起始地址。
             page_table = (pte_t*)page_paddr ; 
 
             // 对这个新分配的4KB大小的页表进行一个清空。
@@ -95,7 +99,7 @@ pte_t* find_pte(pde_t* page_dir , uint32_t vaddr , int alloc)
             return (pte_t*)0 ; 
         }
     }
-
+            // 返回的是虚拟地址在二级页表中的槽地址。
     return page_table + pte_index(vaddr) ;  
 }
 
@@ -114,6 +118,8 @@ int memory_create_map(pde_t* page_dir  , uint32_t vaddr  , uint32_t paddr  , int
         // log_printf("find pte:0x%x" , pte ) ;
 
         ASSERT(pte->present == 0 ) ; 
+
+        // 设置虚拟地址在二级页表中的4KB属性信息
         pte->v = paddr | perm | PTE_P ; 
 
         vaddr += MEM_PAGE_SIZE ; 
@@ -185,6 +191,7 @@ void memory_init(boot_info_t* boot_info)
 
 }
 
+// 创建一个一级页目录表，并且操作系统部分已经做好映射了。
 uint32_t memory_create_uvm(void) 
 {
     // page_dir 是物理地址
@@ -269,3 +276,66 @@ void memory_free_page(uint32_t addr )
         pte->v = 0 ;  
     }
 } 
+
+
+// 将指定页表中的内容复制一份，注意这个页表地址是物理地址 , 这里返回的是新创建的页目录表的地址，并且已经完成了复制。
+uint32_t memory_copy_vum(uint32_t page_dir){
+    uint32_t to_page_dir = memory_create_uvm() ;
+    if(to_page_dir == 0){
+        goto copy_uvm_failed ; 
+    }
+
+    uint32_t user_pde_start = pde_index(MEMORY_TASK_BASE) ; 
+    pde_t* pde = (pde_t*)page_dir + user_pde_start ; 
+    for(int i = user_pde_start ; i < PDE_CNT ; i ++ , pde ++ ){
+        if(!pde->present ) continue ; 
+
+        // pte 指向的是每一个二级页表的起始地址
+        pte_t* pte = (pte_t*)pde_paddr(pde) ;
+        for(int j = 0 ; j < PTE_CNT ; j ++ , pte ++ ) {
+            if(!pte->present) continue ; // 二级页表中的当前槽位不存在值
+            uint32_t page = addr_alloc_page(&paddr_alloc , 1 ) ; // 分配一个物理页
+            if(page == 0 ){ // 错误处理机制
+                goto copy_uvm_failed ; 
+            }
+            
+            // 这里是按照页面进行拷贝的，所以vaddr 只需要找到对应的二级表项即可
+            uint32_t vaddr = (i << 22 ) | (j << 12) ; 
+            int err = memory_create_map((pde_t*)to_page_dir , vaddr , page , 1 , get_pte_perm(pte) ); 
+            if(err < 0 ){
+                goto copy_uvm_failed ; 
+            } 
+            kernel_memcpy((void*)page  , (void*)vaddr , MEM_PAGE_SIZE ) ; 
+        }   
+        
+    }
+    return to_page_dir ; 
+
+copy_uvm_failed: 
+    if(to_page_dir){
+        memory_destroy_uvm(to_page_dir) ; 
+    }
+    return -1 ; 
+}
+
+
+void memory_destroy_uvm(uint32_t page_dir ) {
+    uint32_t user_pde_start = pde_index(MEMORY_TASK_BASE) ; 
+    pde_t* pde = (pde_t*)page_dir + user_pde_start ; 
+
+    // 注意，释放的时候从user_pde_start这个槽开始，千万不要从第0个槽开始，因为操作系统的代码是共享的
+    for(int i = user_pde_start ; i < PDE_CNT ; i ++ , pde ++ ){
+        if(!pde->present ) continue ;
+
+        pte_t* pte = (pte_t*)pde_paddr(pde) ;
+        for(int j = 0 ; j < PTE_CNT ; j ++ , pte ++ ) {
+            if(!pte->present) continue ; // 二级页表中的当前槽位不存在值
+
+            addr_free_page(&paddr_alloc , pte_paddr(pte) , 1 ) ; 
+        }   
+
+        addr_free_page(&paddr_alloc , (uint32_t)(pde_paddr(pde)) , 1 ) ; 
+    }
+
+    addr_free_page(&paddr_alloc , page_dir , 1 );
+}

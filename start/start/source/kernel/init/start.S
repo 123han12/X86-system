@@ -148,5 +148,4 @@ exception_handler_syscall:
 
 	retf $(5 * 4)   
 
-
-# retf 表示远返回 , 为了在内核栈弹出之前在lib_syscall下的sys_call函数压入的5个参数需要将esp指针向上调整20哥个字节
+# retf 表示远返回 , 为了在内核栈弹出之前在lib_syscall下的sys_call函数压入的5个参数需要将esp指针向上调整20个字节

@@ -14,6 +14,7 @@
 #define PTE_U            (1 << 2 ) 
 #define PDE_U            (1 << 2 ) 
 
+#define PTE_CNT          1024
 
 
 typedef union _pde_t {
@@ -82,5 +83,10 @@ static inline void mmu_set_page_dir(uint32_t paddr )
 }
 
 uint32_t memory_create_uvm(void)  ; 
+
+static inline uint32_t get_pte_perm(pte_t* pte){
+    return (pte->v & 0x3FF) ;  
+}
+
 
 #endif 

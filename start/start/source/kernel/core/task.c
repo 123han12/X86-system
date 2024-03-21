@@ -7,10 +7,15 @@
 #include "cpu/irq.h"
 #include "cpu/mmu.h"
 #include "core/memory.h"
-
+#include "core/syscall.h"
 
 static uint32_t idle_task_stack[IDLE_TASK_SIZE] ; 
 static task_manager_t task_manager;     // 任务管理器
+
+// 应用进程task_struct 管理结构
+static task_t task_table[TASK_NR] ; 
+static mutex_t task_table_mutex ; 
+
 
 // 初始化指定task_struct 的tss段
 static int tss_init(task_t * task , int flag , uint32_t entry , uint32_t esp )
@@ -83,6 +88,8 @@ int task_init(task_t * task , const char * name , int flag ,  uint32_t entry , u
     ASSERT(task != (task_t *) 0 ) ; 
     
     task->pid = (uint32_t)task ; 
+    task->parent = (task_t*)0 ; 
+
     int error = tss_init(task , flag , entry , esp ) ; 
     if(error == -1 ){
         log_printf("task init is failed....") ; 
@@ -112,6 +119,23 @@ int task_init(task_t * task , const char * name , int flag ,  uint32_t entry , u
     return 0 ; 
 } 
 
+
+void task_uninit(task_t* task){
+    if(task->tss_sel ) {
+        gdt_free_sel(task->tss_sel) ; 
+    }
+
+    if(task->tss.esp0){
+        memory_free_page(task->tss.esp0 - MEM_PAGE_SIZE ) ; 
+    }
+
+    if(task->tss.cr3 ){
+        memory_destroy_uvm(task->tss.cr3) ; 
+    }
+
+    kernel_memset(task , 0 , sizeof task) ; 
+}
+
 void simple_switch(uint32_t ** from , uint32_t * to ) ; 
 
 void task_switch_from_to(task_t* from , task_t* to )
@@ -130,6 +154,11 @@ static void idle_task_entry()
 }
 
 void task_manager_init(){
+
+// 对任务表进行初始化
+    kernel_memset(task_table , 0 , sizeof (task_table) ) ; 
+    mutex_init(&task_table_mutex) ; 
+
 
     int sel = gdt_alloc_desc() ;
     segment_desc_set(sel ,  0x00000000 , 0xFFFFFFFF , SEG_P_PRESENT | SEG_DPL3 | SEG_S_NORMAL | SEG_TYPE_DATA | SEG_TYPE_RW 
@@ -354,3 +383,82 @@ int sys_getpid() {
     task_t* task = task_current() ; 
     return task->pid ; 
 }
+
+
+static task_t* alloc_task(void){
+    task_t* task = (task_t*)0 ;
+
+    mutex_lock(&task_table_mutex) ; 
+    for(int i = 0 ; i < TASK_NR ; i ++ ){
+        task_t* curr = task_table + i ; 
+        if(curr->name[0] == '\0'){
+            task = curr ; 
+            break ;  
+        }
+    }
+    mutex_unlock(&task_table_mutex) ; 
+    return task ; 
+}
+
+static void free_task(task_t* task){
+    mutex_lock(&task_table_mutex) ; 
+    task->name[0] = '\0' ; 
+    mutex_unlock(&task_table_mutex) ; 
+}
+
+
+
+// 创建子进程的一个流程
+int sys_fork(){
+    
+    task_t* parent_task = task_current() ; 
+
+    task_t* child_task = alloc_task() ; 
+    if(child_task == (task_t*)0 ) {
+        goto fork_failed ; 
+    }
+
+    // 获取在内核栈中压入的一些参数的设置。
+    sys_call_frame_t* frame =(sys_call_frame_t*) ( parent_task->tss.esp0 - sizeof(sys_call_frame_t) )  ; 
+
+    // 注意，因为在子进程中重新设置了页表，这里的 frame->esp + sizeof(uint32_t) * SYSCALL_COUNT 指的就是对应页表中的栈了，两者是不同的
+    int err = task_init(child_task , parent_task->name , 0 , frame->eip , frame->esp + sizeof(uint32_t) * SYSCALL_COUNT ) ;
+    if(err < 0 ) {
+        goto fork_failed ; 
+    } 
+
+    // 子进程的tss的设置,当子进程获取到运行资格之后，会将tss中的内容恢复到各个寄存器中。
+    tss_t* tss = &child_task->tss ; 
+    tss->eax =  0 ;   // 当子进程在恢复的时候，这个就是子进程的返回值 
+    tss->ebx = frame->ebx ; 
+    tss->edx = frame->edx ; 
+    tss->ecx = frame->ecx ; 
+    tss->esi = frame->esi ; 
+    tss->edi = frame->edi ; 
+    tss->ebp = frame->ebp ; 
+
+    tss->cs = frame->cs ; 
+    tss->ds = frame->ds ;
+    tss->es = frame->es ; 
+    tss->fs = frame->fs ;   
+    tss->gs = frame->gs ; 
+    tss->eflags = frame->eflags ; 
+
+
+    child_task->parent = parent_task ; 
+
+    // 子进程和父进程共用同一个页表
+
+    if((tss->cr3 = memory_copy_vum(parent_task->tss.cr3) ) < 0 ){
+        goto fork_failed;  
+    }
+    return  child_task->pid ;  
+fork_failed:
+    if(child_task){
+        task_uninit(child_task) ; 
+        free_task(child_task) ; 
+    }
+
+    return -1 ; 
+}
+

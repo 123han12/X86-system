@@ -18,7 +18,7 @@ static inline int sys_call(syscall_args_t* args){
     
     uint32_t addr[] = { 0  , SELECTOR_SYSCALL | 0 } ; 
     int ret ; 
-    __asm__ __volatile__ (
+    __asm__ __volatile__ (   // 这里使用汇编进行手动压栈的话不用进行手动出栈的吗？
         "push %[arg3]\n\t"
         "push %[arg2]\n\t"
         "push %[arg1]\n\t"
@@ -64,6 +64,14 @@ static inline void print_msg(const char* fmt , int arg){
     args.arg1 = arg ; 
 
     sys_call(&args) ; 
+}
+
+static inline int fork(){
+    syscall_args_t args ; 
+    args.id = SYS_fork ; 
+
+    
+    return sys_call(&args) ; 
 
 }
 

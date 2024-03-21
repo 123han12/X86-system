@@ -7,6 +7,8 @@
 #define TASK_NAME_SIZE    32 
 #define TASK_TIME_SLICE_DEFAULT  10 
 
+
+
 #define TASK_FLAGS_SYSTEM        (1 << 0)
 
 
@@ -21,6 +23,8 @@ typedef struct _task_t {
     }state ; 
 
     int pid ; 
+
+    struct _task_t* parent ;  // 记录当前进程的父进程。
     int sleep_ticks ; 
     int time_ticks ; 
     int slice_ticks ; 
@@ -53,6 +57,8 @@ typedef struct _task_manager_t {
 
     int app_code_sel ; 
     int app_data_sel ; 
+
+
 
 
 
@@ -91,6 +97,8 @@ void sys_sleep(uint32_t ms) ;
 
 
 int sys_getpid()  ; 
+
+int sys_fork() ; 
 
 
 
