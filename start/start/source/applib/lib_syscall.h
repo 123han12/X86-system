@@ -25,7 +25,7 @@ static inline int sys_call(syscall_args_t* args){
         "push %[arg0]\n\t"
         "push %[id]\n\t"
 
-        "lcalll *(%[a])\n\t"
+        "lcalll *(%[a])\n\t" 
         : "=a"(ret) 
         :[a]"r"(addr) , [id]"r"(args->id) , [arg0]"r"(args->arg0) , 
             [arg1]"r"(args->arg1) , [arg2]"r"(args->arg2) , [arg3]"r"(args->arg3) 
@@ -73,6 +73,17 @@ static inline int fork(){
     
     return sys_call(&args) ; 
 
+}
+
+// execve 加载应用程序到进程并切换到这个应用进程
+static inline int execve(const char* name , char* const * argv , char* const* env ){
+    syscall_args_t args ; 
+    args.id = SYS_execve ; 
+    args.arg0 = (int)name ; 
+    args.arg1 = (int)argv ;
+    args.arg2 = (int)env ; 
+
+    return sys_call(&args) ; 
 }
 
 

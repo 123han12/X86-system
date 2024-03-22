@@ -16,6 +16,7 @@ static const  sys_handler_t sys_table[] = {
     [SYS_getpid] = (sys_handler_t)sys_getpid , 
     [SYS_fork] = (sys_handler_t)sys_fork , 
     [SYS_printmsg] = (sys_handler_t)sys_printmsg , 
+    [SYS_execve] = (sys_handler_t)sys_execve , 
 } ; 
 
 void do_handler_syscall(sys_call_frame_t* frame ){
@@ -28,7 +29,6 @@ void do_handler_syscall(sys_call_frame_t* frame ){
             return ; 
         }
     }
-
     task_t* task = task_current() ; 
     log_printf("task: %s , Unkown syscall: %d" , task->name , frame->func_id ) ; 
     frame->eax = -1 ; 

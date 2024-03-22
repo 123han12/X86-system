@@ -11,7 +11,11 @@ int first_task_main(void)
     if (pid < 0) {
         print_msg("create child proc failed. errorcode:%d\n" , pid ) ; 
     } else if (pid == 0) {
-        print_msg("child: %d\n", count);
+        
+        // 子进程将执行的地方
+        char * argv[] = {"arg0", "arg1", "arg2", "arg3"};
+        execve("/shell.elf", argv, (char **)0);
+
     } else {
         print_msg("child task id=%d\n", pid);
         print_msg("parent: %d\n", count);

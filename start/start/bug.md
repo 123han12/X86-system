@@ -50,3 +50,10 @@ void do_handler_page_fault(exception_frame_t * frame) {
 
 解决方案: 让子进程的虚拟空间中的内容和父进程的相同，但物理空间中的代码重新拷贝一份放到合适的地方
 
+
+
+
+(3-22):**在实现execve函数调用后执行指定的shell.elf文件失败，qemu一直重启，无法正常调试**
+
+
+

@@ -77,6 +77,7 @@ static inline uint32_t pte_paddr(pte_t* pte )
 }
 
 
+// 将页目录表地址写入cr3寄存器中，表示当前使用的页目录表
 static inline void mmu_set_page_dir(uint32_t paddr ) 
 {
     write_cr3(paddr) ; 

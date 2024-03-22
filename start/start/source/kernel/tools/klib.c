@@ -47,7 +47,7 @@ uint32_t kernel_strlen(const char *str)
         return -1;
     }
     uint32_t count = 0;
-    while (*str++)
+    while (*str++ != '\0' ) 
         count++;
     return count;
 }
@@ -187,4 +187,23 @@ void kernel_vsprintf(char *buffer, const char *fmt, va_list args)
             break;
         }
     }
+}
+
+int strings_count(char** start ){
+    int count = 0 ; 
+    if(start ) {
+        while(*start++) {
+            count ++ ; 
+        }
+    }
+    return count ; 
+}
+
+
+
+char* get_file_name( char* name ) {
+    char * s = name ; 
+    while(*s != '\0' ) s ++ ; 
+    while( (*s != '/') && (*s != '\\' ) && (s >= name ) ) s-- ; 
+    return s + 1 ; 
 }

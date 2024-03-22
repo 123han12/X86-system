@@ -69,7 +69,7 @@ static uint32_t total_memory_size(boot_info_t* boot_info)
     return mem_size ; 
 }
 
-// alloc 为1表示当vaddr 对应的pte表项不存在的时候就重新分配，为0则不分配
+// alloc 为1表示当vaddr 对应的pte表项不存在的时候就重新分配，为0则不分配 , 返回的是虚拟地址在二级页表中的槽地址
 pte_t* find_pte(pde_t* page_dir , uint32_t vaddr , int alloc) 
 {   
     // 到最后page_table代表的是二级页表的起始地址(物理地址)
@@ -215,6 +215,7 @@ uint32_t memory_create_uvm(void)
 }
 
 
+// 在指定的一级页表page_dir中，给指定的vaddr虚拟地址开始分配up2(size)个物理页，并且属性为 perm ,失败返回-1
 int memory_alloc_for_page_dir(uint32_t page_dir , uint32_t vaddr , uint32_t size , uint32_t perm) 
 {  
     uint32_t curr_vaddr = vaddr ; 
@@ -230,7 +231,7 @@ int memory_alloc_for_page_dir(uint32_t page_dir , uint32_t vaddr , uint32_t size
         }
 
         int err = memory_create_map((pde_t*)page_dir , curr_vaddr , paddr , 1 , perm ) ; 
-        if(err == -1 ) 
+        if(err < 0 ) 
         {
             log_printf("create memory map is failed.....") ; 
             addr_free_page(&paddr_alloc , vaddr , i + 1 ) ; 
@@ -319,6 +320,7 @@ copy_uvm_failed:
 }
 
 
+// 释放给定的页目录表给定的内存。
 void memory_destroy_uvm(uint32_t page_dir ) {
     uint32_t user_pde_start = pde_index(MEMORY_TASK_BASE) ; 
     pde_t* pde = (pde_t*)page_dir + user_pde_start ; 
@@ -338,4 +340,49 @@ void memory_destroy_uvm(uint32_t page_dir ) {
     }
 
     addr_free_page(&paddr_alloc , page_dir , 1 );
+}
+
+
+/// @brief 返回在指定的page_dir页表中 虚拟地址vaddr对应的物理地址
+/// @param  page_dir 
+/// @param  vaddr 
+/// @return  
+uint32_t  memory_get_paddr( uint32_t  page_dir , uint32_t  vaddr ) {
+
+    pte_t* pte = find_pte((pde_t*)page_dir , vaddr , 0 ) ; 
+
+    if(pte == (pte_t*)0 ){
+        return 0 ; 
+    }
+
+    return pte_paddr(pte) + (vaddr & (MEM_PAGE_SIZE - 1) ) ;  
+}
+
+
+// 从当前正在使用的页表的from虚拟地址开始，拷贝size个字节到page_dir的to 这个虚拟地址
+// to 这个地址可能不是4KB对齐的，需要注意一下
+int memory_copy_uvm_data(uint32_t to , uint32_t page_dir , uint32_t from , uint32_t size ){
+    while(size > 0 ){
+        uint32_t to_paddr = memory_get_paddr(page_dir , to) ; 
+        if(to_paddr == 0 ) {
+            return -1 ; 
+        }
+        // 获取to的数据在当前页的偏移量
+        uint32_t offset_in_page = to_paddr & (MEM_PAGE_SIZE - 1 ) ; 
+        
+        // curr_size 表示的是to在当前页应该拷贝的数据的字节数
+        uint32_t curr_size = MEM_PAGE_SIZE - offset_in_page ; 
+
+        // 获取到真实拷贝的字节数
+        if(curr_size > size ){
+            curr_size = size ; 
+        } 
+        kernel_memcpy((void*)to_paddr , (void*)from , curr_size) ; 
+        
+        size -= curr_size ; 
+        to += curr_size ; 
+        from += curr_size ; 
+    }
+
+    return 0 ; 
 }

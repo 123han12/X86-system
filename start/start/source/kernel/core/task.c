@@ -8,6 +8,8 @@
 #include "cpu/mmu.h"
 #include "core/memory.h"
 #include "core/syscall.h"
+#include "fs/fs.h"
+#include "common/elf.h"
 
 static uint32_t idle_task_stack[IDLE_TASK_SIZE] ; 
 static task_manager_t task_manager;     // 任务管理器
@@ -409,6 +411,7 @@ static void free_task(task_t* task){
 
 
 // 创建子进程的一个流程
+
 int sys_fork(){
     
     task_t* parent_task = task_current() ; 
@@ -462,3 +465,221 @@ fork_failed:
     return -1 ; 
 }
 
+/// @brief 从指定文件，根据指定的段头结构elf_phdr 结构，读取段到 page_dir指定的页表之中
+/// @param file 
+/// @param elf_phdr 
+/// @param page_dir 
+/// @return 
+static int load_phdr(int file , Elf32_Phdr* phdr , uint32_t page_dir ) {
+    
+    ASSERT((phdr->p_vaddr & (MEM_PAGE_SIZE - 1)) == 0); 
+    // gcc在编译链接elf文件的时候，会自动将p_vaddr调整到4kB对齐
+    int err = memory_alloc_for_page_dir(page_dir , phdr->p_vaddr , phdr->p_memsz , PTE_P | PTE_U | PTE_W ) ;
+    if(err < 0 ){
+        log_printf("no memory") ; 
+        return -1 ;
+    }
+    if((sys_lseek(file , phdr->p_offset , 0 ) ) < 0 ) {
+        log_printf("read file failed..") ; 
+        return -1 ; 
+    }
+
+/*
+    // 为段分配所有的内存空间.后续操作如果失败，将在上层释放
+    // 简单起见，设置成可写模式，也许可考虑根据phdr->flags设置成只读
+    // 因为没有找到该值的详细定义，所以没有加上
+
+*/
+    uint32_t vaddr = phdr->p_vaddr ; 
+    uint32_t size = phdr->p_filesz ; 
+
+    // 注意, 这个vaddr 应该是针对page_dir 这个页表，但现在这个页表还未启用，所以不能直接使用memset
+    while(size > 0 ){
+        int curr_size = (size > MEM_PAGE_SIZE ) ? MEM_PAGE_SIZE : size ; 
+        
+        // 得到vaddr 在page_dir页表中对应的物理地址
+        uint32_t paddr = memory_get_paddr(page_dir , vaddr ) ; 
+
+        // sys_read底层调用的是memory_copy , 因为在建立页表的时候，物理地址范围内的所有物理地址都和相应的虚拟地址是直接映射的，所以
+        // 这个paddr , 可以在当前进程的当前页表中使用，作为新页表page_dir的物理地址的直接使用。而这个物理地址同样关联着page_dir的某个
+        // 虚拟地址。
+        if(sys_read(file , (char*)paddr , curr_size ) < curr_size ) {
+            log_printf("read file failed...") ; 
+            return -1 ;
+        }
+        
+        size -= curr_size ; 
+        vaddr += curr_size ; 
+    }
+
+    return 0 ; 
+}
+
+
+
+
+// 把name指定的elf文件加载到page_dir指定的虚拟地址空间中，
+static uint32_t load_elf_file(task_t* task , const char* name , uint32_t page_dir) {
+    Elf32_Ehdr elf_hdr ; 
+    Elf32_Phdr elf_phdr ; 
+
+    int file = sys_open(name , 0) ; // 这个函数实现了将elf文件加载到内存的指定位置，后序的读写都是从内存中读的，暂时是这样。
+    if(file < 0 ){
+        log_printf("open file is failed. %s" , name ) ; 
+        goto load_failed ; 
+    } 
+
+    int cnt = sys_read(file , (char*)&elf_hdr , sizeof(Elf32_Ehdr) ) ; 
+    if(cnt < sizeof(Elf32_Ehdr) ) { 
+        log_printf("elf hdr too small. size=%d" , cnt ) ; 
+        goto load_failed ; 
+    }
+
+    // 判断读出的文件是否正确
+    if((elf_hdr.e_ident[0] != 0x7F) || (elf_hdr.e_ident[1] != 'E') || 
+        (elf_hdr.e_ident[2] != 'L') || (elf_hdr.e_ident[3] != 'F')
+    ) {
+        log_printf("check elf ident failed.") ;
+        goto load_failed ; 
+    }
+     
+    // 必须是可执行文件和针对386处理器的类型，且有入口
+    if ((elf_hdr.e_type != ET_EXEC) || (elf_hdr.e_machine != ET_386) || (elf_hdr.e_entry == 0)) {
+        log_printf("check elf type or entry failed.");
+        goto load_failed;
+    }
+
+
+    // 必须有程序头部
+    if ((elf_hdr.e_phentsize == 0) || (elf_hdr.e_phoff == 0)) {
+        log_printf("none programe header");
+        goto load_failed;
+    }
+
+
+    uint32_t e_phoff = elf_hdr.e_phoff ; 
+    for(int i = 0 ; i < elf_hdr.e_phnum ; i ++ , e_phoff += elf_hdr.e_phentsize ){
+        if( sys_lseek(file , e_phoff , 0 ) < 0 ) {
+            goto load_failed ; 
+        }  
+        cnt = sys_read(file , (char*)&elf_phdr , sizeof(Elf32_Phdr) ) ; 
+        if(cnt < sizeof(Elf32_Phdr) ){
+            log_printf("read file faild....") ; 
+            goto load_failed ; 
+        }
+
+        // 对 programme headr 结构进行检查
+        if((elf_phdr.p_type != PT_LOAD ) || (elf_phdr.p_vaddr < MEMORY_TASK_BASE ) ) {
+            continue ; 
+        }
+
+        // 加载当前程序头。
+        int err = load_phdr(file , &elf_phdr , page_dir ) ;  
+        if(err < 0 ) {
+            log_printf("load program faild...") ; 
+            goto load_failed ; 
+        }
+    }
+
+    sys_close(file) ; 
+    return elf_hdr.e_entry ;  // 返回整个elf文件的入口地址
+
+load_failed:
+    if(file){
+        sys_close(file) ;
+    }
+
+
+    return 0 ; 
+}
+
+
+// 将 argv字符串数组中的argc个字符串一一拷贝到page_dir页表中对应的虚拟地址to开始的地方
+int copy_args(char* to , uint32_t page_dir , int argc , char** argv ) {
+    task_args_t task_args ; 
+    task_args.argc = argc ; 
+    task_args.argv = (char**)to + sizeof(task_args_t) ; 
+    task_args.ret_addr = 0 ; 
+    
+
+    // 获取字符串应该拷贝到的起始地址
+    char* dest_arg = to + sizeof(task_args_t) + sizeof(char*) * argc ; 
+    char** dest_arg_tb = (char**)memory_get_paddr(page_dir , (uint32_t)(to + sizeof(task_args_t) ) ) ; 
+    // 拷贝字符串
+    for(int i = 0 ; i < argc ; i ++ ){
+        char* from = argv[i] ; 
+        int len = kernel_strlen(from) + 1 ; 
+        int err = memory_copy_uvm_data((uint32_t)dest_arg , page_dir , (uint32_t)from , len ) ;  
+        ASSERT(err >= 0 ) ; 
+
+        dest_arg_tb[i] = dest_arg ;  // 注意 dest_arg_tb是物理地址，这里可以直接使用的！！ 
+
+        dest_arg += len ; 
+    }
+    int err = memory_copy_uvm_data((uint32_t)to , page_dir , (uint32_t)&task_args , sizeof(task_args_t) );
+
+    return err ; 
+}
+
+
+int sys_execve(char* name , char ** argv , char **env ) {
+    task_t* task = task_current() ; 
+
+    kernel_memcpy(task->name , get_file_name(name) , TASK_NAME_SIZE) ; 
+
+    uint32_t old_page_dir = task->tss.cr3 ; 
+    uint32_t new_page_dir = memory_create_uvm() ; 
+    if(new_page_dir == 0 ) {
+        goto exec_failed ; 
+    }
+
+    uint32_t entry = load_elf_file(task , name , new_page_dir ) ; // 加载elf文件并返回入口地址
+    if(entry == 0 ){
+        goto exec_failed ; 
+    }
+
+    // 新进程的栈分配空间与first_task 可能不同，所以也需要重新建立
+    uint32_t stack_top =  MEM_TASK_STACK_TOP - MEM_TASK_ARG_SIZE ;  
+    int err = memory_alloc_for_page_dir(
+        new_page_dir , 
+        MEM_TASK_STACK_TOP - MEM_TASK_STACK_SIZE , 
+        MEM_TASK_STACK_SIZE , 
+        PTE_P | PTE_U | PTE_W 
+        ) ; 
+    if(err < 0) {
+        goto exec_failed ; 
+    }
+    int argc = strings_count(argv) ; 
+
+    err = copy_args((char*)stack_top  , new_page_dir , argc , argv ) ;   
+    if(err < 0 ){
+        goto exec_failed ; 
+    }
+
+    sys_call_frame_t * frame = (sys_call_frame_t*) (task->tss.esp0 - sizeof(sys_call_frame_t)) ; 
+
+    frame->eip = entry ; 
+    frame->eax = frame->ebx = frame->ecx = frame->edx = 0 ; 
+    frame->esi = frame->edi = frame->ebp = 0 ; 
+    frame->eflags = EFLAGS_IF | EFLAGS_DEFAULT ; 
+    // 注意 cs 和 ss 段寄存器不需要修改，所有的应用进程使用的都是task_manager 中的 app_code_sel 和 app_data_sel 
+    frame->esp = stack_top - sizeof(uint32_t) * SYSCALL_COUNT ; 
+
+    // 更新当前进程的页表
+    task->tss.cr3 = new_page_dir ; 
+    mmu_set_page_dir(new_page_dir) ; 
+
+    memory_destroy_uvm(old_page_dir) ; 
+
+
+    return 0 ; 
+
+exec_failed:
+    if(new_page_dir != 0 ){
+        task->tss.cr3 = old_page_dir ; 
+        memory_destroy_uvm(old_page_dir) ; 
+        memory_destroy_uvm(new_page_dir) ; 
+    }
+
+    return -1 ; 
+}

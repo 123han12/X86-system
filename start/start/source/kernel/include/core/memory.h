@@ -11,7 +11,9 @@
 #define MEMORY_TASK_BASE  0x80000000
 #define MEM_EXT_END       (128*1024*1024) 
 
-
+#define MEM_TASK_STACK_TOP   0xE0000000 
+#define MEM_TASK_STACK_SIZE  (MEM_PAGE_SIZE * 500) 
+#define MEM_TASK_ARG_SIZE    (MEM_PAGE_SIZE * 4) 
 
 
 typedef  struct  _addr_alloc_t {
@@ -47,6 +49,7 @@ uint32_t memory_create_uvm(void) ;
 // 给当前进程的一级页表addr虚拟地址开始的size个页面分配物理页面，每页的属性都是perm
 int memory_alloc_page_for(uint32_t addr , uint32_t size , int perm ) ; 
 
+int memory_alloc_for_page_dir(uint32_t page_dir , uint32_t vaddr , uint32_t size , uint32_t perm) ; 
 
 uint32_t memory_alloc_page(void) ; 
 void memory_free_page(uint32_t addr ) ; 
@@ -57,6 +60,10 @@ uint32_t memory_copy_vum(uint32_t page_dir) ;
 
 
 void memory_destroy_uvm(uint32_t page_dir ) ; 
+
+uint32_t  memory_get_paddr(uint32_t page_dir , uint32_t vaddr ) ;
+
+int memory_copy_uvm_data(uint32_t to , uint32_t page_dir , uint32_t from , uint32_t size ) ; 
 
 
 #endif 

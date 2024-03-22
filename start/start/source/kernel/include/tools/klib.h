@@ -29,4 +29,8 @@ void kernel_vsprintf(char * buffer, const char * fmt, va_list args);
 void kernel_itoa(char * buf, int num, int base) ; 
 void kernel_sprintf(char * buffer, const char * fmt, ...) ; 
 
+int strings_count(char** start ) ;
+char* get_file_name(char* name ) ; 
+
+
 #endif 

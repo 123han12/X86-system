@@ -51,6 +51,10 @@ typedef struct
 #define PT_SHLIB	5		 /* Reserved */
 #define PT_PHDR		6		 /* Entry for header table itself */
 
+
+#define ET_EXEC         2   // 可执行文件
+#define ET_386          3   // 80386处理器
+
 #pragma pack() // 恢复默认值
 
 #endif 
