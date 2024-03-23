@@ -17,6 +17,7 @@ static const  sys_handler_t sys_table[] = {
     [SYS_fork] = (sys_handler_t)sys_fork , 
     [SYS_printmsg] = (sys_handler_t)sys_printmsg , 
     [SYS_execve] = (sys_handler_t)sys_execve , 
+    [SYS_yield] = (sys_handler_t)sys_sched_yield , 
 } ; 
 
 void do_handler_syscall(sys_call_frame_t* frame ){

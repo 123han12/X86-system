@@ -112,14 +112,21 @@ int task_init(task_t * task , const char * name , int flag ,  uint32_t entry , u
     // 进行临界区保护
     irq_state_t  state = irq_enter_protection() ; 
     
-    task_set_ready(task) ;  
-    list_insert_last(&task_manager.task_list , &task->all_node) ;   
 
+    list_insert_last(&task_manager.task_list , &task->all_node) ;   
     irq_exit_protection(state) ; 
 
 
     return 0 ; 
 } 
+
+// 将已经初始化好的task结构加入到task_manager管理器中
+void task_start (task_t* task) {
+    irq_state_t state = irq_enter_protection() ; 
+    task_set_ready(task) ; 
+
+    irq_exit_protection(state) ; 
+}
 
 
 void task_uninit(task_t* task){
@@ -180,8 +187,9 @@ void task_manager_init(){
     list_init(&(task_manager.sleep_list) ) ; 
     task_manager.curr_task = (task_t*)0 ;  
     task_init(&task_manager.idle_task , "idle_task" , TASK_FLAGS_SYSTEM ,
-     (uint32_t)idle_task_entry , 0);  // esp 等于0因为其运行在特权级为0所以无需指定特权级为3的栈
-
+    (uint32_t)idle_task_entry , 0);  // esp 等于0因为其运行在特权级为0所以无需指定特权级为3的栈
+    
+    task_start(&task_manager.idle_task ) ;  
 }
 
 
@@ -218,8 +226,10 @@ void task_first_init(void)
     memory_alloc_page_for(first_start , alloc_size , PTE_P | PTE_W | PTE_U ) ; 
     kernel_memcpy((void*)first_start , (void*)s_first_task , copy_size ) ;   
 
-
     write_tr(task_manager.first_task.tss_sel) ; // 将其选择子放入到tr 寄存器中
+
+    // 将初始化好的任务放到task_manager中
+    task_start(&(task_manager.first_task) ) ; 
 }
 
 task_t* task_first_task(void)  
@@ -455,6 +465,7 @@ int sys_fork(){
     if((tss->cr3 = memory_copy_vum(parent_task->tss.cr3) ) < 0 ){
         goto fork_failed;  
     }
+    task_start(child_task ) ; 
     return  child_task->pid ;  
 fork_failed:
     if(child_task){

@@ -7,10 +7,7 @@
 #define TASK_NAME_SIZE    32 
 #define TASK_TIME_SLICE_DEFAULT  10 
 
-
-
 #define TASK_FLAGS_SYSTEM        (1 << 0)
-
 
 typedef struct _task_t {
 

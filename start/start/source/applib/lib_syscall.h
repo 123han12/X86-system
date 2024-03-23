@@ -82,9 +82,19 @@ static inline int execve(const char* name , char* const * argv , char* const* en
     args.arg0 = (int)name ; 
     args.arg1 = (int)argv ;
     args.arg2 = (int)env ; 
+    return sys_call(&args) ;
 
-    return sys_call(&args) ; 
 }
+
+static inline int yield(void){
+    
+    syscall_args_t args ; 
+    args.id = SYS_yield ; 
+    
+    return sys_call(&args) ; 
+
+}
+
 
 
 #endif 
