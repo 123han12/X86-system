@@ -97,10 +97,14 @@ int task_init(task_t * task , const char * name , int flag ,  uint32_t entry , u
         log_printf("task init is failed....") ; 
         return  error ; 
     }
-
+ 
     kernel_strncpy(task->name , name , TASK_NAME_SIZE) ; 
     task->state = TASK_CREATED ; 
     task->sleep_ticks = 0 ; 
+
+    task->heap_start = 0 ; 
+    task->heap_end = 0 ; 
+
     task->time_ticks = TASK_TIME_SLICE_DEFAULT ; 
     task->slice_ticks = task->time_ticks ; 
 
@@ -217,6 +221,11 @@ void task_first_init(void)
     uint32_t first_start = (uint32_t) first_task_entry ;  
 
     task_init( &(task_manager.first_task) , "first_task"  , 0 , first_start , first_start + alloc_size ) ; 
+    
+    // 初始化堆结构
+    task_manager.first_task.heap_start = (uint32_t)e_first_task ; 
+    task_manager.first_task.heap_end = (uint32_t)e_first_task ; 
+
    
     task_manager.curr_task = &(task_manager.first_task) ;  
 
@@ -590,6 +599,9 @@ static uint32_t load_elf_file(task_t* task , const char* name , uint32_t page_di
             log_printf("load program faild...") ; 
             goto load_failed ; 
         }
+
+        task->heap_start = elf_phdr.p_vaddr + elf_phdr.p_memsz ; 
+        task->heap_end = elf_phdr.p_vaddr + elf_phdr.p_memsz ; 
     }
 
     sys_close(file) ; 

@@ -3,7 +3,7 @@
 #include "common/cpu_instr.h"
 #include "common/boot_info.h"
 #include "tools/klib.h"
-
+#include "tools/log.h" 
 #define TEMP_FILE_ID  100
 
 static uint8_t TEMP_ADDR[100*1024] ; 
@@ -53,12 +53,15 @@ int sys_read(int file , char* ptr , int len ){
         kernel_memcpy((void*)ptr , (void*)temp_pos , len ) ; 
         temp_pos += len ; 
         return len ; 
+    } else if(file == 0 ) {
+        
     }
     return -1 ; 
 }
 int sys_write(int file , char* ptr , int len) {
-    // 暂时不用，所以不写
-    return -1 ; 
+    ptr[len] = '\0' ;  // 保险起见，将这个信息加上。
+    log_printf("%s" , ptr ) ; 
+    return -1; 
 }
 int sys_lseek(int file , int ptr , int dir ) {
     if(file == TEMP_FILE_ID ){
@@ -70,4 +73,14 @@ int sys_lseek(int file , int ptr , int dir ) {
 
 int sys_close(int file) {
     return 0 ; 
+}
+
+
+
+
+int sys_isatty(int file){
+    return -1 ; 
+}
+int sys_fstat(int file , struct stat* st ) {
+    return -1 ;
 }

@@ -10,7 +10,6 @@
 #define TASK_FLAGS_SYSTEM        (1 << 0)
 
 typedef struct _task_t {
-
     enum {
         TASK_CREATED , 
         TASK_RUNNING , 
@@ -18,10 +17,12 @@ typedef struct _task_t {
         TASK_READY ,
         TASK_WAITTING ,  
     }state ; 
-
     int pid ; 
-
     struct _task_t* parent ;  // 记录当前进程的父进程。
+
+    uint32_t heap_start ; 
+    uint32_t heap_end ; 
+
     int sleep_ticks ; 
     int time_ticks ; 
     int slice_ticks ; 
@@ -36,6 +37,8 @@ typedef struct _task_t {
    
     tss_t tss ; 
     int tss_sel ; 
+
+
 
 } task_t ; 
 

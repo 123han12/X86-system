@@ -98,39 +98,48 @@ void kernel_sprintf(char * buffer, const char * fmt, ...) {
 
 void kernel_itoa(char *buf, int num, int base) // 不处理16进制的负数的情况。
 {
-    static const char *map = "0123456789ABCDEF" ; 
-    if(num == 0 ) 
-    {
-        *buf++ = '0' ; 
-        *buf = '\0' ; 
-        return ; 
-    }
- 
+        // 转换字符索引[-15, -14, ...-1, 0, 1, ...., 14, 15]
+    static const char * num2ch = {"FEDCBA9876543210123456789ABCDEF"};
+    char * p = buf;
+    int old_num = num;
 
     // 仅支持部分进制
     if ((base != 2) && (base != 8) && (base != 10) && (base != 16)) {
-        *buf = '\0' ; 
-        return ;
+        *p = '\0';
+        return;
     }
 
-    if (num < 0) *buf++ = '-';
-    num = num >= 0 ? num : -num ; 
-    char *start = buf ; 
-    while (num)
-    {
-        int mod = num % base ; 
-        *start++ = map[mod];
-        num /= base ; 
+    // 只支持十进制负数
+    int signed_num = 0;
+    if ((num < 0) && (base == 10)) {
+        *p++ = '-';
+        signed_num = 1;
     }
-    char *left = buf , *right = start - 1;
-    while (left <  right)
-    {
-        char c = *left;
-        *left = *right;
-        *right = c;
-        left++, right--;
+
+    if (signed_num) {
+        do {
+            char ch = num2ch[num % base + 15];
+            *p++ = ch;
+            num /= base;
+        } while (num);
+    } else {
+        uint32_t u_num = (uint32_t)num;
+        do {
+            char ch = num2ch[u_num % base + 15];
+            *p++ = ch;
+            u_num /= base;
+        } while (u_num);
     }
-    *start = '\0' ; 
+    *p-- = '\0';
+
+    // 将转换结果逆序，生成最终的结果
+    char * start = (!signed_num) ? buf : buf + 1;
+    while (start < p) {
+        char ch = *start;
+        *start = *p;
+        *p-- = ch;
+        start++;
+    }
 }
 
 void kernel_vsprintf(char *buffer, const char *fmt, va_list args)

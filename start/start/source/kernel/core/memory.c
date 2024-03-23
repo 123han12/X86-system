@@ -243,6 +243,8 @@ int memory_alloc_for_page_dir(uint32_t page_dir , uint32_t vaddr , uint32_t size
     return 0 ; 
 }
 
+// 在当前进程的页表机制中，给指定的虚拟首地址addr开始分配up2(size) / MEM_PAGE_SIZE 个物理页面，每一个页面的属性都是perm
+// 并且addr 和size 可以都不是页对齐的，addr会进行一个向下页对齐，size会进行一个向上页对齐。
 int memory_alloc_page_for(uint32_t addr , uint32_t size , int perm ) 
 {
     // 给指定页表的指定的虚拟地址分配指定的内存页的个数
@@ -385,4 +387,49 @@ int memory_copy_uvm_data(uint32_t to , uint32_t page_dir , uint32_t from , uint3
     }
 
     return 0 ; 
+}
+
+
+// 系统最终会调用到这个函数，来从堆空间中申请指定大小的内存，返回申请的内存的起始地址
+char* sys_sbrk(int incr) {
+    int bytes_count = incr ; 
+    task_t* task = task_current() ; 
+    char* pre_heap_end = (char*)task->heap_end ; 
+
+    ASSERT(incr >= 0 ) ; 
+
+    if(incr == 0 ) {
+        log_printf("sbrk(0): end=0x%x" , pre_heap_end ); 
+        return pre_heap_end ; 
+    }    
+
+    uint32_t start = task->heap_end  ; 
+
+    uint32_t end = start + incr ; 
+
+    int start_offset = start & (MEM_PAGE_SIZE - 1 ) ;  // 得到start 在一页中的偏移量
+    if(start_offset) {
+        if(start_offset + incr <= MEM_PAGE_SIZE ) {
+            task->heap_end = end ; 
+            return pre_heap_end ; 
+        } else {
+            uint32_t curr_size = MEM_PAGE_SIZE - start_offset ; 
+            start += curr_size ; 
+            incr -= curr_size ; 
+        }
+    }
+
+    if(incr) {
+        uint32_t curr_size = end - start ; 
+        int err = memory_alloc_page_for(start , curr_size , PTE_P | PTE_U  | PTE_W ) ; 
+        if(err < 0) {
+            log_printf("sbrk: alloc memory failed...") ; 
+            return (char*)-1 ;
+        }
+    }
+
+    log_printf("sbrk(%d) , end = 0x%x" , bytes_count , end ) ; 
+    task->heap_end = end ; 
+
+    return (char*)pre_heap_end ;  
 }
