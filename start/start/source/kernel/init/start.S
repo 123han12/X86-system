@@ -126,12 +126,20 @@ simple_switch:
 	.extern do_handler_syscall
 exception_handler_syscall:
 
-	pushal
+	pusha
 	push %ds
 	push %es
 	push %fs
 	push %gs
 	pushf 
+
+
+	// 使用内核段寄存器，避免使用应用层的
+	mov $(KERNEL_SELECTOR_DS), %eax
+	mov %eax, %ds
+	mov %eax, %es
+	mov %eax, %fs
+	mov %eax, %gs
 
 	mov %esp , %eax 
 	push %eax 
@@ -144,7 +152,7 @@ exception_handler_syscall:
 	pop %fs
 	pop %es
 	pop %ds
-	popal
+	popa
 
 	retf $(5 * 4)   
 

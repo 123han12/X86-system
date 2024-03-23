@@ -598,7 +598,7 @@ load_failed:
 int copy_args(char* to , uint32_t page_dir , int argc , char** argv ) {
     task_args_t task_args ; 
     task_args.argc = argc ; 
-    task_args.argv = (char**)to + sizeof(task_args_t) ; 
+    task_args.argv = (char**)( to + sizeof(task_args_t) ) ; 
     task_args.ret_addr = 0 ; 
     
 

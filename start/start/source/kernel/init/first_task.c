@@ -13,7 +13,7 @@ int first_task_main(void)
     } else if (pid == 0) {
         
         // 子进程将执行的地方
-        char * argv[] = {"arg0", "arg1", "arg2", "arg3"};
+        char * argv[] = {"han" , "shen" , "ao" } ;
         execve("/shell.elf", argv, (char **)0);
 
     } else {
