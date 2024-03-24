@@ -11,6 +11,7 @@
 #include "ipc/sem.h"
 #include "ipc/mutex.h" 
 #include "core/memory.h"
+#include "dev/console.h"
 
 static boot_info_t* init_boot_info ;
 static sem_t sem ; 
@@ -19,15 +20,19 @@ static sem_t sem ;
 void kernel_init(boot_info_t* boot_info )  
 {   
     init_boot_info = boot_info ;
+
     cpu_init() ; 
     log_init() ; 
-    
+    console_init() ; 
+
     memory_init(boot_info) ;  
     
     irq_init() ; 
     time_init() ;  // 启动定时器
 
     task_manager_init() ;  // 任务管理器初始化
+
+
 }
 
 

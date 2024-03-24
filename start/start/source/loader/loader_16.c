@@ -61,7 +61,7 @@ static void detect_memory(void)
             break;
     }
 
-    show_msg("great we are complete the thing that userful detect memory");
+    show_msg("great we are complete the thing that userful detect memory\r\n");
 }
 
 uint16_t gdt_table[][4] = {

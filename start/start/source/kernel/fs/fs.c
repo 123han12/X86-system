@@ -4,6 +4,8 @@
 #include "common/boot_info.h"
 #include "tools/klib.h"
 #include "tools/log.h" 
+#include "dev/console.h"
+
 #define TEMP_FILE_ID  100
 
 static uint8_t TEMP_ADDR[100*1024] ; 
@@ -59,9 +61,13 @@ int sys_read(int file , char* ptr , int len ){
     return -1 ; 
 }
 int sys_write(int file , char* ptr , int len) {
-    ptr[len] = '\0' ;  // 保险起见，将这个信息加上。
-    log_printf("%s" , ptr ) ; 
+    if(file == 1 ) { 
+        // ptr[len] = '\0' ;  // 保险起见，将这个信息加上。
+        // log_printf("%s" , ptr ) ; 
+        console_write(0 , ptr , len ); 
+    }
     return -1; 
+
 }
 int sys_lseek(int file , int ptr , int dir ) {
     if(file == TEMP_FILE_ID ){
