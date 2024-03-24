@@ -12,6 +12,7 @@
 #include "ipc/mutex.h" 
 #include "core/memory.h"
 #include "dev/console.h"
+#include "dev/kbd.h"
 
 static boot_info_t* init_boot_info ;
 static sem_t sem ; 
@@ -31,8 +32,7 @@ void kernel_init(boot_info_t* boot_info )
     time_init() ;  // 启动定时器
 
     task_manager_init() ;  // 任务管理器初始化
-
-
+    kbd_init() ; 
 }
 
 

@@ -352,3 +352,4 @@ int console_write(int console , char* data , int size ){
 void console_close(int console ){
     return ; 
 }  
+

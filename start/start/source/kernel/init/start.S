@@ -96,7 +96,7 @@ exception_handler machine_check, 18, 0
 exception_handler smd_exception, 19, 0
 exception_handler virtual_exception, 20, 0
 exception_handler timer , 0x20 , 0 
-
+exception_handler kbd , 0x21 , 0 
 
 # 给 simple_switch 会传入两个参数，from  to 表示两个tss段
 	.text

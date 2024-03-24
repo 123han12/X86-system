@@ -13,6 +13,7 @@
         "list.h": "c",
         "irq.h": "c",
         "log.h": "c",
-        "syscall.h": "c"
+        "syscall.h": "c",
+        "kbd.h": "c"
     },
 }
