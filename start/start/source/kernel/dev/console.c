@@ -122,7 +122,7 @@ static void move_next_line(console_t *console)
     }
 }
 
-// 对所有的屏幕进行初始化
+// 对指定的屏幕进行初始化
 int console_init(int idx)
 {
     console_t *console = console_buf + idx;

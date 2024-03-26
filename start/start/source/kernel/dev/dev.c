@@ -18,12 +18,11 @@ static dev_desc_t* dev_desc_table[] = {
 // 其中的dev_desc_t* 字段用来描述该物理设备的设备种类。
 static device_t dev_table[DEV_TABLE_SIZE] ; 
 
+// 判断给定的dev_id 是否有效
 static int is_device_bad(int dev_id ){
     if(dev_id < 0 || dev_id >= DEV_TABLE_SIZE) {
         return 1 ; 
     }
-
-
     if(dev_table[dev_id].desc == (dev_desc_t*)0) {
         return 1 ; 
     }
@@ -31,12 +30,14 @@ static int is_device_bad(int dev_id ){
 
 }
 
-
-// 主设备号，次设备号 , 参数指针, 返回值是在dev_table 中的下标
+/// @brief 主设备号，次设备号 , 参数指针, 返回值是在dev_table中的下标 
+/// @param major 
+/// @param minor 
+/// @param data 
+/// @return 
 int dev_open(int major , int minor , void *data ) {
     irq_state_t state = irq_enter_protection() ; 
 
-    
     device_t* free_dev = (device_t*)0 ; 
 
     for(int i = 0 ; i < DEV_TABLE_SIZE ; i ++ ) {
@@ -49,6 +50,7 @@ int dev_open(int major , int minor , void *data ) {
             return i ; 
         } 
     }
+
     dev_desc_t * desc = (dev_desc_t*)0 ; 
     for(int i = 0 ; i < sizeof(dev_desc_table) / sizeof(dev_desc_table[0] ) ; i ++ ) {
         dev_desc_t* d = dev_desc_table[i] ; 
@@ -58,6 +60,7 @@ int dev_open(int major , int minor , void *data ) {
         } 
     }
 
+
     // 如果走到这里，desc仍然为(dev_desc_t*)0 则表示该种类型的设备操作系统并未设置其具体的处理函数，直接忽略
     // 如果走到这里，free_dev为 (device_t*)0 表示此时物理设备槽满了，也直接不处理。
 
@@ -66,8 +69,9 @@ int dev_open(int major , int minor , void *data ) {
         free_dev->data = data ; 
         free_dev->desc = desc ; 
 
+        // 调用指定的设备的特定的open()函数，0表示成功 -1 表示失败
         int err = desc->open(free_dev) ; 
-        if(err == 0 ) {
+        if(err == 0 ) {      // 表示打开成功了
             free_dev->open_count = 1 ; 
             irq_exit_protection(state) ; 
             return free_dev - dev_table ; 
@@ -86,6 +90,7 @@ int dev_read(int dev_id , int addr , char* buf , int size ) {
     return dev->desc->read(dev , addr , buf , size ) ; 
 }
 
+// 根据给定的dev_id,向指定的设备中写入数据
 int dev_write(int dev_id , int addr , char* buf , int size) {
     if(is_device_bad(dev_id) ) {
         return -1 ; 
@@ -93,6 +98,7 @@ int dev_write(int dev_id , int addr , char* buf , int size) {
     device_t* dev = dev_table + dev_id ; 
     return dev->desc->write(dev , addr , buf , size ) ; 
 }
+
 
 int dev_control(int dev_id , int cmd , int arg0 , int arg1 ) {
     if(is_device_bad(dev_id) ) {

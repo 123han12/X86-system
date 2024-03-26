@@ -13,6 +13,7 @@
 #include "core/memory.h"
 #include "dev/console.h"
 #include "dev/kbd.h"
+#include "fs/fs.h" 
 
 static boot_info_t* init_boot_info ;
 static sem_t sem ; 
@@ -25,8 +26,9 @@ void kernel_init(boot_info_t* boot_info )
     cpu_init() ; 
     irq_init() ; 
     log_init() ; 
-
+    
     memory_init(boot_info) ; 
+    fs_init() ; 
     time_init() ;  // 启动定时器
 
     task_manager_init() ;  // 任务管理器初始化

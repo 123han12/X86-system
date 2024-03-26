@@ -42,16 +42,10 @@ typedef struct _dev_desc_t {
 } dev_desc_t ; 
 
 int dev_open(int major , int minor , void *data ) ; 
-
 int dev_read(int dev_id , int addr , char* buf , int size ) ; 
-
 int dev_write(int dev_id , int addr , char* buf , int size) ;
-
 int dev_control(int dev_id , int cmd , int arg0 , int arg1 ) ; 
-
 void dev_close(int dev_id) ; 
-
-
 
 
 #endif 

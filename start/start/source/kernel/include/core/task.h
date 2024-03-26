@@ -3,9 +3,12 @@
 #include "cpu/cpu.h"
 #include "common/types.h"
 #include "tools/list.h"
-
+#include "fs/file.h"
+ 
 #define TASK_NAME_SIZE    32 
 #define TASK_TIME_SLICE_DEFAULT  10 
+
+#define TASK_OFILE_NR          128 
 
 #define TASK_FLAGS_SYSTEM        (1 << 0)
 
@@ -38,7 +41,7 @@ typedef struct _task_t {
     tss_t tss ; 
     int tss_sel ; 
 
-
+    file_t* file_table[TASK_OFILE_NR] ; 
 
 } task_t ; 
 
@@ -88,6 +91,10 @@ task_t * task_current(void) ;
 void task_dispatch(void)  ; 
 
 void task_time_tick(void) ; 
+
+int task_alloc_fd(file_t* file ) ; 
+void task_remove_fd(int fd) ; 
+file_t* task_file(int fd) ; 
 
 
 

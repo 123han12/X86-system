@@ -5,6 +5,13 @@
 static tty_t   tty_devs[TTY_NR] ; 
 
 
+
+
+
+/// @brief 用来初始指定的缓冲区管理结构 fifo 
+/// @param fifo 
+/// @param buf 
+/// @param size 
 static void tty_fifo_init(tty_fifo_t * fifo , char* buf , int size ) {
     fifo->buf = buf ; 
     fifo->size = size ; 
@@ -12,12 +19,28 @@ static void tty_fifo_init(tty_fifo_t * fifo , char* buf , int size ) {
     fifo->count = 0 ; 
 }
 
+/// @brief 根据传入的dev中的idx 次设备号 minor 找到在tty_devs中的具体的显存区域,成功返回0，失败返回-1
+/// @param dev 
+/// @return 
 int tty_open(device_t *dev) {
     int idx = dev->minor ;  // idx 表示的是在tty_devs中的下标
     if((idx < 0 ) || (idx >= TTY_NR) ) {
         log_printf("open tty failed , tty num = %d" , idx ) ; 
+        return -1 ; 
     }
-    tty_t* tty = tty_devs + idx ; 
+    tty_t* tty = tty_devs + idx ;   // 找到具体的tty_t 的结构
+
+    /*
+        每一个tty_t 结构都对应着一个console控制台，在tty_t中，每一个都有一个两个字符数组，
+        相对于cpu来说，一个是输入缓冲队列，一个是输出缓冲队列。两个队列分别对应两个信号量，
+        用于限制生产者和消费者对缓冲区的操作。
+
+        console_idx 用来表示当前tty_t 在console_buf数组中的下标，一个槽对应的是一个显存块。
+
+        oflags 表示的是当前的设备的一些属性 TTY_OCRLF 表示的是当前屏幕在遇到\n的时候输出的实际是\r\n
+    
+
+    */
 
     tty_fifo_init(&tty->ofifo , tty->obuf , TTY_OBUF_SIZE ) ;
     sem_init(&tty->osem , TTY_OBUF_SIZE ); // 初始值为 TTY_OBUF_SIZE  
@@ -25,14 +48,20 @@ int tty_open(device_t *dev) {
     tty->console_idx = idx ;  
     tty->oflags = TTY_OCRLF ;  
 
-    kbd_init() ; 
+
+    // 初始化键盘
+    kbd_init() ;  
+
     // 初始化指定的显存区域
     console_init(idx) ; 
 
-    
     return 0 ; 
 }
 
+
+/// @brief 根据指定的device_t中的 dev->minor 找到指定tty_* 并返回
+/// @param dev 
+/// @return 
 static tty_t* get_tty(device_t* dev ) {
     int idx = dev->minor ; 
     if((idx < 0 ) || (idx >= TTY_NR ) || (!dev->open_count ) ) {
@@ -41,10 +70,14 @@ static tty_t* get_tty(device_t* dev ) {
     }
 
     return tty_devs + idx ;  
-
 }
 
 
+
+/// @brief 向fifo所管理的缓冲区中写入单个字符，写入成功返回0失败返回-1，调用方使用semphore来控制是否有空闲的位置
+/// @param fifo 
+/// @param c 
+/// @return 
 int tty_fifo_put(tty_fifo_t* fifo , char c ) {
     if(fifo->count == fifo->size ) {
         return -1 ; 
@@ -55,6 +88,11 @@ int tty_fifo_put(tty_fifo_t* fifo , char c ) {
     fifo->count ++ ; 
     return 0 ; 
 }
+
+/// @brief 从指定的fifo所管理的缓冲区中读取单个字符，成功返回0，失败返回-1, 调用方使用semphore控制是否有字符
+/// @param fifo 
+/// @param c 
+/// @return 
 int tty_fifo_get(tty_fifo_t* fifo , char* c) {
     if(fifo->count == 0 ) {
         return -1 ; 
@@ -71,6 +109,14 @@ int tty_read(device_t *dev, int addr, char *buf, int size){
     
 
 }
+
+
+/// @brief 向指定的tty设备中写入size个字符 , 返回写入的个数len
+/// @param dev 
+/// @param addr 
+/// @param buf 
+/// @param size 
+/// @return 
 int tty_write(device_t *dev, int addr, char *buf, int size){
     if(size < 0 ) {
         return -1 ; 
@@ -101,7 +147,7 @@ int tty_write(device_t *dev, int addr, char *buf, int size){
         console_write(tty); 
     }
 
-
+    return len ; 
 }
 int tty_control(device_t *dev, int cmd, int arg0, int agr1){
     return 0 ; 
@@ -110,6 +156,8 @@ int tty_close(device_t *dev){
 
 }
 
+
+// 这个是在一开始就写死的，用来向操作系统注册tty设备的描述符
 dev_desc_t dev_tty_desc = {
     .name = "tty", 
     .major = DEV_TTY , 
@@ -119,3 +167,6 @@ dev_desc_t dev_tty_desc = {
     .control = tty_control , 
     .close = tty_close , 
 } ; 
+
+
+

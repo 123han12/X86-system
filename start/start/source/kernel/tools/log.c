@@ -22,7 +22,8 @@ void log_init(void)  // 设置qemu的串行接口的寄存器，硬件初始化�
 {
     mutex_init(&mutex) ; 
 
-    log_dev_id = dev_open(DEV_TTY , 0 , (void*)0 );  
+    // 实际上在这里就开启了第一个tty设备
+    log_dev_id = dev_open(DEV_TTY , 0 , (void*)0 ) ; // 将log_dev_id   
 
 #if LOG_USE_COM
     outb(COM1_PORT + 1, 0x00);    // Disable all interrupts

@@ -112,6 +112,7 @@ int task_init(task_t * task , const char * name , int flag ,  uint32_t entry , u
     list_node_init(&task->run_node) ;
     list_node_init(&task->all_node) ;  
     list_node_init(&task->wait_node) ; 
+    kernel_memset(&task->file_table , 0 , sizeof(file_t*) * TASK_OFILE_NR ) ; 
 
     // 进行临界区保护
     irq_state_t  state = irq_enter_protection() ; 
@@ -706,3 +707,41 @@ exec_failed:
 
     return -1 ; 
 }
+
+
+/// @brief 在进程中的file_table表中给指定的file_t结构分配下标，成功返回下标，失败返回-1
+/// @param file 
+/// @return 
+int task_alloc_fd(file_t* file ) {
+    task_t* task = task_current() ; 
+
+    for(int i = 0 ; i < TASK_OFILE_NR ; i ++ ) {
+        file_t* p = task->file_table[i] ; 
+        if(p ==(file_t*)0 ) {
+            task->file_table[i] = file ; 
+            return i ; 
+        } 
+    }
+    return -1 ; 
+} 
+
+/// @brief 清除进程中的的file_table中的fd槽中的file_t 的指针
+/// @param fd 
+void task_remove_fd(int fd){
+    if((fd >= 0 ) && (fd < TASK_OFILE_NR ) ) {
+        task_current()->file_table[fd] = (file_t*)0 ; 
+        return ; 
+    }
+}
+
+
+/// @brief 获取进程的file_table的第fd个槽中的file_t的指针
+/// @param fd 
+/// @return 
+file_t* task_file(int fd){
+    if((fd >= 0 ) && (fd < TASK_OFILE_NR) ) {
+        file_t* file = task_current()->file_table[fd] ; 
+        return file ; 
+    }
+    return (file_t*)0 ; 
+} 

@@ -80,6 +80,7 @@ int yield(void){
     return sys_call(&args) ; 
 }
 
+// 底层调用 sys_open 如果name 为 "tty:0" 则调用dev_open 
 int open(const char* name , int flags , ...) {
     syscall_args_t args ; 
     args.id = SYS_open ; 

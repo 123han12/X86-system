@@ -44,6 +44,8 @@ void do_handler_syscall(sys_call_frame_t* frame ){
             return ; 
         }
     }
+
+    
     task_t* task = task_current() ; 
     log_printf("task: %s , Unkown syscall: %d" , task->name , frame->func_id ) ; 
     frame->eax = -1 ; 

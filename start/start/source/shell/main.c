@@ -4,6 +4,7 @@
 
 int main (int argc, char **argv) {
 
+#if 0
     sbrk(0) ;   
 
     sbrk(100) ; 
@@ -34,8 +35,9 @@ int main (int argc, char **argv) {
 
     printf("\033[2J\n") ; // 实现屏幕的清空
 
+#endif 
+    open("tty:0" , 0 ) ; //  
 
-    // gets() ; 
     printf("Hello from shell\n") ; 
     printf("os version:%s\n" , "1.0.0") ;
     printf("%d %d %d\n" , 1 , 2 , 3 ) ;  
@@ -52,6 +54,5 @@ int main (int argc, char **argv) {
         printf("shell pid=%d\n" , getpid() ) ; 
         msleep(1000);
     }
-
     
 }
