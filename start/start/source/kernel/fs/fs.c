@@ -62,9 +62,10 @@ int sys_read(int file , char* ptr , int len ){
 }
 int sys_write(int file , char* ptr , int len) {
     if(file == 1 ) { 
-        // ptr[len] = '\0' ;  // 保险起见，将这个信息加上。
-        // log_printf("%s" , ptr ) ; 
-        console_write(0 , ptr , len ); 
+        // console_write(0 , ptr , len ); 
+        
+        ptr[len] = '\0' ;  // 保险起见，将这个信息加上。
+        log_printf("%s" , ptr ) ; 
     }
     return -1; 
 

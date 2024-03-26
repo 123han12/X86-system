@@ -64,10 +64,13 @@ static const key_map_t map_table[256] = {
 
 void kbd_init(void) {
 
-    kernel_memset(&kbd_state , 0 , sizeof(kbd_state) ) ; 
-    // 这里对于键盘的话不需要过多的初始化，只需要注册一下函数即可。
-    irq_install(IRQ1_KEYBOARD , (irq_handler_t)exception_handler_kbd ) ;     
-    irq_enable(IRQ1_KEYBOARD) ; 
+    static int inited = 0 ; 
+    if(!inited ) {
+        kernel_memset(&kbd_state , 0 , sizeof(kbd_state) ) ; 
+        // 这里对于键盘的话不需要过多的初始化，只需要注册一下函数即可。
+        irq_install(IRQ1_KEYBOARD , (irq_handler_t)exception_handler_kbd ) ;     
+        irq_enable(IRQ1_KEYBOARD) ;
+    } 
 }
 
 static inline int is_make_code(uint8_t raw_code) {

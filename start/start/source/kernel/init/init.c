@@ -23,16 +23,13 @@ void kernel_init(boot_info_t* boot_info )
     init_boot_info = boot_info ;
 
     cpu_init() ; 
-    log_init() ; 
-    console_init() ; 
-
-    memory_init(boot_info) ;  
-    
     irq_init() ; 
+    log_init() ; 
+
+    memory_init(boot_info) ; 
     time_init() ;  // 启动定时器
 
     task_manager_init() ;  // 任务管理器初始化
-    kbd_init() ; 
 }
 
 

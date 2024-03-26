@@ -6,9 +6,13 @@
 #include "cpu/irq.h"
 #include "ipc/mutex.h"
 #include "dev/console.h"
+#include "dev/dev.h"
 
 
 static mutex_t mutex ; 
+
+
+static int log_dev_id ; 
 
 // 这个宏用来控制是否使用串口，如果该宏值不为0表示使用串行接口，否则表示不使用
 #define LOG_USE_COM    0  
@@ -17,6 +21,8 @@ static mutex_t mutex ;
 void log_init(void)  // 设置qemu的串行接口的寄存器，硬件初始化，不用太在意
 {
     mutex_init(&mutex) ; 
+
+    log_dev_id = dev_open(DEV_TTY , 0 , (void*)0 );  
 
 #if LOG_USE_COM
     outb(COM1_PORT + 1, 0x00);    // Disable all interrupts
@@ -58,13 +64,17 @@ void log_printf(const char* fmt , ... )
     outb(COM1_PORT , '\r') ; // 将光标移动到当前行的开头
     outb(COM1_PORT , '\n') ; // 将光标移动到当前行的结尾
 #else 
-    console_write(0 , str_buf , kernel_strlen(str_buf) ) ; 
+    
+    
+    // console_write(0 , str_buf , kernel_strlen(str_buf) ) ; 
+
+    dev_write(log_dev_id , 0 , str_buf , kernel_strlen(str_buf ) ) ; 
+
     char c = '\n' ; 
-    console_write(0 , &c , 1 ) ; 
+    //console_write(0 , &c , 1 ) ;
+    dev_write(log_dev_id , 0 , &c , 1 ) ;  
 #endif  
-
     mutex_unlock(&mutex) ;
-
     
 }
 
