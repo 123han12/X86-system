@@ -3,19 +3,23 @@
 #include "common/cpu_instr.h"
 #include "dev/tty.h" 
 #include "common/types.h"
+#include "cpu/irq.h"
 
 #define CONSOLE_NR            8
 static console_t console_buf[CONSOLE_NR];
+static int curr_console_idx = 0 ; 
 
 // 读取
 static int read_cursor_pos(void)
 {
+    irq_state_t state = irq_enter_protection() ; 
     int pos;
     // 读取光标的位置
     outb(0x3D4, 0xF);
     pos = inb(0x3d5);
     outb(0x3D4, 0xE);
     pos |= (inb(0x3d5) << 8);
+    irq_exit_protection(state) ; 
     return pos;
 }
 
@@ -23,13 +27,16 @@ static int read_cursor_pos(void)
 static int update_cursor_pos(console_t *console)
 {
     // 获取到当前控制台的光标应该处于的位置
-    uint16_t pos = (console - console_buf ) * console->display_cols * console->old_cursor_row  ; 
+    uint16_t pos = (console - console_buf ) * console->display_cols * console->display_rows  ; 
     pos += console->cursor_row * console->display_cols + console->cursor_col;
 
+    irq_state_t state = irq_enter_protection() ; 
     outb(0x3D4, 0xF);
     outb(0x3d5, (uint8_t)(pos & 0xFF));
     outb(0x3D4, 0xE);
     outb(0x3d5, (uint8_t)((pos >> 8) & 0xFF));
+
+    irq_exit_protection(state) ; 
 
     return pos;
 }
@@ -143,7 +150,7 @@ int console_init(int idx)
         console->cursor_col = 0 ; 
         console->cursor_row = 0 ; 
         clear_display(console) ;    //对屏幕进行清空
-        update_cursor_pos(console) ; 
+        // update_cursor_pos(console) ; 
     }
 
     // 设置颜色
@@ -394,7 +401,10 @@ int console_write(tty_t* tty )
 
         len ++ ;     
     }while(1) ; 
-    update_cursor_pos(c);
+
+    if(tty->console_idx == curr_console_idx ) {
+        update_cursor_pos(c);
+    }
     return len;
 }
 
@@ -406,6 +416,7 @@ void console_close(int console)
 // 切换到指定的显示器
 void console_select(int idx ) {
     console_t* console = console_buf + idx ; 
+
     if(console->disp_base == 0 ) {
         console_init(idx) ; 
     }
@@ -422,5 +433,6 @@ void console_select(int idx ) {
     update_cursor_pos(console) ; 
 
     char num = idx + '0' ; 
+    curr_console_idx = idx ; 
     show_char(console , num ) ; 
 }

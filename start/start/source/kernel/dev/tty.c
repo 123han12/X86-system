@@ -1,6 +1,8 @@
 #include "dev/tty.h"
 #include "dev/kbd.h"
 #include "dev/console.h"
+#include "cpu/irq.h"
+
 
 static tty_t   tty_devs[TTY_NR] ; 
 
@@ -83,13 +85,17 @@ static tty_t* get_tty(device_t* dev ) {
 /// @param c 
 /// @return 
 int tty_fifo_put(tty_fifo_t* fifo , char c ) {
+    irq_state_t state = irq_enter_protection() ; 
     if(fifo->count == fifo->size ) {
+        irq_exit_protection(state) ; 
         return -1 ; 
     }
 
     fifo->buf[fifo->write++] = c ; 
     if(fifo->write >= fifo->size ) fifo->write = 0 ; 
     fifo->count ++ ; 
+
+    irq_exit_protection(state) ; 
     return 0 ; 
 }
 
@@ -98,12 +104,16 @@ int tty_fifo_put(tty_fifo_t* fifo , char c ) {
 /// @param c 
 /// @return 
 int tty_fifo_get(tty_fifo_t* fifo , char* c) {
+    irq_state_t state = irq_enter_protection() ; 
     if(fifo->count == 0 ) {
+        irq_exit_protection(state) ; 
         return -1 ; 
     }
     *c = fifo->buf[fifo->read++] ; 
     if(fifo->read >= fifo->size ) fifo->read = 0 ;
     fifo->count -- ; 
+    irq_exit_protection(state) ; 
+    
     return  0 ; 
 }
 

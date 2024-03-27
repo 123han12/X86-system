@@ -429,7 +429,7 @@ char* sys_sbrk(int incr) {
         }
     }
 
-    log_printf("sbrk(%d) , end = 0x%x" , bytes_count , end ) ; 
+    // log_printf("sbrk(%d) , end = 0x%x" , bytes_count , end ) ; 
     task->heap_end = end ; 
 
     return (char*)pre_heap_end ;  

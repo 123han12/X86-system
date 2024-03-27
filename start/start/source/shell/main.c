@@ -37,7 +37,7 @@ int main (int argc, char **argv) {
     printf("\033[2J\n") ; // 实现屏幕的清空
 
 #endif 
-    open("tty:0" , 0 ) ; // 0 -> dev0   
+    open(argv[0] , 0 ) ; // 0 -> dev0   
     dup(0) ;  // 1 -> dev0 
     dup(0) ;  // 2 -> dev0 
 
