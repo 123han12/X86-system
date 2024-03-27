@@ -2,6 +2,8 @@
 #include "tools/log.h"
 #include "common/cpu_instr.h"
 #include "tools/klib.h"
+#include "dev/tty.h"
+
 
 void exception_handler_kbd(void) ; 
 
@@ -20,7 +22,7 @@ static const key_map_t map_table[256] = {
         [0x0B] = {'0', ')'},
         [0x0C] = {'-', '_'},
         [0x0D] = {'=', '+'},
-        [0x0E] = {'\b', '\b'},
+        [0x0E] = {0x7F, 0x7F },   // backspeace键
         [0x0F] = {'\t', '\t'},
         [0x10] = {'q', 'Q'},
         [0x11] = {'w', 'W'},
@@ -81,6 +83,15 @@ static inline char get_key(uint8_t raw_code) {
     return raw_code & 0x7F ; 
 }
 
+static void do_fx_key(int key) {
+    
+    // 转换为相应的tty的索引
+    int index = key - KEY_F1 ; 
+    if(kbd_state.lctrl_press || kbd_state.rctrl_press ) {
+        tty_select(index) ;  
+    }
+}
+
 static void do_normal_key(uint8_t raw_code ) {
     char key = get_key(raw_code) ; 
     int is_make = is_make_code(raw_code) ; 
@@ -112,6 +123,8 @@ static void do_normal_key(uint8_t raw_code ) {
         case KEY_F6: 
         case KEY_F7: 
         case KEY_F8: 
+            do_fx_key(key); 
+            break ; 
         case KEY_F9: 
         case KEY_F10: 
         case KEY_F11: 
@@ -136,7 +149,7 @@ static void do_normal_key(uint8_t raw_code ) {
                         key = key - 'A' + 'a' ; 
                     }   
                 }
-                log_printf("key: %c" , key) ; 
+                tty_in(key) ; 
             }
             break ; 
     }

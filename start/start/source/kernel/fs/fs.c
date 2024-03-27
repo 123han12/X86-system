@@ -113,13 +113,21 @@ int sys_read(int file , char* ptr , int len ){
         kernel_memcpy((void*)ptr , (void*)temp_pos , len ) ; 
         temp_pos += len ; 
         return len ; 
-    } else if(file == 0 ) {
-        
+    } else if(file == 0 ) {  // 如果从标准输入设备进行读取
+        file = 0 ; 
+        file_t* p_file = task_file(file) ; 
+        if(!p_file) {
+            log_printf("file not opened...") ; 
+            return -1 ; 
+        }
+        return dev_read(p_file->dev_id , 0 , ptr , len ); 
     }
+
     return -1 ; 
 }
+
+// 向file文件中进行写，首地址为ptr 长度为len , newlib 库传过来的file 是1 
 int sys_write(int file , char* ptr , int len) {
-    file = 0 ; 
     file_t* p_file = task_file(file) ; 
     if(!p_file) {
         log_printf("file not opened...") ; 
@@ -153,4 +161,28 @@ int sys_fstat(int file , struct stat* st ) {
 
 void fs_init(void) {
     file_table_init() ; 
+}
+
+int sys_dup(int file ) {
+    if(file < 0 || file >= FILE_TABLE_SIZE ) {
+        log_printf("file %d is not vaild.." , file ) ; 
+        return -1 ;  
+    }
+
+    file_t* p_file = task_file(file) ; 
+    if(!p_file) {
+        log_printf("file not opend....") ; 
+        return -1 ; 
+    }
+
+    int fd = task_alloc_fd(p_file) ; 
+    
+    if(fd >= 0 ) {
+        p_file->ref ++ ; 
+        return fd ; 
+    }
+
+    log_printf("no task file avaliable.") ; 
+    return -1 ; 
+    
 }

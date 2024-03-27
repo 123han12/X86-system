@@ -12,7 +12,8 @@ int sys_close(int file) ;
 int sys_fstat(int file , struct stat* st ) ; 
 int sys_isatty(int file) ; 
 
-
 void fs_init(void) ; 
+
+int sys_dup(int file ) ; 
 
 #endif 

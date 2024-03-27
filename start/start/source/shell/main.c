@@ -2,6 +2,7 @@
 #include "lib_syscall.h"
 #include <stdio.h>
 
+char cmd_buf[256] ; 
 int main (int argc, char **argv) {
 
 #if 0
@@ -36,23 +37,26 @@ int main (int argc, char **argv) {
     printf("\033[2J\n") ; // 实现屏幕的清空
 
 #endif 
-    open("tty:0" , 0 ) ; //  
+    open("tty:0" , 0 ) ; // 0 -> dev0   
+    dup(0) ;  // 1 -> dev0 
+    dup(0) ;  // 2 -> dev0 
 
     printf("Hello from shell\n") ; 
     printf("os version:%s\n" , "1.0.0") ;
     printf("%d %d %d\n" , 1 , 2 , 3 ) ;  
 
+    fprintf(stderr , "error") ; 
+
     
     for(int i = 0 ; i < argc  ;  i ++ ) {
         printf("arg: %s\n" , argv[i] ) ; 
     }
-
-    // fork() ; 
-    // 子进程直接将运行权交出去，父进程继续运行
-    yield() ;  
+ 
     for (;;) { 
-        printf("shell pid=%d\n" , getpid() ) ; 
-        msleep(1000);
+        // printf("shell pid=%d\n" , getpid() ) ; 
+        // msleep(1000);
+        gets(cmd_buf) ;  // 底层调用sys_read函数
+        puts(cmd_buf) ;  // 底层调用sys_write 
     }
     
 }

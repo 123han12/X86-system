@@ -2,6 +2,7 @@
 #include "tools/klib.h"
 #include "common/cpu_instr.h"
 #include "dev/tty.h" 
+#include "common/types.h"
 
 #define CONSOLE_NR            8
 static console_t console_buf[CONSOLE_NR];
@@ -18,10 +19,12 @@ static int read_cursor_pos(void)
     return pos;
 }
 
+
 static int update_cursor_pos(console_t *console)
 {
     // 获取到当前控制台的光标应该处于的位置
-    uint16_t pos = console->cursor_row * console->display_cols + console->cursor_col;
+    uint16_t pos = (console - console_buf ) * console->display_cols * console->old_cursor_row  ; 
+    pos += console->cursor_row * console->display_cols + console->cursor_col;
 
     outb(0x3D4, 0xF);
     outb(0x3d5, (uint8_t)(pos & 0xFF));
@@ -398,4 +401,26 @@ int console_write(tty_t* tty )
 void console_close(int console)
 {
     return;
+}
+
+// 切换到指定的显示器
+void console_select(int idx ) {
+    console_t* console = console_buf + idx ; 
+    if(console->disp_base == 0 ) {
+        console_init(idx) ; 
+    }
+
+    
+    uint16_t pos = idx * console->display_rows * console->display_cols ; 
+
+    outb(0x3D4 , 0xC) ; 
+    outb(0x3D5 , (uint8_t)( (pos >> 8) & 0xFF )) ; // 写高八位
+    outb(0x3D4 , 0xD) ; 
+    outb(0x3D5 , (uint8_t)(pos & 0xFF)) ;  // 写低八位
+
+    // 更新光标位置
+    update_cursor_pos(console) ; 
+
+    char num = idx + '0' ; 
+    show_char(console , num ) ; 
 }

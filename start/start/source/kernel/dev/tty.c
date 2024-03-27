@@ -4,8 +4,7 @@
 
 static tty_t   tty_devs[TTY_NR] ; 
 
-
-
+static int curr_tty = 0 ; 
 
 
 /// @brief 用来初始指定的缓冲区管理结构 fifo 
@@ -44,9 +43,14 @@ int tty_open(device_t *dev) {
 
     tty_fifo_init(&tty->ofifo , tty->obuf , TTY_OBUF_SIZE ) ;
     sem_init(&tty->osem , TTY_OBUF_SIZE ); // 初始值为 TTY_OBUF_SIZE  
+    
+    sem_init(&tty->isem , 0 ) ; // 键盘中断程序负责notify  
     tty_fifo_init(&tty->ififo , tty->ibuf , TTY_IBUF_SIZE ) ;
     tty->console_idx = idx ;  
+
     tty->oflags = TTY_OCRLF ;  
+    tty->iflags = TTY_ICRLF | TTY_IECHO ; 
+
 
 
     // 初始化键盘
@@ -104,13 +108,6 @@ int tty_fifo_get(tty_fifo_t* fifo , char* c) {
 }
 
 
-
-int tty_read(device_t *dev, int addr, char *buf, int size){
-    
-
-}
-
-
 /// @brief 向指定的tty设备中写入size个字符 , 返回写入的个数len
 /// @param dev 
 /// @param addr 
@@ -149,6 +146,56 @@ int tty_write(device_t *dev, int addr, char *buf, int size){
 
     return len ; 
 }
+
+
+/// @brief 将tty从键盘中断函数中获取的字符输入到buf缓冲区中，一共输入size个
+/// @param dev 
+/// @param addr 
+/// @param buf 
+/// @param size 
+/// @return 
+int tty_read(device_t *dev, int addr, char *buf, int size){
+    if(size < 0 ) {
+        return -1 ;
+    }
+    tty_t* tty = get_tty(dev) ; 
+    char* pbuf = buf ; 
+    int len = 0 ; 
+    while(len < size ) {
+        sem_wait(&tty->isem) ; 
+        char ch ; 
+        tty_fifo_get(&tty->ififo , &ch ) ; 
+        switch (ch)
+        {
+        case '\n':
+            if((tty->iflags & TTY_ICRLF ) && (len < size - 1 ) ) {
+                *pbuf++ = '\r' ;
+                len ++;  
+            }
+            *pbuf++ = '\n' ; 
+            len ++ ; 
+            break ; 
+        default:
+            *pbuf++ = ch ; 
+            len ++ ; 
+            break;
+        }
+
+        //如果输入开启了回显,这个判断是为了让键盘输入的字符能够在屏幕上显示出来
+        if(tty->iflags & TTY_IECHO) {
+            tty_write(dev , addr , &ch , 1 ) ; 
+        }   
+        
+        if(ch == '\n' || ch == '\r' ) {
+            break ; 
+        }
+    }
+    return len ; 
+
+}
+
+
+
 int tty_control(device_t *dev, int cmd, int arg0, int agr1){
     return 0 ; 
 }
@@ -168,5 +215,24 @@ dev_desc_t dev_tty_desc = {
     .close = tty_close , 
 } ; 
 
+void tty_in( char ch ) {
 
+    tty_t* tty = tty_devs + curr_tty ; 
+    
+    if(sem_count(&tty->isem) >= TTY_IBUF_SIZE ) {
+        return ; 
+    }
+    tty_fifo_put(&tty->ififo , ch ) ; 
+    sem_notify(&tty->isem) ; 
+}
+
+void tty_select(int tty) {
+    if(tty != curr_tty ) {
+
+
+        console_select(tty);  
+        curr_tty = tty ; 
+
+    }
+}
 
