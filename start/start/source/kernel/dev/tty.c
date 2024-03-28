@@ -11,7 +11,7 @@ static int curr_tty = 0 ;
 
 /// @brief 用来初始指定的缓冲区管理结构 fifo 
 /// @param fifo 
-/// @param buf 
+/// @param buf  
 /// @param size 
 static void tty_fifo_init(tty_fifo_t * fifo , char* buf , int size ) {
     fifo->buf = buf ; 
@@ -35,12 +35,8 @@ int tty_open(device_t *dev) {
         每一个tty_t 结构都对应着一个console控制台，在tty_t中，每一个都有一个两个字符数组，
         相对于cpu来说，一个是输入缓冲队列，一个是输出缓冲队列。两个队列分别对应两个信号量，
         用于限制生产者和消费者对缓冲区的操作。
-
         console_idx 用来表示当前tty_t 在console_buf数组中的下标，一个槽对应的是一个显存块。
-
         oflags 表示的是当前的设备的一些属性 TTY_OCRLF 表示的是当前屏幕在遇到\n的时候输出的实际是\r\n
-    
-
     */
 
     tty_fifo_init(&tty->ofifo , tty->obuf , TTY_OBUF_SIZE ) ;
@@ -53,19 +49,15 @@ int tty_open(device_t *dev) {
     tty->oflags = TTY_OCRLF ;  
     tty->iflags = TTY_ICRLF | TTY_IECHO ; 
 
-
-
     // 初始化键盘
     kbd_init() ;  
-
     // 初始化指定的显存区域
     console_init(idx) ; 
-
     return 0 ; 
 }
 
 
-/// @brief 根据指定的device_t中的 dev->minor 找到指定tty_* 并返回
+/// @brief 根据指定的device_t中的 dev->minor 找到指定tty_* 并返回,失败返回-1
 /// @param dev 
 /// @return 
 static tty_t* get_tty(device_t* dev ) {
@@ -104,11 +96,11 @@ int tty_fifo_put(tty_fifo_t* fifo , char c ) {
 /// @param c 
 /// @return 
 int tty_fifo_get(tty_fifo_t* fifo , char* c) {
-    irq_state_t state = irq_enter_protection() ; 
-    if(fifo->count == 0 ) {
-        irq_exit_protection(state) ; 
+
+    if(fifo->count <= 0) {
         return -1 ; 
     }
+    irq_state_t state = irq_enter_protection() ; 
     *c = fifo->buf[fifo->read++] ; 
     if(fifo->read >= fifo->size ) fifo->read = 0 ;
     fifo->count -- ; 
@@ -118,7 +110,7 @@ int tty_fifo_get(tty_fifo_t* fifo , char* c) {
 }
 
 
-/// @brief 向指定的tty设备中写入size个字符 , 返回写入的个数len
+/// @brief 向指定的tty设备中写入size个字符 , 返回写入的个数len,失败返回-1
 /// @param dev 
 /// @param addr 
 /// @param buf 
@@ -129,11 +121,9 @@ int tty_write(device_t *dev, int addr, char *buf, int size){
         return -1 ; 
     }
     tty_t* tty = get_tty(dev) ; 
-
-    if(!tty ) {
+    if( tty == (tty_t*)0 ) {
         return -1 ; 
     }
-
     int len = 0 ; 
     while(size) {
         char c = *buf ++ ; 
@@ -153,7 +143,6 @@ int tty_write(device_t *dev, int addr, char *buf, int size){
         size -- ; 
         console_write(tty); 
     }
-
     return len ; 
 }
 
@@ -177,25 +166,30 @@ int tty_read(device_t *dev, int addr, char *buf, int size){
         tty_fifo_get(&tty->ififo , &ch ) ; 
         switch (ch)
         {
-        case '\n':
-            if((tty->iflags & TTY_ICRLF ) && (len < size - 1 ) ) {
-                *pbuf++ = '\r' ;
-                len ++;  
-            }
-            *pbuf++ = '\n' ; 
-            len ++ ; 
-            break ; 
-        default:
-            *pbuf++ = ch ; 
-            len ++ ; 
-            break;
+            case ASCII_DEL:
+				if (len == 0) {
+					continue;
+				}
+				len--;
+				pbuf--;
+				break;
+            case '\n':
+                if((tty->iflags & TTY_ICRLF ) && (len < size - 1 ) ) {
+                    *pbuf++ = '\r' ;
+                    len ++;  
+                }
+                *pbuf++ = '\n' ; 
+                len ++ ; 
+                break ; 
+            default:
+                *pbuf++ = ch ; 
+                len ++ ; 
+                break;
         }
-
         //如果输入开启了回显,这个判断是为了让键盘输入的字符能够在屏幕上显示出来
         if(tty->iflags & TTY_IECHO) {
             tty_write(dev , addr , &ch , 1 ) ; 
         }   
-        
         if(ch == '\n' || ch == '\r' ) {
             break ; 
         }
@@ -228,21 +222,21 @@ dev_desc_t dev_tty_desc = {
 void tty_in( char ch ) {
 
     tty_t* tty = tty_devs + curr_tty ; 
-    
+
+    // 此时sem_count(&tty->isem) 相当于在输入缓冲区中的字符的个数，如果字符个数大于等于TTY_IBUF_SIZE的话，就直接忽略这个字符
     if(sem_count(&tty->isem) >= TTY_IBUF_SIZE ) {
         return ; 
     }
     tty_fifo_put(&tty->ififo , ch ) ; 
+
+    // 通知等待在这个信号量的进程，将其唤醒加入到就绪队列当中。
     sem_notify(&tty->isem) ; 
 }
 
 void tty_select(int tty) {
     if(tty != curr_tty ) {
-
-
-        console_select(tty);  
         curr_tty = tty ; 
-
+        console_select(tty);  
     }
 }
 

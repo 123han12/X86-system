@@ -27,6 +27,7 @@ int first_task_main(void)
         int pid = fork() ;
         if(pid < 0 ) {
             print_msg("create shello failed.." , 0 ) ; 
+            break ; 
         }
         if(pid == 0 ) {
             char tty_num[5] = "tty:?" ; 
@@ -42,7 +43,6 @@ int first_task_main(void)
 
     for(; ; )
     {
-        // print_msg("task id:%d" , pid) ; 
         msleep(1000) ; 
     }
 

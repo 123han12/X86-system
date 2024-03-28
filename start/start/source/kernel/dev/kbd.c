@@ -22,7 +22,7 @@ static const key_map_t map_table[256] = {
         [0x0B] = {'0', ')'},
         [0x0C] = {'-', '_'},
         [0x0D] = {'=', '+'},
-        [0x0E] = {0x7F, 0x7F },   // backspeace键
+        [0x0E] = {ASCII_DEL, ASCII_DEL },   // backspeace键
         [0x0F] = {'\t', '\t'},
         [0x10] = {'q', 'Q'},
         [0x11] = {'w', 'W'},
@@ -75,6 +75,9 @@ void kbd_init(void) {
     } 
 }
 
+/// @brief 是否是按下的时候的信号，是返回true
+/// @param raw_code 
+/// @return 
 static inline int is_make_code(uint8_t raw_code) {
     return !(raw_code & 0x80 ) ;  
 }
@@ -91,6 +94,8 @@ static void do_fx_key(int key) {
         tty_select(index) ;  
     }
 }
+
+
 
 static void do_normal_key(uint8_t raw_code ) {
     char key = get_key(raw_code) ; 
@@ -113,7 +118,6 @@ static void do_normal_key(uint8_t raw_code ) {
             break ; 
         case KEY_CTRL:
             kbd_state.lctrl_press = is_make ; 
-
             break ; 
         case KEY_F1: 
         case KEY_F2: 
@@ -129,9 +133,6 @@ static void do_normal_key(uint8_t raw_code ) {
         case KEY_F10: 
         case KEY_F11: 
         case KEY_F12:
-            break ;  
-        
-
         default:
             if(is_make) {
                 
@@ -155,6 +156,8 @@ static void do_normal_key(uint8_t raw_code ) {
     }
 }
 
+/// @brief 只能处理功能键，其他更长的则无法处理
+/// @param raw_code 
 static void do_e0_key(uint8_t raw_code ) {
     char key = get_key(raw_code) ; 
     int is_make = is_make_code(raw_code) ; 
@@ -187,8 +190,6 @@ void do_handler_kbd(exception_frame_t* frame ){
     }
 
     uint8_t raw_code = inb(KDB_PORT_DATA) ; 
-
-
     // 读取完成之后，就可以发EOI，方便后续继续响应键盘中断
 	// 否则,键值的处理过程可能略长，将导致中断响应延迟
     pic_send_eoi(IRQ1_KEYBOARD) ; 

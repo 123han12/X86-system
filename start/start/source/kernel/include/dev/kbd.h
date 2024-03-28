@@ -34,7 +34,7 @@
 #define KEY_F11           0x57
 #define KEY_F12           0x58
 
-
+#define	ASCII_DEL		0x7F
 
 
 

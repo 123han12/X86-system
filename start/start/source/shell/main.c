@@ -41,17 +41,14 @@ int main (int argc, char **argv) {
     dup(0) ;  // 1 -> dev0 
     dup(0) ;  // 2 -> dev0 
 
-    printf("Hello from shell\n") ; 
-    printf("os version:%s\n" , "1.0.0") ;
-    printf("%d %d %d\n" , 1 , 2 , 3 ) ;  
+    puts("hello from x86 os");
+    printf("os version: %s\n", OS_VERSION);
+    puts("author: hanshenao");
+    puts("create data: 2024-03-27");
 
-    fprintf(stderr , "error") ; 
+    fprintf(stderr, "stderr output\n");
+    puts("sh >>");
 
-    
-    for(int i = 0 ; i < argc  ;  i ++ ) {
-        printf("arg: %s\n" , argv[i] ) ; 
-    }
- 
     for (;;) { 
         // printf("shell pid=%d\n" , getpid() ) ; 
         // msleep(1000);
