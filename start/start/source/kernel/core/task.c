@@ -15,7 +15,7 @@ static uint32_t idle_task_stack[IDLE_TASK_SIZE] ;
 static task_manager_t task_manager;     // 任务管理器
 
 // 应用进程task_struct 管理结构
-static task_t task_table[TASK_NR] ; 
+static task_t task_table[TASK_NR] ;   // 所有进程的task_t 都是在这个结构体数组中
 static mutex_t task_table_mutex ; 
 
 
@@ -107,12 +107,14 @@ int task_init(task_t * task , const char * name , int flag ,  uint32_t entry , u
 
     task->time_ticks = TASK_TIME_SLICE_DEFAULT ; 
     task->slice_ticks = task->time_ticks ; 
+    task->status = 0 ; 
 
     // 对 task_t 结构中的list_node_t 进行初始化
     list_node_init(&task->run_node) ;
     list_node_init(&task->all_node) ;  
     list_node_init(&task->wait_node) ; 
     kernel_memset(&task->file_table , 0 , sizeof(file_t*) * TASK_OFILE_NR ) ; 
+
 
     // 进行临界区保护
     irq_state_t  state = irq_enter_protection() ; 
@@ -429,6 +431,19 @@ static void free_task(task_t* task){
 }
 
 
+static void copy_opened_files(task_t* child_task) {
+    task_t* parent = task_current() ; 
+
+    // 将父进程的文件表，复制到子进程
+    for(int fd = 0 ; fd < TASK_OFILE_NR ; fd ++ ){
+        file_t* file = parent->file_table[fd] ; 
+        if(file) {
+            file_inc_ref(file) ; 
+            child_task->file_table[fd] = file ; 
+        }
+    }
+
+}
 
 // 创建子进程的一个流程
 
@@ -450,6 +465,8 @@ int sys_fork(){
         goto fork_failed ; 
     } 
 
+    copy_opened_files(child_task) ; 
+
     // 子进程的tss的设置,当子进程获取到运行资格之后，会将tss中的内容恢复到各个寄存器中。
     tss_t* tss = &child_task->tss ; 
     tss->eax =  0 ;   // 当子进程在恢复的时候，这个就是子进程的返回值 
@@ -466,12 +483,11 @@ int sys_fork(){
     tss->fs = frame->fs ;   
     tss->gs = frame->gs ; 
     tss->eflags = frame->eflags ; 
-
-
     child_task->parent = parent_task ; 
 
-    // 子进程和父进程共用同一个页表
 
+
+    // 子进程和父进程共用同一个页表
     if((tss->cr3 = memory_copy_vum(parent_task->tss.cr3) ) < 0 ){
         goto fork_failed;  
     }
@@ -745,3 +761,98 @@ file_t* task_file(int fd){
     }
     return (file_t*)0 ; 
 } 
+
+
+// 退出当前进程
+void sys_exit(int status){
+    task_t* curr_task = task_current() ; 
+
+    // 回收资源
+    for(int fd = 0 ; fd < TASK_OFILE_NR ; fd ++ ) {
+        file_t* file = curr_task->file_table[fd];
+        if(file) {
+            sys_close(fd) ; 
+            curr_task->file_table[fd] = (file_t*)0 ; 
+        }
+    }
+
+    int move_child = 0 ; 
+
+    // 将自己的子进程委托给first_task进程，
+    mutex_lock(&task_table_mutex) ; 
+    for(int fd = 0 ; fd < TASK_OFILE_NR ; fd ++ ){
+        task_t* task = task_table + fd ; 
+        if(task->parent == curr_task) {
+            task->parent = &task_manager.first_task ; 
+            if(task->state == TASK_ZOMBLE ) {
+                move_child = 1 ; 
+            }
+        }
+    }
+    mutex_unlock(&task_table_mutex) ; 
+
+
+
+    irq_state_t state = irq_enter_protection() ; 
+
+    task_t* parent = curr_task->parent ; 
+
+    // first_task是否需要唤醒
+    if(move_child && (parent != &task_manager.first_task ) ) {
+        if(task_manager.first_task.state == TASK_WAITTING ) {
+            task_set_ready(&task_manager.first_task) ; 
+        } 
+    }
+
+    if(parent->state == TASK_WAITTING )  {
+        task_set_ready(parent) ; 
+    }
+     
+    curr_task->status = status ;  // 保存该进程的退出状态
+    curr_task->state = TASK_ZOMBLE  ; // 设置进程的状态
+    task_set_block(curr_task) ;
+    
+    
+
+    task_dispatch() ;      
+    irq_exit_protection(state) ; 
+}
+
+
+
+int sys_wait(int* status ) {    // 父进程一直在等待某一个子进程的退出，如果没有父进程则阻塞
+    task_t* curr_task = task_current() ; 
+    for(; ; ) {
+        mutex_lock(&task_table_mutex) ; 
+        for(int i = 0 ; i < TASK_NR ; i ++ ) {
+            task_t* task = task_table + i ; 
+            if(task->parent != curr_task) {
+                continue ; 
+            }
+            if(task->state == TASK_ZOMBLE) {
+                int pid = task->pid ; 
+                *status = task->status ; 
+
+                // 释放资源
+                memory_destroy_uvm(task->tss.cr3) ; 
+                memory_free_page(task->tss.esp0 - MEM_PAGE_SIZE) ;
+                kernel_memset(task , 0 , sizeof(task) ) ; 
+                
+                mutex_unlock(&task_table_mutex) ; 
+                return pid ;   // 返回子进程的id
+            }
+        }
+        mutex_unlock(&task_table_mutex) ; 
+
+
+        irq_state_t state = irq_enter_protection() ;
+
+        task_set_block(curr_task); 
+        curr_task->state = TASK_WAITTING ; 
+        task_dispatch() ; 
+        
+        irq_exit_protection(state) ; 
+    }
+    
+    return 0 ; 
+}

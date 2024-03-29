@@ -19,6 +19,7 @@ typedef struct _task_t {
         TASK_SLEEP , 
         TASK_READY ,
         TASK_WAITTING ,  
+        TASK_ZOMBLE , 
     }state ; 
     int pid ; 
     struct _task_t* parent ;  // 记录当前进程的父进程。
@@ -29,7 +30,8 @@ typedef struct _task_t {
     int sleep_ticks ; 
     int time_ticks ; 
     int slice_ticks ; 
-
+    
+    int status ; 
 
     char name[TASK_NAME_SIZE] ; 
 
@@ -42,6 +44,7 @@ typedef struct _task_t {
     int tss_sel ; 
 
     file_t* file_table[TASK_OFILE_NR] ; 
+
 
 } task_t ; 
 
@@ -110,5 +113,8 @@ int sys_fork() ;
 
 int sys_execve(char* name , char ** argv , char **env ) ; 
 
+void sys_exit(int status) ; 
+
+int sys_wait(int* status ) ; 
 
 #endif 

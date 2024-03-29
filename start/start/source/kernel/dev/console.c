@@ -9,6 +9,8 @@
 static console_t console_buf[CONSOLE_NR];
 static int curr_console_idx = 0;
 
+
+
 /**
  * @brief 读取当前光标的位置
  */
@@ -220,6 +222,8 @@ int console_init (int idx) {
         console->cursor_col = 0;
         clear_display(console);
     }
+
+    mutex_init(&console->mutex) ;  
 
     console->old_cursor_row = console->cursor_row;
     console->old_cursor_col = console->cursor_col;
@@ -433,8 +437,11 @@ static void write_esc_square (console_t * console, char c) {
  * 可能有多个进程在写，注意保护
  */
 int console_write (tty_t * tty) {
+
+
 	console_t * console = console_buf + tty->console_idx ; 
     int len = 0;
+    mutex_lock(&console->mutex) ; 
     do {
         char c;
         // 取字节数据, 如果在tty_fifo_get中取不到数据，就直接返回0了,也就退出了do while循环了
@@ -457,6 +464,7 @@ int console_write (tty_t * tty) {
         }
         len++;
     }while (1);
+    mutex_unlock(&console->mutex) ; 
 
     if (tty->console_idx == curr_console_idx) {
         update_cursor_pos(console);

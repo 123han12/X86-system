@@ -30,4 +30,6 @@ void file_table_init(void) ;
 file_t* file_alloc(void) ; 
 void file_free(file_t* file)  ;
 
+void file_inc_ref(file_t* file) ; 
+
 #endif 

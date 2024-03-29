@@ -32,6 +32,8 @@ static const  sys_handler_t sys_table[] = {
     [SYS_sbrk] = (sys_handler_t)sys_sbrk , 
     [SYS_fstat] = (sys_handler_t)sys_fstat , 
     [SYS_dup] = (sys_handler_t)sys_dup ,    
+    [SYS_exit] = (sys_handler_t)sys_exit , 
+    [SYS_wait] = (sys_handler_t)sys_wait , 
 
 } ; 
 

@@ -2,6 +2,7 @@
 #define CONSOLE_H 
 #include "common/types.h" 
 #include "dev/tty.h"
+#include "ipc/mutex.h"
 
 #define CONSOLE_DISP_ADDR    0xb8000
 #define CONSOLE_DISP_END     (0xb8000 + 32 * 1024) 
@@ -62,6 +63,8 @@ typedef struct _console_t {
 
     int esc_param[ESC_PARAM_MAX] ; 
     int curr_parm_index ; 
+
+    mutex_t mutex ; 
 
 } console_t ; 
 

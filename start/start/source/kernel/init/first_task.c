@@ -41,9 +41,11 @@ int first_task_main(void)
     }
 
 
+    // 回收所有的孤儿进程的资源
     for(; ; )
     {
-        msleep(1000) ; 
+        int status ; 
+        wait(&status) ; 
     }
 
     return 0;
