@@ -163,6 +163,9 @@ void _exit(int status) {
     args.id = SYS_exit ; 
     args.arg0 = (int)status ; 
     sys_call(&args) ;
+    for(; ; ) {
+        
+    }
 }
 
 int wait(int* status ) {

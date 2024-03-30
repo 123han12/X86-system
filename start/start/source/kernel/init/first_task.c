@@ -23,7 +23,7 @@ int first_task_main(void)
     
 #endif 
 
-    for(int i = 0 ;i < TTY_NR ; i ++ ) {
+    for(int i = 0 ;i < 1 ; i ++ ) {
         int pid = fork() ;
         if(pid < 0 ) {
             print_msg("create shello failed.." , 0 ) ; 
@@ -39,8 +39,6 @@ int first_task_main(void)
             } 
         }
     }
-
-
     // 回收所有的孤儿进程的资源
     for(; ; )
     {

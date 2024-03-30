@@ -8,10 +8,21 @@
 #include "fs/file.h"
 #include "dev/dev.h"
 #include "core/task.h" 
+#include "tools/list.h"
+#include "cpu/irq.h"
+
+#define FS_TABLE_SIZE   10 
+
+extern fs_op_t devfs_op ; 
+
+
+// 做一个文件系统管理表，每一个表项都是不同的文件系统
+static list_t mounted_list ; 
+static fs_t fs_table[FS_TABLE_SIZE] ; 
+static list_t free_list ; 
 
 
 #define TEMP_FILE_ID  100
-
 static uint8_t TEMP_ADDR[100*1024] ; 
 static uint8_t* temp_pos ; 
 
@@ -159,8 +170,82 @@ int sys_fstat(int file , struct stat* st ) {
     return -1 ;
 }
 
+
+static void mount_list_init(void) {
+    list_init(&free_list) ; 
+    for(int i = 0 ; i < FS_TABLE_SIZE ; i ++ ) {
+        list_insert_first(&free_list , &fs_table[i].node) ; 
+    }
+    list_init(&mounted_list) ; 
+}
+
+
+static fs_op_t* get_fs_op(fs_type_t type , int major ) {
+    switch(type) {
+        case FS_DEVFS:
+            return &devfs_op ; 
+            break ; 
+        default:
+            return (fs_op_t*)0 ; 
+            break ; 
+    }
+}
+
+static fs_t* mount(fs_type_t type , char* mount_point , int dev_major , int dev_minor ) {
+    fs_t* fs = (fs_t*) 0 ; 
+    log_printf("mount file system , name:%s , dev:%d\n" , mount_point , dev_major ) ; 
+
+    list_node_t* curr = list_first(&mounted_list) ; 
+    while(curr) {
+        fs_t* ptr = list_parent_node(curr , fs_t , node ) ; 
+        if(kernel_memcmp(fs->mount_point , mount_point , FS_MOUNT_SIZE) == 0 ) {
+            log_printf("fs aleardy mounted") ; 
+            goto mount_failed ; 
+        }
+
+        curr = list_node_next(curr) ; 
+    }
+
+    list_node_t* free_node = list_remove_first(&free_list ) ; 
+    if(!free_node) {
+        log_printf("no free fs , mount failed..") ; 
+        goto mount_failed ; 
+    }
+    fs = list_parent_node(free_node , fs_t , node) ; 
+
+    // 初始化这个fs的字段
+    fs_op_t* op = get_fs_op(type , dev_major) ; 
+    if(op == (fs_op_t*)0 ) {
+        log_printf("unsupported fs type!:%d" , type ) ; 
+        goto mount_failed; 
+    }
+
+    kernel_memset(fs , 0 , sizeof(fs) ) ; 
+    kernel_memcpy(fs->mount_point , mount_point , FS_MOUNT_SIZE ) ;   
+    fs->op = op ;
+    
+    if(op->mount(fs , dev_major , dev_minor ) < 0 ) {
+        log_printf("mount fs %s is failed.." , mount_point ) ; 
+        goto mount_failed; 
+    } 
+
+    list_insert_first(&mounted_list , &fs->node ); 
+
+    return fs ; 
+mount_failed:
+    if(fs){
+        list_insert_last(&free_list , &fs->node ) ; 
+    }
+    return (fs_t*)0 ; 
+} 
+
 void fs_init(void) {
     file_table_init() ; 
+    mount_list_init() ; 
+
+    fs_t* fs = mount(FS_DEVFS , "/dev" , 0 , 0 ) ; 
+    ASSERT(fs != (fs_t*)0 ) ;  
+
 }
 
 int sys_dup(int file ) {
