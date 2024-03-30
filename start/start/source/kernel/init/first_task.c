@@ -30,8 +30,8 @@ int first_task_main(void)
             break ; 
         }
         if(pid == 0 ) {
-            char tty_num[5] = "tty:?" ; 
-            tty_num[4] = i + '0' ; 
+            char tty_num[] = "/dev/tty?" ; 
+            tty_num[sizeof(tty_num) - 2 ] = i + '0' ; 
             char* argv[] = {tty_num , (char*)0 } ; 
             execve("/shell.elf" , argv , (char**)0 ) ; 
             while(1) {

@@ -29,13 +29,15 @@ typedef enum _fs_type_t {
 
 typedef struct _fs_t {
     fs_op_t * op ; // 回调函数的表
-    char* mount_point[FS_MOUNT_SIZE] ; 
+    char mount_point[FS_MOUNT_SIZE] ; 
     fs_type_t type ; 
     void*  data ; 
     int dev_id ;   // 设备的id , 识别磁盘上的某个分区
     
     list_node_t node ; 
     mutex_t*  mutex ; 
+
+
     
 
 }fs_t ; 
@@ -54,6 +56,11 @@ int sys_isatty(int file) ;
 void fs_init(void) ; 
 
 int sys_dup(int file ) ; 
+
+
+
+int path_to_num(const char* path , int* num ) ; 
+const char* path_next_child(const char* path ) ; 
 
 
 

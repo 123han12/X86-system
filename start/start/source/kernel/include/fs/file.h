@@ -6,6 +6,8 @@
 #define FILE_NAME_SIZE  32 
 #define FILE_TABLE_SIZE  2048
 
+struct _fs_t ; 
+
 typedef enum _file_type_t {
     FILE_UNKNOWN = 0 , 
     FILE_TTY , 
@@ -22,6 +24,8 @@ typedef struct _file_t {
     int pos ;  // 文件读取的位置
 
     int mode ; // 文件的读写模式
+
+    struct _fs_t* fs ;  
 
 } file_t ; 
 
