@@ -1,6 +1,12 @@
 #ifndef DISK_H 
 #define DISK_H 
 #include "common/types.h"
+#include "dev/dev.h"
+#include "cpu/irq.h"
+#include "ipc/mutex.h"
+#include "ipc/sem.h"
+
+
 
 #define DISK_NAME_SIZE         32 
 #define DISK_PRIMARY_PART_CNT  (4 + 1)
@@ -70,6 +76,8 @@ typedef struct _disk_t {
     int sector_count ; // 扇区的数量
     partinfo_t partinfo[DISK_PRIMARY_PART_CNT] ; 
 
+    mutex_t * mutex ;
+    sem_t* op_sem ; 
 
 } disk_t ; 
 
@@ -101,6 +109,7 @@ typedef struct _mbr_t {
 
 }mbr_t ; 
 
+
 #pragma pack() 
 
 
@@ -108,8 +117,17 @@ typedef struct _mbr_t {
 
 void disk_init() ; 
 
+int disk_open(device_t* dev ) ; 
+int disk_read(device_t* dev , int addr , char* buf , int size ) ; 
+int disk_write(device_t* dev , int addr , char* buf , int size ) ; 
+int disk_control(device_t* dev , int cmd , int arg0 , int agr1 ) ; 
+int disk_close(device_t* dev) ; 
 
 
+
+
+void exception_handler_ide_primary(void) ; 
+void do_handler_ide_primary(exception_frame_t* frame ) ; 
 
 
 #endif 

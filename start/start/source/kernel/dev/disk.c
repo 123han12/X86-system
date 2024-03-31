@@ -4,7 +4,14 @@
 #include "common/cpu_instr.h"
 #include "common/boot_info.h"
 
+static mutex_t mutex ; 
+static sem_t  op_sem ; 
+
 static disk_t disk_buf[DISK_CNT] ; 
+
+static int task_on_op ; 
+
+
 
 
 // 向磁盘的指定的分区发送命令
@@ -131,7 +138,7 @@ static void print_disk_info(disk_t* disk ) {
             ) ; 
         }
     }
-    
+
 }
 
 // 识别计算机中硬盘的个数
@@ -140,15 +147,23 @@ void disk_init() {
 
     log_printf("Check disk.....") ;
     kernel_memset(disk_buf , 0 , sizeof(disk_buf) ) ; 
+
+    // 进行锁的初始化
+    mutex_init(&mutex) ; 
+    sem_init(&op_sem , 1 ) ; 
+
     
     for(int i = 0 ; i < DISK_PER_CHANNEL ; i ++ ) {
         disk_t* disk = disk_buf + i ; 
+
         
         // 设置磁盘名称
         kernel_sprintf(disk->name , "sd%c" , i + 'a' ) ; 
         
         disk->drive = (i == 0 ) ? DISK_MASTER : DISK_SLAVE ; 
         disk->port_base = IOBASE_PRIMARY ; 
+        disk->mutex = &mutex ;
+        disk->op_sem = &op_sem ; 
 
         int err = identify(disk) ;   // 识别磁盘信息
         if(err == 0 ) { 
@@ -159,3 +174,151 @@ void disk_init() {
     // 解析磁盘分区表
 
 }
+
+
+
+int disk_open(device_t* dev ) {
+    // 0xa0 a表示磁盘的编号，0表示 分区号
+    int disk_idx = ( ( dev->minor >> 4 ) & 0xF )  - 0xa; 
+    int part_idx = dev->minor & 0xF ;  // 分区号
+
+    if((disk_idx >= DISK_CNT ) || (part_idx >= DISK_PRIMARY_PART_CNT ) ) {
+        log_printf("device minor error: %d" , dev->minor ) ;
+        return -1 ;  
+    } 
+
+    disk_t* disk = disk_buf + disk_idx ; 
+    if(disk->sector_count == 0 ) {
+        log_printf("disk not exists,device: sd%x" , dev->minor ) ; 
+        return -1 ; 
+    }
+    partinfo_t* part_info = disk->partinfo + part_idx ; 
+    if(part_info->totoal_sector == 0 ) {
+        log_printf("part not exists, device: sd%x" , dev->minor ) ;  
+        return -1 ; 
+    }
+
+    // 将目标分区的信息存储到dev->data中
+    dev->data = part_info ; 
+
+    // 使得磁盘中断能够生效
+    irq_install(IRQ14_HARDDISK_PRIMARY , (irq_handler_t)exception_handler_ide_primary) ; 
+    irq_enable(IRQ14_HARDDISK_PRIMARY) ; 
+    
+
+    return 0 ; 
+    
+}
+
+/// @brief addr 参数表示的是相对于当前分区的扇区的起始地址
+/// @param dev 
+/// @param addr 
+/// @param buf 
+/// @param size 
+/// @return 
+int disk_read(device_t* dev , int addr , char* buf , int size ) {
+
+    // 通过信号量和中断的配合防止出现进程的忙等现象
+    partinfo_t* part_info = (partinfo_t*)dev->data ;
+    if(!part_info) {
+        log_printf("Get part info failed. device: %d" , dev->minor ) ; 
+    }
+
+    disk_t* disk = part_info->disk ; 
+
+    if(disk == (disk_t*)0 ) {
+        log_printf("No disk:%d" , dev->minor);
+    }
+
+    mutex_lock(disk->mutex) ;  // 先进行上锁
+
+    task_on_op = 1 ; 
+
+    // 在传入的时候需要将相对分区地址转换为绝对分区地址
+    disk_send_cmd(disk , part_info->start_sector + addr , size , DISK_CMD_READ ) ; 
+    
+    int cnt ; 
+    for(cnt = 0 ; cnt < size ; cnt ++ , buf += disk->sector_size ) {
+        sem_wait(disk->op_sem ) ; 
+        int err = disk_wait_data(disk) ; 
+        if(err < 0 ) {
+            log_printf("disk(%s)  read error: start sector %d count: %d" , addr  , size ) ; 
+            break ; 
+        }
+        // 每一次读取一个扇区的大小
+        disk_read_data(disk , buf , disk->sector_size ) ; 
+    }
+
+    mutex_unlock(disk->mutex) ; 
+
+
+    return cnt ; 
+}
+int disk_write(device_t* dev , int addr , char* buf , int size ) {
+    // 通过信号量和中断的配合防止出现进程的忙等现象
+    partinfo_t* part_info = (partinfo_t*)dev->data ;
+    if(!part_info) {
+        log_printf("Get part info failed. device: %d" , dev->minor ) ; 
+    }
+
+    disk_t* disk = part_info->disk ; 
+
+    if(disk == (disk_t*)0 ) {
+        log_printf("No disk:%d" , dev->minor);
+    }
+
+    mutex_lock(disk->mutex) ;  // 先进行上锁
+
+    task_on_op = 1 ; 
+
+    // 在传入的时候需要将相对分区地址转换为绝对分区地址
+    disk_send_cmd(disk , part_info->start_sector + addr , size , DISK_CMD_WRITE ) ; 
+    
+    int cnt ; 
+    for(cnt = 0 ; cnt < size ; cnt ++ , buf += disk->sector_size ) {
+        disk_write_data(disk , buf , disk->sector_size ) ;  
+        sem_wait(disk->op_sem ) ;  // 这里为什么是sem_wait在后面？？
+
+        int err = disk_wait_data(disk) ; 
+        if(err < 0 ) {
+            log_printf("disk(%s)  read error: start sector %d count: %d" , addr  , size ) ; 
+            break ; 
+        }
+        // 每一次读取一个扇区的大小
+    }
+
+    mutex_unlock(disk->mutex) ; 
+
+    return cnt ; 
+}
+int disk_control(device_t* dev , int cmd , int arg0 , int agr1 ) {
+    return -1 ; 
+}
+int disk_close(device_t* dev) {
+    return -1 ; 
+}
+
+
+dev_desc_t dev_disk_desc = {
+    .name = "disk", 
+    .major = DEV_DISK , 
+    .open = disk_open , 
+    .read = disk_read , 
+    .write = disk_write , 
+    .control = disk_control , 
+    .close = disk_close , 
+} ; 
+
+
+void do_handler_ide_primary(exception_frame_t* frame ) {
+    pic_send_eoi(IRQ14_HARDDISK_PRIMARY) ;  
+
+
+    if(task_on_op ) { 
+        sem_notify(&op_sem) ; // 通知进程
+    }
+
+}
+
+
+

@@ -51,6 +51,8 @@
 
 #define IRQ_PIC_START       0x20
 
+#define IRQ14_HARDDISK_PRIMARY  (0x20 + 14 )
+
 #define PIC_OCW2_EOI        (1 << 5) 
 
 

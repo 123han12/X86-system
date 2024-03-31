@@ -3,10 +3,12 @@
 
 #define DEV_NAME_SIZE      32
 
-#define DEV_TTY            1 
+// #define DEV_TTY            1 
 
 enum {
     DEV_UNKNOWN = 0 , 
+    DEV_TTY , 
+    DEV_DISK , 
 } ; 
 
 
@@ -46,6 +48,8 @@ int dev_read(int dev_id , int addr , char* buf , int size ) ;
 int dev_write(int dev_id , int addr , char* buf , int size) ;
 int dev_control(int dev_id , int cmd , int arg0 , int arg1 ) ; 
 void dev_close(int dev_id) ; 
+
+
 
 
 #endif 

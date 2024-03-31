@@ -17,6 +17,8 @@
         "kbd.h": "c",
         "tty.h": "c",
         "stdint.h": "c",
-        "stdlib.h": "c"
+        "stdlib.h": "c",
+        "boot_info.h": "c",
+        "dev.h": "c"
     },
 }

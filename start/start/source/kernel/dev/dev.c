@@ -1,16 +1,18 @@
 #include "dev/dev.h"
 #include "cpu/irq.h"
 #include "tools/klib.h"
+#include "dev/disk.h"
 
 #define DEV_TABLE_SIZE     128 
 
 extern dev_desc_t dev_tty_desc ; 
-
+extern dev_desc_t dev_disk_desc ; 
 
 // 设备种类表，操作系统每接入一种新的设备，都需要在这里插入新的设备种类
 // 并且每个设备种类元素都在自己的编译单元内设置好了自己的特定的处理函数
 static dev_desc_t* dev_desc_table[] = {
     &dev_tty_desc , 
+    &dev_disk_desc , 
 
 } ; 
 
