@@ -81,5 +81,4 @@ fs_op_t devfs_op = {
     .close = devfs_close  , 
     .seek = devfs_seek , 
     .stat = devfs_stat , 
-
 } ; 

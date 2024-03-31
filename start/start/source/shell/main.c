@@ -159,6 +159,8 @@ int main (int argc, char **argv) {
 
     cli_init(promot , cmd_list , sizeof(cmd_list ) / sizeof(cmd_list[0] ) ); 
 
+    printf("Hello world..") ; 
+
     for(;;) {
         show_promot(cli.promot) ; 
         char* str = fgets(cli.curr_input , CLI_INPUT_SIZE , stdin ) ; 

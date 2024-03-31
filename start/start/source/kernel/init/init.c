@@ -30,7 +30,6 @@ void kernel_init(boot_info_t* boot_info )
     memory_init(boot_info) ; 
     fs_init() ; 
     time_init() ;  // 启动定时器
-
     task_manager_init() ;  // 任务管理器初始化
 }
 

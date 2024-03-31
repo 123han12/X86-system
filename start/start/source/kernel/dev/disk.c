@@ -91,7 +91,9 @@ static void detect_part_info(disk_t* disk ) {
     }
 }
 
-
+/// @brief 识别 primary bus 上的硬盘，并且将识别到的信息放入到disk_t 结构中
+/// @param disk 
+/// @return 
 static int identify(disk_t* disk ) {
     disk_send_cmd(disk , 0 , 0 , DISK_CMD_IDENTIFY ) ; 
     int err = inb(DISK_STATUS(disk) ) ;
@@ -141,7 +143,7 @@ static void print_disk_info(disk_t* disk ) {
 
 }
 
-// 识别计算机中硬盘的个数
+// 识别计算机中硬盘的个数, 将通过端口读取到的disk1 和 disk2 的信息存储到 disk_buf[0] 和disk_buf[1] 中
 void disk_init() {
     // 这里仅考虑Primary bus 上的两个硬盘
 

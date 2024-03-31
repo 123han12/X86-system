@@ -88,6 +88,7 @@ int sys_open(const char *name, int flags)
 {
     if (kernel_memcmp((void *)name, (void *)"/shell.elf", 3) == 0)
     {
+        // 通过dev_id确认磁盘在dev_table表中的位置
         int dev_id = dev_open(DEV_DISK , 0xa0 , (void*)0) ;
         dev_read(dev_id , 5000 , (uint8_t*)TEMP_ADDR , 80 ) ; // 读取elf文件到内存指定的地址中
         temp_pos = TEMP_ADDR ; 
@@ -184,6 +185,7 @@ int sys_read(int file, char *ptr, int len)
 // 向file文件中进行写，首地址为ptr 长度为len , newlib 库传过来的file 是1
 int sys_write(int file, char *ptr, int len)
 {
+
     if(is_fd_bad(file) || !ptr || !len ) {
         return -1 ; 
     }
@@ -392,13 +394,14 @@ mount_failed:
 
 void fs_init(void)
 {
-    file_table_init();
+    file_table_init(); // 初始化全局的表格
     mount_list_init();
 
     // 在文件系统初始化的时候，将磁盘初始化好 
     disk_init() ; 
 
 
+    // 挂载 之前写好的设备管理层。
     fs_t *fs = mount(FS_DEVFS, "/dev", 0, 0) ;  // 挂载设备文件系统
     ASSERT(fs != (fs_t *)0);
 
@@ -406,7 +409,7 @@ void fs_init(void)
     root_fs = mount(FS_FAT16 , "/home" , ROOT_DEV ) ; 
     ASSERT(root_fs != (fs_t*)0 ) ; 
     
-
+    
 }
 
 

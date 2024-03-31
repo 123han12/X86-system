@@ -21,6 +21,8 @@
         "boot_info.h": "c",
         "dev.h": "c",
         "fatfs.h": "c",
-        "mutex.h": "c"
+        "mutex.h": "c",
+        "os_cfg.h": "c",
+        "disk.h": "c"
     },
 }
