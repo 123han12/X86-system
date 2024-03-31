@@ -31,6 +31,16 @@ static inline uint16_t inw(uint16_t port )
 }
 
 
+static inline void outw(uint16_t port , uint16_t data )   
+{
+    __asm__  __volatile__ 
+    (
+        "out %[v] , %[p] \n\t" 
+        :
+        : [p]"d"(port) , [v]"a"(data) 
+    ) ; 
+}
+
 // 向指定端口输出数据
 static inline void outb(uint16_t port , uint8_t data )
 {   

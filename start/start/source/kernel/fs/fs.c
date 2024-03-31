@@ -11,7 +11,7 @@
 #include "tools/list.h"
 #include "cpu/irq.h"
 #include <sys/file.h>
-
+#include "dev/disk.h"
 
 #define FS_TABLE_SIZE 10
 
@@ -415,6 +415,10 @@ void fs_init(void)
 {
     file_table_init();
     mount_list_init();
+
+    // 在文件系统初始化的时候，将磁盘初始化好 
+    disk_init() ; 
+
 
     fs_t *fs = mount(FS_DEVFS, "/dev", 0, 0);
     ASSERT(fs != (fs_t *)0);

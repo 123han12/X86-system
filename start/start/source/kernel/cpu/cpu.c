@@ -87,6 +87,7 @@ void swith_to_tss(int selector )
     far_jump(selector , 0 ) ;  // 实现程序切换的最重要的部分，就是跳转到指定的代码进行执行
 }
 
+
 void cpu_init(void)
 {
     mutex_init(&mutex) ; 
