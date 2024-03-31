@@ -12,10 +12,15 @@
 #include "cpu/irq.h"
 #include <sys/file.h>
 #include "dev/disk.h"
+#include "os_cfg.h"
 
 #define FS_TABLE_SIZE 10
 
 extern fs_op_t devfs_op;
+extern fs_op_t fatfs_op ; 
+
+static fs_t* root_fs ; 
+
 
 // 做一个文件系统管理表，每一个表项都是不同的文件系统
 static list_t mounted_list;
@@ -115,12 +120,11 @@ int sys_open(const char *name, int flags)
         if (node == end)
             break;
     }
-    if (fs)
-    {
+    if (fs){  
         name = path_next_child(name);
     }
-    else
-    {
+    else{    // 没有找到相应的文件系统就挂载到root_fs下
+        fs = root_fs ; 
     }
 
     file->mode = flags;
@@ -318,6 +322,9 @@ static fs_op_t *get_fs_op(fs_type_t type, int major)
     case FS_DEVFS:
         return &devfs_op;
         break;
+    case FS_FAT16:
+        return &fatfs_op ; 
+        break ; 
     default:
         return (fs_op_t *)0;
         break;
@@ -392,8 +399,14 @@ void fs_init(void)
     disk_init() ; 
 
 
-    fs_t *fs = mount(FS_DEVFS, "/dev", 0, 0);
+    fs_t *fs = mount(FS_DEVFS, "/dev", 0, 0) ;  // 挂载设备文件系统
     ASSERT(fs != (fs_t *)0);
+
+    // 挂载FAT16分区
+    root_fs = mount(FS_FAT16 , "/home" , ROOT_DEV ) ; 
+    ASSERT(root_fs != (fs_t*)0 ) ; 
+    
+
 }
 
 

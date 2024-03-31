@@ -19,6 +19,8 @@
         "stdint.h": "c",
         "stdlib.h": "c",
         "boot_info.h": "c",
-        "dev.h": "c"
+        "dev.h": "c",
+        "fatfs.h": "c",
+        "mutex.h": "c"
     },
 }

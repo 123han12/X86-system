@@ -239,7 +239,9 @@ int disk_read(device_t* dev , int addr , char* buf , int size ) {
     
     int cnt ; 
     for(cnt = 0 ; cnt < size ; cnt ++ , buf += disk->sector_size ) {
-        sem_wait(disk->op_sem ) ; 
+        if(task_current() ) {
+            sem_wait(disk->op_sem ) ; 
+        }
         int err = disk_wait_data(disk) ; 
         if(err < 0 ) {
             log_printf("disk(%s)  read error: start sector %d count: %d" , addr  , size ) ; 
@@ -277,8 +279,10 @@ int disk_write(device_t* dev , int addr , char* buf , int size ) {
     int cnt ; 
     for(cnt = 0 ; cnt < size ; cnt ++ , buf += disk->sector_size ) {
         disk_write_data(disk , buf , disk->sector_size ) ;  
-        sem_wait(disk->op_sem ) ;  // 这里为什么是sem_wait在后面？？
 
+        if(task_current() ) {
+            sem_wait(disk->op_sem ) ; 
+        }
         int err = disk_wait_data(disk) ; 
         if(err < 0 ) {
             log_printf("disk(%s)  read error: start sector %d count: %d" , addr  , size ) ; 
@@ -314,7 +318,7 @@ void do_handler_ide_primary(exception_frame_t* frame ) {
     pic_send_eoi(IRQ14_HARDDISK_PRIMARY) ;  
 
 
-    if(task_on_op ) { 
+    if(task_on_op && task_current() ) { 
         sem_notify(&op_sem) ; // 通知进程
     }
 
