@@ -24,6 +24,7 @@
         "mutex.h": "c",
         "os_cfg.h": "c",
         "disk.h": "c",
-        "string.h": "c"
+        "string.h": "c",
+        "console.h": "c"
     },
 }

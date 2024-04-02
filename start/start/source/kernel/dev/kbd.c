@@ -95,8 +95,6 @@ static void do_fx_key(int key) {
     }
 }
 
-
-
 static void do_normal_key(uint8_t raw_code ) {
     char key = get_key(raw_code) ; 
     int is_make = is_make_code(raw_code) ; 
@@ -150,7 +148,14 @@ static void do_normal_key(uint8_t raw_code ) {
                         key = key - 'A' + 'a' ; 
                     }   
                 }
-                tty_in(key) ; 
+
+                if(kbd_state.lctrl_press || kbd_state.rctrl_press ){
+                    if(key == 'l' || key == 'L') {
+                        quick_clear_console() ;  // 在底层会将相应的字符显示出来
+                    }
+                } else {
+                    tty_in(key) ;
+                }
             }
             break ; 
     }

@@ -168,6 +168,10 @@ static void clear_display (console_t * console) {
         start->background = console->background;
         start->foreground = console->foreground;
     }
+
+    // 清除之后，光标的位置也需要进行一下置位。
+    console->cursor_col = 0 ; 
+    console->cursor_row = 0 ; 
 }
 
 /**
@@ -438,7 +442,6 @@ static void write_esc_square (console_t * console, char c) {
  */
 int console_write (tty_t * tty) {
 
-
 	console_t * console = console_buf + tty->console_idx ; 
     int len = 0;
     mutex_lock(&console->mutex) ; 
@@ -478,3 +481,24 @@ int console_write (tty_t * tty) {
 void console_close (int dev) {
 	// 似乎不太需要做点什么
 }
+
+/// @brief 在当前tty上展示前缀prefix
+/// @param tty 
+/// @param prefix 
+static void console_show_prefix(console_t* console , const char* prefix ){
+    mutex_lock(&console->mutex) ;   
+    int len = kernel_strlen(prefix) ; 
+    for(int i = 0 ; i < len ; i ++ ) {
+        show_char(console , *(prefix + i) ) ; 
+    }
+    mutex_unlock(&console->mutex) ; 
+}
+// 快速将当前屏幕进行清屏
+void clear_current_console(tty_t* tty) {
+    console_t* console = console_buf + tty->console_idx ; 
+    clear_display(console) ; 
+    console_show_prefix(console , "sh>>") ; 
+    update_cursor_pos(console) ; 
+} 
+
+

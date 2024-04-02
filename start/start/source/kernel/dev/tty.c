@@ -252,3 +252,9 @@ void tty_select(int tty) {
     }
 }
 
+void quick_clear_console(void){
+    tty_t* tty =tty_devs + curr_tty ; 
+    clear_current_console(tty) ; 
+}
+
+

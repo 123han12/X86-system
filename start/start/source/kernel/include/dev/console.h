@@ -76,4 +76,8 @@ void console_close(int console ) ;
 
 void console_select(int idx );  
 
+void clear_current_console(tty_t* tty) ; 
+
+
+
 #endif 
