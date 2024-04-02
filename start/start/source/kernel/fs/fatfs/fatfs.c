@@ -277,8 +277,41 @@ int fatfs_write(char *buf, int size, file_t *file){
 void fatfs_close(file_t *file){
     return  ; 
 }
+
+/// @brief 将pos调整到相对于文件开头的offset的地方
+/// @param file 
+/// @param offset 
+/// @param dir 
+/// @return 
 int fatfs_seek(file_t *file, uint32_t offset, int dir){
-    return -1 ; 
+    // 如果不是相对于文件开头，就不处理了
+    if(dir != 0 ) {
+        return -1 ; 
+    } 
+    fat_t* fat =  (fat_t*)file->fs->data ; 
+    cluster_t current_cluster = file->sblk ; 
+    uint32_t curr_pos = 0 ; 
+    uint32_t offset_to_move = offset ; 
+    while(offset_to_move > 0 ) {
+        uint32_t c_offset = curr_pos % fat->cluster_byte_size ; 
+        uint32_t curr_move = offset_to_move ; 
+        if(c_offset + curr_move <  fat->cluster_byte_size ) {
+            curr_pos += curr_move ; 
+            break ; 
+        }   
+
+        curr_move = fat->cluster_byte_size - c_offset ; 
+        curr_pos += curr_move ; 
+        offset_to_move -= curr_move ; 
+        current_cluster  = cluster_get_next(fat , current_cluster ) ; 
+        if(!cluster_is_vaild(current_cluster) ) {
+            return -1 ; 
+        }
+    }
+
+    file->pos = curr_pos ; 
+    file->cblk = current_cluster ; 
+    return 0 ; 
 }
 int fatfs_stat(file_t *file, struct stat *st){
 

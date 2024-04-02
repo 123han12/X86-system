@@ -243,8 +243,10 @@ static void run_exec_file(const char* path , int argc , char** argv ) {
         printf("create child process failed....\n") ;
 
     }else if(pid == 0 ){
-        for(int i = 0 ; i < argc ; i ++ ) {
-            printf("arg %d = %s \n" , i , argv[i] ) ; 
+        // 加载磁盘上的应用程序
+        int err = execve(path  , argv , (char*const*)0 ) ; 
+        if(err < 0 ) {
+            fprintf(stderr , "exec failed....") ; 
         }
         exit(-1) ; 
     }else {
@@ -254,6 +256,16 @@ static void run_exec_file(const char* path , int argc , char** argv ) {
     }
 }
 
+
+// 判断文件系统上是否存在这个文件
+static const char* find_exec_path(const char* name ) {
+    FILE* fd = fopen(name , "r") ;
+    if(fd == (FILE*)0 ) {
+        return (const char*)0 ; 
+    } 
+    fclose(fd) ; 
+    return name ;  
+}
 
 int main (int argc, char **argv) { 
     open(argv[0] , O_RDWR) ; // 0 -> dev0   
@@ -296,14 +308,12 @@ int main (int argc, char **argv) {
             run_builtin(cmd , argc , argv ) ; 
             continue ; 
         }
-
-
-        run_exec_file("" , argc , argv ) ; 
-
-
+        const char* path = find_exec_path(argv[0] ) ; // 判断文件是否存在
+        if(path){
+            run_exec_file(path  , argc , argv ) ; 
+            continue ; 
+        }
         fprintf(stderr , ESC_COLOR_ERROR"Unknown command: %s\n"ESC_COLOR_DEFAULT , cli.curr_input ); 
-
-        
     }
 
 

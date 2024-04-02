@@ -4,6 +4,7 @@
 #include "os_cfg.h"
 #include "tools/log.h"
 #include "common/types.h"
+#include "core/task.h"
 
 
 static gate_desc_t idt_table[IDT_TABLE_NR] ; 
@@ -45,7 +46,13 @@ static void do_default_handler(exception_frame_t* frame , const char* message )
 
 
 	log_printf("--------------------------------") ; 
-	for(; ;){ hlt() ; } 
+	if(frame->cs & 0x3 ) { // 如果是在用户特权级
+		sys_exit(frame->error_code) ; // 直接退出
+	}else {
+		while(1){
+			hlt() ; 
+		}
+	}
 }
 
 void do_handler_unknown (exception_frame_t * frame) {
@@ -121,9 +128,13 @@ void do_handler_general_protection(exception_frame_t * frame) {
 	log_printf("selector index:%d" , frame->error_code & 0xFFF8) ; 
 
 	dump_core_regs(frame) ; 
-	
-	while(1){
-		hlt() ; 
+		
+	if(frame->cs & 0x3 ) { // 如果是在用户特权级
+		sys_exit(frame->error_code) ; // 直接退出
+	}else {
+		while(1){
+			hlt() ; 
+		}
 	}
 
 
@@ -157,8 +168,12 @@ void do_handler_page_fault(exception_frame_t * frame) {
 
 	dump_core_regs(frame) ; 
 	
-	while(1){
-		hlt() ; 
+	if(frame->cs & 0x3 ) { // 如果是在用户特权级
+		sys_exit(frame->error_code) ; // 直接退出
+	}else {
+		while(1){
+			hlt() ; 
+		}
 	}
 }
 

@@ -27,9 +27,7 @@ static list_t mounted_list;
 static fs_t fs_table[FS_TABLE_SIZE];
 static list_t free_list;
 
-#define TEMP_FILE_ID 100
-static uint8_t TEMP_ADDR[100 * 1024];
-static uint8_t *temp_pos;
+
 
 
 static int is_fd_bad(int file)
@@ -86,14 +84,6 @@ static int path_begin_with(const char *path, const char *str)
 /// @return
 int sys_open(const char *name, int flags)
 {
-    if (kernel_memcmp((void *)name, (void *)"/shell.elf", 3) == 0)
-    {
-        // 通过dev_id确认磁盘在dev_table表中的位置
-        int dev_id = dev_open(DEV_DISK , 0xa0 , (void*)0) ; // 实际上这个底层调用到的是disk_open
-        dev_read(dev_id , 5000 , (uint8_t*)TEMP_ADDR , 80 ) ; // 读取elf文件到内存指定的地址中
-        temp_pos = TEMP_ADDR ; 
-        return TEMP_FILE_ID;
-    }
     file_t *file = file_alloc();
     int fd = -1;
     if (!file)
@@ -153,12 +143,6 @@ sys_open_failed:
 // 将在TEMP_ADDR中的elf文件读入到指定的地址ptr 中,
 int sys_read(int file, char *ptr, int len)
 {
-    if (TEMP_FILE_ID == file)
-    {
-        kernel_memcpy((void *)ptr, (void *)temp_pos, len);
-        temp_pos += len;
-        return len;
-    }
     if(is_fd_bad(file) || !ptr || !len ) {
         return -1 ; 
     }
@@ -209,12 +193,6 @@ int sys_write(int file, char *ptr, int len)
 }
 int sys_lseek(int file, int ptr, int dir)
 {
-    if (file == TEMP_FILE_ID)
-    {
-        temp_pos = (uint8_t *)(TEMP_ADDR + ptr);
-        return 0;
-    }
-
 
     if(is_fd_bad(file) ) {
         return -1 ; 
@@ -236,11 +214,6 @@ int sys_lseek(int file, int ptr, int dir)
 
 int sys_close(int file)
 {
-    if (file == TEMP_FILE_ID)
-    {
-        return 0;
-    }
-
     if(is_fd_bad(file) ) {
         log_printf("file error") ; 
         return 0 ; 

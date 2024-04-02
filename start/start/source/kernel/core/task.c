@@ -643,7 +643,7 @@ int copy_args(char* to , uint32_t page_dir , int argc , char** argv ) {
     
 
     // 获取字符串应该拷贝到的起始地址
-    char* dest_arg = to + sizeof(task_args_t) + sizeof(char*) * argc ; 
+    char* dest_arg = to + sizeof(task_args_t) + sizeof(char*) * (argc + 1 ) ; 
     char** dest_arg_tb = (char**)memory_get_paddr(page_dir , (uint32_t)(to + sizeof(task_args_t) ) ) ; 
     // 拷贝字符串
     for(int i = 0 ; i < argc ; i ++ ){
@@ -655,6 +655,9 @@ int copy_args(char* to , uint32_t page_dir , int argc , char** argv ) {
         dest_arg_tb[i] = dest_arg ;  // 注意 dest_arg_tb是物理地址，这里可以直接使用的！！ 
 
         dest_arg += len ; 
+    }
+    if(argc){
+        dest_arg_tb[argc] = '\0' ; 
     }
     int err = memory_copy_uvm_data((uint32_t)to , page_dir , (uint32_t)&task_args , sizeof(task_args_t) );
 
