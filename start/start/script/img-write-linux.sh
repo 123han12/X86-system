@@ -41,3 +41,4 @@ dd if=shell.elf of=$DISK1_NAME bs=512 conv=notrunc seek=5000
 # sudo cp -v shell.elf $TARGET_PATH
 # sudo cp -v loop.elf $TARGET_PATH/loop
 # sudo umount $TARGET_PATH
+

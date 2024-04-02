@@ -28,6 +28,7 @@ int read(int file , char* ptr , int len ) ;
 int write(int file , char* ptr , int len ) ; 
 int close(int file) ; 
 int lseek(int file , int ptr , int dir) ;  
+int ioctl(int file , int cmd , int arg0 , int arg1 ) ; 
 
 int isatty(int file) ; 
 int fstat(int file , struct stat* st);
@@ -36,5 +37,25 @@ int dup(int file) ;
 
 void _exit(int status) ;  
 int  wait(int* status ) ; 
+
+typedef struct _dirent{
+    int index ;
+    int type ; 
+    char name[255] ; 
+    int size ; 
+} dirent ; 
+
+typedef struct _DIR {
+    int index ; 
+    dirent dirent ;  
+}DIR ; 
+
+DIR* opendir(const char* path ) ;
+
+dirent* readdir(DIR* dir ) ; 
+
+int closedir(DIR* dir ) ; 
+
+
 
 #endif 

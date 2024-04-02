@@ -6,6 +6,9 @@
 #include <string.h>
 #include <getopt.h>
 #include <sys/file.h>
+#include "fs/file.h"
+#include "dev/tty.h"
+
 
 static cli_t cli ; 
 static const char*  promot  = "sh>>" ; 
@@ -81,6 +84,97 @@ static int do_exit(int argc , char** argv ) {
     return 0 ; 
 }
 
+
+static int do_ls(int argc , char** argv ) {
+    DIR* p_dir = opendir("temp") ; 
+    if(p_dir == (DIR*)0 ) {
+        printf("open dir failed.") ;
+        return -1 ; 
+    }
+    dirent * entry ; 
+    while((entry = readdir(p_dir)) != NULL ) {
+        strlwr(entry->name ) ; 
+        printf("%c %s size:%dB\n" , entry->type == FILE_DIR ? 'd' : 'f' , entry->name , entry->size )  ;
+    }
+    closedir(p_dir) ;   
+    return 0 ; 
+}
+
+static int do_less(int argc , char** argv) {
+
+    int line_mode = 0 ; 
+    int ch ; 
+    while((ch = getopt(argc , argv , "lh") ) != -1 ) { // getopt 会自动调整argv中的参数的顺序
+        switch (ch)
+        {
+        case 'h':
+            puts("show file content ") ; 
+            puts("Usage: less [-l] file") ; 
+            optind = 1 ; 
+            return 0 ;
+        case 'l':
+            line_mode = 1 ; 
+            break ; 
+        case '?':
+            if(optarg ) {
+                fprintf(stderr , ESC_COLOR_ERROR"Unknown option: -%s\n"ESC_COLOR_DEFAULT , optarg ); 
+            }
+            optind = 1 ; 
+            return -1 ; 
+        default: 
+            break;
+        }
+    }
+    if(optind > argc - 1 ) {
+        fprintf(stderr , ESC_COLOR_ERROR"no file\n"ESC_COLOR_DEFAULT );
+        optind = 1 ; 
+        return -1 ;
+    }
+
+    FILE* file = fopen(argv[optind] , "r" ) ; 
+    if(file == (FILE*)0 ){
+        fprintf(stderr , "open file failed.%s\n" , argv[optind] ) ; 
+        optind = 1 ; 
+        return -1 ; 
+    }
+
+    char* buf = (char*)malloc(255) ; 
+    if(line_mode == 0 ) {
+        while(fgets(buf , 255 , file ) != NULL ) {
+            fputs(buf , stdout ) ; 
+        }
+    }else {
+
+        // 关闭回显
+        ioctl(0 , TTY_CMD_ECHO , 0 , 0 ) ; 
+        setvbuf(stdin , NULL , _IONBF , 0) ;  // 使得fgetc使用无缓存的方式和操作系统内核进行交互
+        while(1) {
+            char* b = fgets(buf , 255 , file ) ; 
+            if(b == NULL ) {
+                break ; 
+            }
+            fputs(buf , stdout) ; 
+
+            int ch ; 
+            while((ch = fgetc(stdin)) != 'n' ) {
+                if(ch == 'q' ) {
+                    goto less_quit ; 
+                }
+            }
+        }
+less_quit:
+        setvbuf(stdin , NULL , _IOLBF ,  BUFSIZ ) ; // 恢复正常的有缓存的状态 
+        // 开启回显
+        ioctl(0 , TTY_CMD_ECHO , 1 , 0 ) ; 
+
+    }
+
+    free(buf) ; 
+    fclose(file) ; 
+    optind = 1 ; 
+    return 0 ; 
+}
+
 static const cli_cmd_t cmd_list[] = {
     {
         .name = "help" , 
@@ -102,7 +196,16 @@ static const cli_cmd_t cmd_list[] = {
         .usage = "quit from shell." , 
         .do_func = do_exit , 
     } , 
-
+    {
+        .name = "ls" , 
+        .usage = "ls  -- list directory" , 
+        .do_func = do_ls , 
+    } , 
+    {
+        .name = "less" , 
+        .usage = "less [-l] file -- show file" , 
+        .do_func = do_less , 
+    }
 } ; 
 
 static void cli_init(const char* promot , const cli_cmd_t* cmd_list , int size ) {
@@ -157,9 +260,7 @@ int main (int argc, char **argv) {
     dup(0) ;  // 1 -> dev0 
     dup(0) ;  // 2 -> dev0 
 
-    cli_init(promot , cmd_list , sizeof(cmd_list ) / sizeof(cmd_list[0] ) ); 
-
-    printf("Hello world..") ; 
+    cli_init(promot , cmd_list , sizeof(cmd_list ) / sizeof(cmd_list[0] ) ) ;  
 
     for(;;) {
         show_promot(cli.promot) ; 

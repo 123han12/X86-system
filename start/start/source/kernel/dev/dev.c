@@ -5,7 +5,7 @@
 
 #define DEV_TABLE_SIZE     128 
 
-extern dev_desc_t dev_tty_desc ; 
+extern dev_desc_t dev_tty_desc ;  // 这两个都是对应的真实硬件中的编译单元
 extern dev_desc_t dev_disk_desc ; 
 
 // 设备种类表，操作系统每接入一种新的设备，都需要在这里插入新的设备种类
@@ -13,8 +13,9 @@ extern dev_desc_t dev_disk_desc ;
 static dev_desc_t* dev_desc_table[] = {
     &dev_tty_desc , 
     &dev_disk_desc , 
-
 } ; 
+
+
 
 // 存放具体的物理设备的信息,每一个元素代表的都是一个真实的物理设备，
 // 其中的dev_desc_t* 字段用来描述该物理设备的设备种类。
@@ -62,7 +63,6 @@ int dev_open(int major , int minor , void *data ) {
         } 
     }
 
-
     // 如果走到这里，desc仍然为(dev_desc_t*)0 则表示该种类型的设备操作系统并未设置其具体的处理函数，直接忽略
     // 如果走到这里，free_dev为 (device_t*)0 表示此时物理设备槽满了，也直接不处理。
 
@@ -109,7 +109,6 @@ int dev_control(int dev_id , int cmd , int arg0 , int arg1 ) {
     device_t* dev = dev_table + dev_id ; 
     return dev->desc->control(dev , cmd , arg0 , arg1 ) ; 
 }
-
 
 void dev_close(int dev_id){
     if(is_device_bad(dev_id) ) {

@@ -6,6 +6,8 @@
 #define TTY_OBUF_SIZE     512 
 #define TTY_IBUF_SIZE     512 
 
+#define  TTY_CMD_ECHO      0x1 
+
 #define TTY_NR            8 
 
 #define TTY_OCRLF        (1 << 0)        // 此位置1表示需要将在输出\n的时候需要对其转换为 \r\n
@@ -34,7 +36,7 @@ typedef struct _tty_t {
     int console_idx ;  
 
     int oflags ; 
-    int iflags ; 
+    int iflags ;   // 输入标志控制回显
 
 }tty_t ; 
 

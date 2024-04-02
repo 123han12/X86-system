@@ -27,6 +27,8 @@ static const  sys_handler_t sys_table[] = {
     [SYS_write] = (sys_handler_t)sys_write , 
     [SYS_close] = (sys_handler_t)sys_close , 
     [SYS_lseek] = (sys_handler_t)sys_lseek ,
+    [SYS_ioctl] = (sys_handler_t)sys_ioctl , 
+
 
     [SYS_isatty] = (sys_handler_t)sys_isatty , 
     [SYS_sbrk] = (sys_handler_t)sys_sbrk , 
@@ -34,6 +36,11 @@ static const  sys_handler_t sys_table[] = {
     [SYS_dup] = (sys_handler_t)sys_dup ,    
     [SYS_exit] = (sys_handler_t)sys_exit , 
     [SYS_wait] = (sys_handler_t)sys_wait , 
+
+    [SYS_opendir] = (sys_handler_t)sys_opendir , 
+    [SYS_readdir] = (sys_handler_t)sys_readdir , 
+    [SYS_closedir] = (sys_handler_t)sys_closedir , 
+    
 
 } ; 
 

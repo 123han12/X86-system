@@ -18,7 +18,7 @@ SECTIONS
 		*(EXCLUDE_FILE(*first_task* *lib_syscall*) .data)
 	}
 	.bss : {
-		*(EXCLUDE_FILE(*first_task* *lib_syscall*) .bss)
+		*(EXCLUDE_FILE(*first_task* *lib_syscall*) .bss)	
 	}
 	e_data = . ; 
 

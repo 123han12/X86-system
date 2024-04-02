@@ -5,6 +5,7 @@
 #include "tools/list.h"
 #include "ipc/mutex.h"
 #include "fs/fatfs/fatfs.h"
+#include "applib/lib_syscall.h"
 struct _fs_t ; 
 
 //函数注册表
@@ -18,6 +19,13 @@ typedef struct _fs_op_t {
     void (*close)(file_t* file ) ; 
     int (*seek)(file_t* file , uint32_t offset , int dir ) ; 
     int (*stat)(file_t* file , struct stat* st ) ; // 取出file文件的信息放入到st结构体中
+    int (*ioctl)(file_t* file , int cmd , int arg0 , int agr1 ) ; 
+
+    int (*opendir) (struct _fs_t* fs , const char* name , DIR* dir ) ; 
+    int (*readdir) (struct _fs_t* fs , DIR* dir , dirent* dirent ) ; 
+    int (*closedir) (struct _fs_t* fs , DIR* dir ) ; 
+
+
 } fs_op_t ; 
 
 
@@ -50,6 +58,7 @@ int sys_open(const char* name , int flags ) ;
 int sys_read(int file , char* ptr , int len ) ; 
 int sys_write(int file , char* ptr , int len) ;
 int sys_lseek(int file , int ptr , int dir ) ;
+int sys_ioctl(int file , int cmd , int arg0 , int arg1 ) ; 
 
 int sys_close(int file) ; 
 
@@ -66,6 +75,11 @@ int path_to_num(const char* path , int* num ) ;
 const char* path_next_child(const char* path ) ; 
 
 
+
+
+int sys_opendir(const char* path , DIR* dir ) ;
+int sys_readdir(DIR* dir , dirent* dirent ) ;
+int sys_closedir(DIR* dir ) ;
 
 
 #endif 

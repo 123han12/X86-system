@@ -212,7 +212,7 @@ int disk_open(device_t* dev ) {
     
 }
 
-/// @brief addr 参数表示的是相对于当前分区的扇区的起始地址
+/// @brief addr 参数表示的是相对于当前分区的扇区的起始地址 , buf 表示要读到的地方，size表示读取多少个扇区。
 /// @param dev 
 /// @param addr 
 /// @param buf 

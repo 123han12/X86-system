@@ -11,6 +11,8 @@ struct _fs_t ;
 typedef enum _file_type_t {
     FILE_UNKNOWN = 0 , 
     FILE_TTY , 
+    FILE_DIR , 
+    FILE_NORMAL , 
 } file_type_t ; 
 
 // 用来描述一个文件
@@ -21,11 +23,19 @@ typedef struct _file_t {
     int ref ; // 文件打开的次数
 
     int dev_id ;  // 文件所属的dev_id
+    
     int pos ;  // 文件读取的位置
+    int sblk ; 
+    int cblk ;        
+    int p_index ;   // 在父目录中的索引
+    
 
     int mode ; // 文件的读写模式
 
     struct _fs_t* fs ;  
+
+
+
 
 } file_t ; 
 

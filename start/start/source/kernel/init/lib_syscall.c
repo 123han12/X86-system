@@ -1,4 +1,4 @@
-#include "lib_syscall.h" 
+#include "applib/lib_syscall.h" 
 #include <stdlib.h>
 #include <string.h>
 #include <malloc.h>
@@ -179,56 +179,3 @@ int wait(int* status ) {
 }
 
 
-DIR* opendir(const char* path ) {
-    DIR* dir = (DIR*)malloc(sizeof(DIR) ) ; 
-    if(dir == NULL ) {
-        return (DIR*)0 ; 
-    }
-    
-    syscall_args_t args ; 
-    args.id = SYS_opendir ; 
-    args.arg0 = (int)path ;
-    args.arg1 = (int)dir ;  
-    int err = sys_call(&args) ;
-    if(err < 0 ) {
-        free(dir) ; 
-        return (DIR*) 0 ; 
-    }
-    return dir ; 
-}
-
-dirent* readdir(DIR* dir ) {
-
-    syscall_args_t args ; 
-    args.id = SYS_readdir ; 
-    args.arg0 = (int)dir ;
-    args.arg1 = (int)&dir->dirent ; 
-    int err = sys_call(&args) ;
-    if(err < 0 ) {
-        return (dirent*) 0 ; 
-    }
-    return &dir->dirent ;  
-}
-
-int closedir(DIR* dir ) {
-    syscall_args_t args ; 
-    args.id = SYS_closedir ; 
-    args.arg0 = (int)dir ;
-    int err = sys_call(&args) ;
-    if(err < 0 ) {
-        return -1 ; 
-    }
-    free(dir) ; 
-    return 0 ;  
-} 
-
-
-int ioctl(int file , int cmd , int arg0 , int arg1 ){
-    syscall_args_t args ; 
-    args.id = SYS_ioctl ; 
-    args.arg0 = (int)file ;
-    args.arg1 = (int)cmd ;
-    args.arg2 = (int)arg0 ;
-    args.arg3 = (int)arg1 ;
-    return sys_call(&args) ;
-}

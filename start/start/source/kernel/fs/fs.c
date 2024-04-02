@@ -17,7 +17,7 @@
 #define FS_TABLE_SIZE 10
 
 extern fs_op_t devfs_op;
-extern fs_op_t fatfs_op ; 
+extern fs_op_t fatfs_op; 
 
 static fs_t* root_fs ; 
 
@@ -89,7 +89,7 @@ int sys_open(const char *name, int flags)
     if (kernel_memcmp((void *)name, (void *)"/shell.elf", 3) == 0)
     {
         // 通过dev_id确认磁盘在dev_table表中的位置
-        int dev_id = dev_open(DEV_DISK , 0xa0 , (void*)0) ;
+        int dev_id = dev_open(DEV_DISK , 0xa0 , (void*)0) ; // 实际上这个底层调用到的是disk_open
         dev_read(dev_id , 5000 , (uint8_t*)TEMP_ADDR , 80 ) ; // 读取elf文件到内存指定的地址中
         temp_pos = TEMP_ADDR ; 
         return TEMP_FILE_ID;
@@ -121,7 +121,7 @@ int sys_open(const char *name, int flags)
         if (node == end)
             break;
     }
-    if (fs){  
+    if (fs){   // 如果
         name = path_next_child(name);
     }
     else{    // 没有找到相应的文件系统就挂载到root_fs下
@@ -368,7 +368,7 @@ static fs_t *mount(fs_type_t type, char *mount_point, int dev_major, int dev_min
     if (op == (fs_op_t *)0)
     {
         log_printf("unsupported fs type!:%d", type);
-        goto mount_failed;
+        goto mount_failed ; 
     }
 
     kernel_memset(fs, 0, sizeof(fs));
@@ -468,4 +468,55 @@ const char *path_next_child(const char *path)
         c++;
 
     return *c ? c : (const char *)0;
+}
+
+
+
+
+
+int sys_opendir(const char* path , DIR* dir ){
+    fs_protect(root_fs) ; 
+    int err = root_fs->op->opendir(root_fs , path , dir )  ; 
+    fs_unprotect(root_fs) ; 
+    return err ; 
+}
+
+
+int sys_readdir(DIR* dir , dirent* dirent ) {
+    
+    fs_protect(root_fs) ; 
+    int err = root_fs->op->readdir(root_fs , dir , dirent ) ; 
+    fs_unprotect(root_fs) ; 
+    return err ; 
+}
+
+// 关闭相应的dir 
+int sys_closedir(DIR* dir ) {
+    fs_protect(root_fs) ; 
+    int err = root_fs->op->closedir(root_fs , dir ); 
+    fs_unprotect(root_fs) ; 
+
+    return err ;  
+}
+
+int sys_ioctl(int file , int cmd , int arg0 , int arg1 ) {
+    if (is_fd_bad(file))
+    {
+        log_printf("file %d is not vaild..", file);
+        return -1;
+    }
+
+    file_t *p_file = task_file(file);
+    if (!p_file)
+    {
+        log_printf("file not opend....");
+        return -1;
+    }
+
+    fs_t* fs = p_file->fs ; 
+    fs_protect(fs) ; 
+    int err = fs->op->ioctl(p_file , cmd , arg0 , arg1 ); 
+    fs_unprotect(fs) ; 
+
+    return err ; 
 }
