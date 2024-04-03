@@ -30,7 +30,7 @@
 #define SYS_opendir    60
 #define SYS_readdir    61 
 #define SYS_closedir   62 
-
+#define SYS_unlink     63 
 
 void exception_handler_syscall(void) ; 
 

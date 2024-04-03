@@ -7,6 +7,7 @@
 #pragma pack(1)    // 千万记得加这个
 
 #define FAT_CLUSTER_INVALID 		0xFFF8      	// 无效的簇号
+#define FAT_CLUSTER_FREE          	0x00     	    // 空闲或无效的簇号
 
 #define DIRITEM_NAME_FREE               0xE5                // 目录项空闲名标记
 #define DIRITEM_NAME_END                0x00                // 目录项结束名标记
@@ -96,6 +97,9 @@ typedef struct _fat_t {
     int curr_sector ;     // 表示当前缓冲区，缓冲的是磁盘上的哪个扇区
 
     struct _fs_t * fs;                      // 所在的文件系统
+
+    mutex_t mutex ; 
+
 } fat_t;
 
 typedef uint16_t cluster_t;

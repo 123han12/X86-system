@@ -175,6 +175,57 @@ less_quit:
     return 0 ; 
 }
 
+
+int do_cp(int argc , char** argv ) {
+    if(argc < 3 ) {
+        fprintf(stderr  , "no [from] or [to]" ) ; 
+        return -1 ; 
+    }
+
+    FILE* from , *to ; 
+    from = fopen(argv[1] , "rb" ) ; // 只读和二进制的方式打开
+    to = fopen(argv[2] , "wb") ; // 不存在则创建
+
+    if( (from == (FILE*)0 ) || (to == (FILE*)0) ) {
+        fprintf(stderr , "open file failed")  ; 
+        goto ls_failed; 
+    } 
+    char* buf = (char*)malloc(255) ; 
+    int size ; 
+    while((size = fread(buf , 1 , 255 , from ) ) > 0  ) {
+        fwrite(buf , 1 , size , to ) ;
+
+    }   
+
+    free(buf) ;
+
+ls_failed:
+    if(from ){
+        fclose(from) ; 
+    }
+    if(to) {
+        fclose(to) ; 
+    }
+    return 0 ; 
+
+}
+
+// 删除指定的文件
+int do_rm(int argc , char** argv) {
+    if(argc < 2 ) {
+        fprintf(stderr , "no file"  );
+        return -1 ;   
+    }
+
+    int err = unlink(argv[1] ) ; 
+    if(err < 0 ) {
+        fprintf(stderr , "rm file failed: %s" , argv[1] ) ; 
+        return err ; 
+    }
+
+    return 0 ;
+}
+
 static const cli_cmd_t cmd_list[] = {
     {
         .name = "help" , 
@@ -205,6 +256,16 @@ static const cli_cmd_t cmd_list[] = {
         .name = "less" , 
         .usage = "less [-l] file -- show file" , 
         .do_func = do_less , 
+    } , 
+    {
+        .name = "cp" , 
+        .usage = "cp src dest -- copy file" , 
+        .do_func = do_cp  , 
+    } , 
+    {
+        .name = "rm" , 
+        .usage = "rm filename -- remove file" , 
+        .do_func = do_rm , 
     }
 } ; 
 
@@ -257,13 +318,23 @@ static void run_exec_file(const char* path , int argc , char** argv ) {
 }
 
 
+
 // 判断文件系统上是否存在这个文件
 static const char* find_exec_path(const char* name ) {
-    FILE* fd = fopen(name , "r") ;
-    if(fd == (FILE*)0 ) {
-        return (const char*)0 ; 
+    static char path[255] ; 
+
+    int fd = open(name , 0 ) ; 
+
+    if(fd ==  0 ) {
+        sprintf(path , "%s.elf" , name) ;
+        fd = open(path , 0 ) ;
+        if(fd == 0 ) {
+            return (const char*)0 ;  
+        }  
+        close(fd) ; 
+        return path ;  
     } 
-    fclose(fd) ; 
+    close(fd) ; 
     return name ;  
 }
 

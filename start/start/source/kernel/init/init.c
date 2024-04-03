@@ -56,11 +56,13 @@ void move_to_first_task(void){
 void init_main()
 {
 
+    log_printf("==============================================") ; 
     log_printf("kernel is runing.......") ; 
     log_printf("version: %s  name:%s" , OS_VERSION , "tiny os x86") ;  
-    log_printf("%d %d %x %c", -123, 123456, 0x12345, 'a') ; 
+    log_printf("author:Han ShenAo") ; 
+    log_printf("==============================================") ; 
 
     task_first_init() ;  
     move_to_first_task() ; 
-
+    
 }

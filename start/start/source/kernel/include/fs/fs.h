@@ -21,10 +21,11 @@ typedef struct _fs_op_t {
     int (*stat)(file_t* file , struct stat* st ) ; // 取出file文件的信息放入到st结构体中
     int (*ioctl)(file_t* file , int cmd , int arg0 , int agr1 ) ; 
 
+
     int (*opendir) (struct _fs_t* fs , const char* name , DIR* dir ) ; 
     int (*readdir) (struct _fs_t* fs , DIR* dir , dirent* dirent ) ; 
     int (*closedir) (struct _fs_t* fs , DIR* dir ) ; 
-
+    int (*unlink) (struct _fs_t* fs , const char* filepath) ; 
 
 } fs_op_t ; 
 
@@ -80,6 +81,8 @@ const char* path_next_child(const char* path ) ;
 int sys_opendir(const char* path , DIR* dir ) ;
 int sys_readdir(DIR* dir , dirent* dirent ) ;
 int sys_closedir(DIR* dir ) ;
+
+int sys_unlink(const char* filename ) ; 
 
 
 #endif 

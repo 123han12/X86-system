@@ -258,6 +258,13 @@ int disk_read(device_t* dev , int addr , char* buf , int size ) {
 
     return cnt ; 
 }
+
+/// @brief addr 参数表示的是相对于当前分区的扇区的起始地址 , buf 表示要写入的数据的起始地址，size表示写入多少扇区
+/// @param dev 
+/// @param addr 
+/// @param buf 
+/// @param size 
+/// @return 
 int disk_write(device_t* dev , int addr , char* buf , int size ) {
     // 通过信号量和中断的配合防止出现进程的忙等现象
     partinfo_t* part_info = (partinfo_t*)dev->data ;

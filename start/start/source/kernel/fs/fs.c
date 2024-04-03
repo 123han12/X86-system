@@ -493,3 +493,11 @@ int sys_ioctl(int file , int cmd , int arg0 , int arg1 ) {
 
     return err ; 
 }
+
+int sys_unlink(const char* filename ) {
+    fs_protect(root_fs) ; 
+    int err = root_fs->op->unlink(root_fs , filename ) ; 
+    fs_unprotect(root_fs) ; 
+
+    return err ; 
+}
