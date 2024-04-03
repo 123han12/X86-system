@@ -323,18 +323,18 @@ static void run_exec_file(const char* path , int argc , char** argv ) {
 static const char* find_exec_path(const char* name ) {
     static char path[255] ; 
 
-    int fd = open(name , 0 ) ; 
+    FILE* fd = fopen(name , "r" ) ; 
 
-    if(fd ==  0 ) {
+    if(fd == (FILE*)0 ) {
         sprintf(path , "%s.elf" , name) ;
-        fd = open(path , 0 ) ;
-        if(fd == 0 ) {
+        fd = fopen(path , "r" ) ;
+        if(fd == (FILE*)0 ) {
             return (const char*)0 ;  
         }  
-        close(fd) ; 
+        fclose(fd) ; 
         return path ;  
     } 
-    close(fd) ; 
+    fclose(fd) ; 
     return name ;  
 }
 
